@@ -1,0 +1,23 @@
+{
+  "$schema": "https://example.invalid/shirika-rpc/license-policy.schema.json",
+  "allowedLicensePatterns": [
+    "^0BSD$",
+    "^Apache-2\\.0$",
+    "^BlueOak-1\\.0\\.0$",
+    "^BSD-2-Clause$",
+    "^BSD-3-Clause$",
+    "^CC-BY-3\\.0$",
+    "^CC-BY-4\\.0$",
+    "^CC0-1\\.0$",
+    "^ISC$",
+    "^MIT OR Apache-2\\.0$",
+    "^MIT OR CC0-1\\.0$",
+    "^MIT$",
+    "^MPL-2\\.0$",
+    "^Python-2\\.0$",
+    "^Unicode-DFS-2016$",
+    "^Unlicense$"
+  ],
+  "deniedLicensePatterns": ["AGPL", "BUSL", "Commons Clause", "GPL", "LGPL", "NPL", "OSL", "SSPL", "UNLICENSED", "UNKNOWN"],
+  "packageOverrides": {}
+}

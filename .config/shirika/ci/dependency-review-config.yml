@@ -1,0 +1,15 @@
+fail-on-severity: moderate
+fail-on-scopes:
+  - runtime
+  - development
+deny-licenses:
+  - AGPL-1.0
+  - AGPL-3.0
+  - GPL-1.0
+  - GPL-2.0
+  - GPL-3.0
+  - LGPL-2.0
+  - LGPL-2.1
+  - LGPL-3.0
+  - SSPL-1.0
+allow-ghsas: []

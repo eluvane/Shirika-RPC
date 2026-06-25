@@ -1,0 +1,10 @@
+{
+  "moderate": false,
+  "high": true,
+  "critical": true,
+  "report-type": "important",
+  "package-manager": "pnpm",
+  "registry": "https://registry.npmjs.org",
+  "skip-dev": true,
+  "allowlist": []
+}

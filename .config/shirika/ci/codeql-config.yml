@@ -1,0 +1,11 @@
+name: codeql-javascript-typescript
+
+queries:
+  - uses: security-and-quality
+
+paths-ignore:
+  - dist/**
+  - coverage/**
+  - node_modules/**
+  - .bench/**
+  - .benchmark/**

@@ -1,0 +1,83 @@
+name: Shirika-RPC benchmarks
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 1'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PNPM_VERSION: 11.8.0
+
+jobs:
+  benchmark:
+    name: Shirika-RPC benchmark baseline
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 26
+      - name: Enable Corepack
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare "pnpm@${PNPM_VERSION}" --activate
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts --strict-peer-dependencies
+      - name: Build
+        run: pnpm run build
+      - name: Run benchmarks and collect baseline
+        run: pnpm run bench:collect -- --out-dir .benchmark/current
+      - name: Publish baseline artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: benchmark-baseline
+          path: .benchmark/current
+          retention-days: 90
+      - name: Append baseline summary
+        run: cat .benchmark/current/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Find previous successful benchmark run
+        id: previous-run
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const runs = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'benchmarks.yml',
+              branch: context.ref.replace('refs/heads/', ''),
+              status: 'success',
+              per_page: 20,
+            });
+            const previous = runs.data.workflow_runs.find((run) => run.id !== context.runId);
+            core.setOutput('run-id', previous ? String(previous.id) : '');
+      - name: Download previous baseline artifact
+        if: steps.previous-run.outputs.run-id != ''
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          name: benchmark-baseline
+          path: .benchmark/previous
+          run-id: ${{ steps.previous-run.outputs.run-id }}
+          github-token: ${{ github.token }}
+      - name: Compare against previous baseline
+        run: pnpm run bench:compare -- --previous .benchmark/previous/baseline.json --current .benchmark/current/baseline.json --out-dir .benchmark/comparison
+      - name: Publish comparison artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: benchmark-comparison
+          path: .benchmark/comparison
+          retention-days: 90
+      - name: Append comparison summary
+        run: cat .benchmark/comparison/summary.md >> "$GITHUB_STEP_SUMMARY"

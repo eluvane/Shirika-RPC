@@ -1,0 +1,186 @@
+{
+  "version": 1,
+  "sourceOfTruth": ["src/core/rpc/contract.ts", "src/core/codec/signature.ts", "formal/lean/Shirika/Contract.lean"],
+  "generatedBy": "scripts/formal/check-contract-vectors.mjs --write",
+  "hashInput": "PreparedContract.descriptionJson, equivalent to JSON.stringify(describeContract(contract)); entries sorted by numeric id, then UTF-16 code-unit method name order",
+  "methodIdPolicy": "runtime rejects contract method ids outside 1..0xffffffff during contract preparation; frame-level method ids are UInt32 and reject outside 0..0xffffffff",
+  "validVectors": [
+    {
+      "name": "single-method-contract",
+      "purpose": "single method description and JSON/FNV hash input",
+      "description": [{ "method": "echo", "id": 1, "request": "string", "response": "string" }],
+      "descriptionJson": "[{\"method\":\"echo\",\"id\":1,\"request\":\"string\",\"response\":\"string\"}]",
+      "hash": "fnv1a32:4f97c9cb",
+      "methodIds": [1],
+      "preparedWitness": {
+        "descriptionJson": "[{\"method\":\"echo\",\"id\":1,\"request\":\"string\",\"response\":\"string\"}]",
+        "hash": "fnv1a32:4f97c9cb",
+        "reprepareReturnsSameWitness": true,
+        "methodIndexLookups": [{ "id": 1, "method": "echo" }],
+        "methodNameLookups": [{ "method": "echo", "id": 1 }]
+      }
+    },
+    {
+      "name": "multiple-methods-different-insertion-orders",
+      "purpose": "same canonical description and hash from different object insertion orders",
+      "description": [
+        { "method": "echo", "id": 1, "request": "string", "response": "string" },
+        { "method": "sum", "id": 2, "request": "tuple(u32,u32)", "response": "u32" },
+        {
+          "method": "processNested",
+          "id": 7,
+          "request": "struct(tag:u8,maybePayload:optional(bytes),pairs:array(tuple(bool,u8)))",
+          "response": "tuple(bool,u16)"
+        }
+      ],
+      "descriptionJson": "[{\"method\":\"echo\",\"id\":1,\"request\":\"string\",\"response\":\"string\"},{\"method\":\"sum\",\"id\":2,\"request\":\"tuple(u32,u32)\",\"response\":\"u32\"},{\"method\":\"processNested\",\"id\":7,\"request\":\"struct(tag:u8,maybePayload:optional(bytes),pairs:array(tuple(bool,u8)))\",\"response\":\"tuple(bool,u16)\"}]",
+      "hash": "fnv1a32:f4228de3",
+      "alternateInsertionOrderDescriptionJson": "[{\"method\":\"echo\",\"id\":1,\"request\":\"string\",\"response\":\"string\"},{\"method\":\"sum\",\"id\":2,\"request\":\"tuple(u32,u32)\",\"response\":\"u32\"},{\"method\":\"processNested\",\"id\":7,\"request\":\"struct(tag:u8,maybePayload:optional(bytes),pairs:array(tuple(bool,u8)))\",\"response\":\"tuple(bool,u16)\"}]",
+      "alternateInsertionOrderHash": "fnv1a32:f4228de3",
+      "methodIds": [1, 2, 7],
+      "preparedWitness": {
+        "descriptionJson": "[{\"method\":\"echo\",\"id\":1,\"request\":\"string\",\"response\":\"string\"},{\"method\":\"sum\",\"id\":2,\"request\":\"tuple(u32,u32)\",\"response\":\"u32\"},{\"method\":\"processNested\",\"id\":7,\"request\":\"struct(tag:u8,maybePayload:optional(bytes),pairs:array(tuple(bool,u8)))\",\"response\":\"tuple(bool,u16)\"}]",
+        "hash": "fnv1a32:f4228de3",
+        "reprepareReturnsSameWitness": true,
+        "methodIndexLookups": [
+          { "id": 1, "method": "echo" },
+          { "id": 2, "method": "sum" },
+          { "id": 7, "method": "processNested" }
+        ],
+        "methodNameLookups": [
+          { "method": "echo", "id": 1 },
+          { "method": "sum", "id": 2 },
+          { "method": "processNested", "id": 7 }
+        ]
+      },
+      "alternateInsertionOrderPreparedWitness": {
+        "descriptionJson": "[{\"method\":\"echo\",\"id\":1,\"request\":\"string\",\"response\":\"string\"},{\"method\":\"sum\",\"id\":2,\"request\":\"tuple(u32,u32)\",\"response\":\"u32\"},{\"method\":\"processNested\",\"id\":7,\"request\":\"struct(tag:u8,maybePayload:optional(bytes),pairs:array(tuple(bool,u8)))\",\"response\":\"tuple(bool,u16)\"}]",
+        "hash": "fnv1a32:f4228de3",
+        "reprepareReturnsSameWitness": true,
+        "methodIndexLookups": [
+          { "id": 1, "method": "echo" },
+          { "id": 2, "method": "sum" },
+          { "id": 7, "method": "processNested" }
+        ],
+        "methodNameLookups": [
+          { "method": "echo", "id": 1 },
+          { "method": "sum", "id": 2 },
+          { "method": "processNested", "id": 7 }
+        ]
+      }
+    },
+    {
+      "name": "uint32-boundary-method-id",
+      "purpose": "boundary method id 0xffffffff is accepted and serialized without truncation",
+      "description": [{ "method": "maxMethod", "id": 4294967295, "request": "void", "response": "void" }],
+      "descriptionJson": "[{\"method\":\"maxMethod\",\"id\":4294967295,\"request\":\"void\",\"response\":\"void\"}]",
+      "hash": "fnv1a32:ed306561",
+      "methodIds": [4294967295],
+      "preparedWitness": {
+        "descriptionJson": "[{\"method\":\"maxMethod\",\"id\":4294967295,\"request\":\"void\",\"response\":\"void\"}]",
+        "hash": "fnv1a32:ed306561",
+        "reprepareReturnsSameWitness": true,
+        "methodIndexLookups": [{ "id": 4294967295, "method": "maxMethod" }],
+        "methodNameLookups": [{ "method": "maxMethod", "id": 4294967295 }]
+      }
+    },
+    {
+      "name": "representative-nested-method",
+      "purpose": "nested realistic codec signature appears in the canonical hash input",
+      "description": [
+        {
+          "method": "processNested",
+          "id": 7,
+          "request": "struct(tag:u8,maybePayload:optional(bytes),pairs:array(tuple(bool,u8)))",
+          "response": "tuple(bool,u16)"
+        }
+      ],
+      "descriptionJson": "[{\"method\":\"processNested\",\"id\":7,\"request\":\"struct(tag:u8,maybePayload:optional(bytes),pairs:array(tuple(bool,u8)))\",\"response\":\"tuple(bool,u16)\"}]",
+      "hash": "fnv1a32:449ac58d",
+      "methodIds": [7],
+      "preparedWitness": {
+        "descriptionJson": "[{\"method\":\"processNested\",\"id\":7,\"request\":\"struct(tag:u8,maybePayload:optional(bytes),pairs:array(tuple(bool,u8)))\",\"response\":\"tuple(bool,u16)\"}]",
+        "hash": "fnv1a32:449ac58d",
+        "reprepareReturnsSameWitness": true,
+        "methodIndexLookups": [{ "id": 7, "method": "processNested" }],
+        "methodNameLookups": [{ "method": "processNested", "id": 7 }]
+      }
+    }
+  ],
+  "invalidVectors": [
+    {
+      "name": "duplicate-method-id-invalid",
+      "purpose": "duplicate ids are invalid for contract definition, description, hash, method index, and preparation",
+      "outcomes": [
+        { "operation": "defineContract", "errorName": "TypeError", "message": "Duplicate method id 1 detected for methods first and second" },
+        { "operation": "describeContract", "errorName": "TypeError", "message": "Duplicate method id 1 detected for methods first and second" },
+        { "operation": "getContractHash", "errorName": "TypeError", "message": "Duplicate method id 1 detected for methods first and second" },
+        { "operation": "buildMethodIndex", "errorName": "TypeError", "message": "Duplicate method id 1 detected for methods first and second" },
+        { "operation": "prepareContract", "errorName": "TypeError", "message": "Duplicate method id 1 detected for methods first and second" }
+      ]
+    },
+    {
+      "name": "method-id-zero-invalid",
+      "purpose": "contract method ids are positive and reject 0 at every preparation/description/index/hash boundary",
+      "outcomes": [
+        {
+          "operation": "defineContractUnchecked",
+          "errorName": "TypeError",
+          "message": "Method id for zero must be an integer in range 1..4294967295, received 0"
+        },
+        {
+          "operation": "describeContractUnchecked",
+          "errorName": "TypeError",
+          "message": "Method id for zero must be an integer in range 1..4294967295, received 0"
+        },
+        {
+          "operation": "getContractHashUnchecked",
+          "errorName": "TypeError",
+          "message": "Method id for zero must be an integer in range 1..4294967295, received 0"
+        },
+        {
+          "operation": "buildMethodIndexUnchecked",
+          "errorName": "TypeError",
+          "message": "Method id for zero must be an integer in range 1..4294967295, received 0"
+        },
+        {
+          "operation": "prepareContractUnchecked",
+          "errorName": "TypeError",
+          "message": "Method id for zero must be an integer in range 1..4294967295, received 0"
+        }
+      ]
+    },
+    {
+      "name": "method-id-above-uint32-invalid",
+      "purpose": "ids above 0xffffffff are rejected instead of truncated or hashed",
+      "outcomes": [
+        { "operation": "method", "errorName": "TypeError", "message": "Method id must be an integer in range 1..4294967295, received 4294967296" },
+        {
+          "operation": "defineContractUnchecked",
+          "errorName": "TypeError",
+          "message": "Method id for tooLarge must be an integer in range 1..4294967295, received 4294967296"
+        },
+        {
+          "operation": "describeContractUnchecked",
+          "errorName": "TypeError",
+          "message": "Method id for tooLarge must be an integer in range 1..4294967295, received 4294967296"
+        },
+        {
+          "operation": "getContractHashUnchecked",
+          "errorName": "TypeError",
+          "message": "Method id for tooLarge must be an integer in range 1..4294967295, received 4294967296"
+        },
+        {
+          "operation": "buildMethodIndexUnchecked",
+          "errorName": "TypeError",
+          "message": "Method id for tooLarge must be an integer in range 1..4294967295, received 4294967296"
+        },
+        {
+          "operation": "prepareContractUnchecked",
+          "errorName": "TypeError",
+          "message": "Method id for tooLarge must be an integer in range 1..4294967295, received 4294967296"
+        }
+      ]
+    }
+  ]
+}

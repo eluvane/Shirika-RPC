@@ -1,0 +1,784 @@
+{
+  "version": 1,
+  "sourceOfTruth": [
+    "src/core/codec/builtins.ts",
+    "src/core/codec/combinators.ts",
+    "src/core/codec/specialized-writers.ts",
+    "src/core/codec/specialized-readers.ts",
+    "src/core/ring/ring-writer.ts",
+    "src/core/ring/ring-reader.ts",
+    "src/core/codec/witness.ts",
+    "formal/lean/Shirika/Codec/Examples.lean"
+  ],
+  "generatedBy": "scripts/formal/check-codec-vectors.mjs --write",
+  "leanBoundary": "selected simplified codec model; msgpack, full Unicode, and floating-point arithmetic are deferred",
+  "vectors": [
+    {
+      "name": "primitive-void",
+      "purpose": "zero-byte void payload has exact measured length",
+      "codecSignature": "void",
+      "prepared": true,
+      "measuredWriterFastPath": true,
+      "measuredWriterValueInScope": true,
+      "readSideValidation": true,
+      "readSideStrategyId": "read-side:void",
+      "valueScope": "all-values",
+      "leanCodec": "Shirika.Codec.Builtins.voidCodec",
+      "leanTheorems": ["Shirika.Codec.Builtins.void_lawful"],
+      "codecWitness": {
+        "codecKind": "primitive",
+        "signature": "void",
+        "leanCodec": "Shirika.Codec.Builtins.voidCodec",
+        "leanTheorems": ["Shirika.Codec.Builtins.void_lawful"],
+        "conformanceVectors": ["primitive-void"],
+        "valueScope": "all-values",
+        "measuredWriterFastPath": true,
+        "readSideValidation": true,
+        "readSideStrategyId": "read-side:void",
+        "components": []
+      },
+      "value": { "type": "undefined" },
+      "measure": 0,
+      "encodedLength": 0,
+      "encodedHex": "",
+      "selectedMeasuredWriter": { "strategyId": "primitive-measured-writer", "measuredLength": 0, "encodedHex": "" },
+      "validatedReadSide": { "strategyId": "read-side:void", "payloadLength": 0, "decodedValue": { "type": "undefined" } },
+      "decodedValue": { "type": "undefined" }
+    },
+    {
+      "name": "primitive-bool",
+      "purpose": "primitive boolean value writes a single presence byte",
+      "codecSignature": "bool",
+      "prepared": true,
+      "measuredWriterFastPath": true,
+      "measuredWriterValueInScope": true,
+      "readSideValidation": true,
+      "readSideStrategyId": "read-side:bool",
+      "valueScope": "all-values",
+      "leanCodec": "Shirika.Codec.Builtins.boolCodec",
+      "leanTheorems": ["Shirika.Codec.Builtins.bool_lawful"],
+      "codecWitness": {
+        "codecKind": "primitive",
+        "signature": "bool",
+        "leanCodec": "Shirika.Codec.Builtins.boolCodec",
+        "leanTheorems": ["Shirika.Codec.Builtins.bool_lawful"],
+        "conformanceVectors": ["primitive-bool"],
+        "valueScope": "all-values",
+        "measuredWriterFastPath": true,
+        "readSideValidation": true,
+        "readSideStrategyId": "read-side:bool",
+        "components": []
+      },
+      "value": true,
+      "measure": 1,
+      "encodedLength": 1,
+      "encodedHex": "01",
+      "selectedMeasuredWriter": { "strategyId": "primitive-measured-writer", "measuredLength": 1, "encodedHex": "01" },
+      "validatedReadSide": { "strategyId": "read-side:bool", "payloadLength": 1, "decodedValue": true },
+      "decodedValue": true
+    },
+    {
+      "name": "primitive-u8",
+      "purpose": "primitive fixed-width one-byte unsigned integer value",
+      "codecSignature": "u8",
+      "prepared": true,
+      "measuredWriterFastPath": true,
+      "measuredWriterValueInScope": true,
+      "readSideValidation": true,
+      "readSideStrategyId": "read-side:u8",
+      "valueScope": "bounded-primitive-values",
+      "leanCodec": "Shirika.Codec.Builtins.u8Codec",
+      "leanTheorems": ["Shirika.Codec.Builtins.u8_lawful"],
+      "codecWitness": {
+        "codecKind": "primitive",
+        "signature": "u8",
+        "leanCodec": "Shirika.Codec.Builtins.u8Codec",
+        "leanTheorems": ["Shirika.Codec.Builtins.u8_lawful"],
+        "conformanceVectors": ["primitive-u8"],
+        "valueScope": "bounded-primitive-values",
+        "measuredWriterFastPath": true,
+        "readSideValidation": true,
+        "readSideStrategyId": "read-side:u8",
+        "components": []
+      },
+      "value": 127,
+      "measure": 1,
+      "encodedLength": 1,
+      "encodedHex": "7f",
+      "selectedMeasuredWriter": { "strategyId": "primitive-measured-writer", "measuredLength": 1, "encodedHex": "7f" },
+      "validatedReadSide": { "strategyId": "read-side:u8", "payloadLength": 1, "decodedValue": 127 },
+      "decodedValue": 127
+    },
+    {
+      "name": "primitive-u16",
+      "purpose": "primitive fixed-width two-byte little-endian integer value",
+      "codecSignature": "u16",
+      "prepared": true,
+      "measuredWriterFastPath": true,
+      "measuredWriterValueInScope": true,
+      "readSideValidation": true,
+      "readSideStrategyId": "read-side:u16",
+      "valueScope": "bounded-primitive-values",
+      "leanCodec": "Shirika.Codec.Builtins.u16Codec",
+      "leanTheorems": ["Shirika.Codec.Builtins.u16_lawful"],
+      "codecWitness": {
+        "codecKind": "primitive",
+        "signature": "u16",
+        "leanCodec": "Shirika.Codec.Builtins.u16Codec",
+        "leanTheorems": ["Shirika.Codec.Builtins.u16_lawful"],
+        "conformanceVectors": ["primitive-u16"],
+        "valueScope": "bounded-primitive-values",
+        "measuredWriterFastPath": true,
+        "readSideValidation": true,
+        "readSideStrategyId": "read-side:u16",
+        "components": []
+      },
+      "value": 4660,
+      "measure": 2,
+      "encodedLength": 2,
+      "encodedHex": "3412",
+      "selectedMeasuredWriter": { "strategyId": "primitive-measured-writer", "measuredLength": 2, "encodedHex": "3412" },
+      "validatedReadSide": { "strategyId": "read-side:u16", "payloadLength": 2, "decodedValue": 4660 },
+      "decodedValue": 4660
+    },
+    {
+      "name": "primitive-u32",
+      "purpose": "primitive fixed-width little-endian integer value",
+      "codecSignature": "u32",
+      "prepared": true,
+      "measuredWriterFastPath": true,
+      "measuredWriterValueInScope": true,
+      "readSideValidation": true,
+      "readSideStrategyId": "read-side:u32",
+      "valueScope": "bounded-primitive-values",
+      "leanCodec": "Shirika.Codec.Builtins.u32Codec",
+      "leanTheorems": ["Shirika.Codec.Builtins.u32_lawful"],
+      "codecWitness": {
+        "codecKind": "primitive",
+        "signature": "u32",
+        "leanCodec": "Shirika.Codec.Builtins.u32Codec",
+        "leanTheorems": ["Shirika.Codec.Builtins.u32_lawful"],
+        "conformanceVectors": ["primitive-u32"],
+        "valueScope": "bounded-primitive-values",
+        "measuredWriterFastPath": true,
+        "readSideValidation": true,
+        "readSideStrategyId": "read-side:u32",
+        "components": []
+      },
+      "value": 305419896,
+      "measure": 4,
+      "encodedLength": 4,
+      "encodedHex": "78563412",
+      "selectedMeasuredWriter": { "strategyId": "primitive-measured-writer", "measuredLength": 4, "encodedHex": "78563412" },
+      "validatedReadSide": { "strategyId": "read-side:u32", "payloadLength": 4, "decodedValue": 305419896 },
+      "decodedValue": 305419896
+    },
+    {
+      "name": "primitive-i32",
+      "purpose": "primitive fixed-width little-endian signed integer byte representation",
+      "codecSignature": "i32",
+      "prepared": true,
+      "measuredWriterFastPath": true,
+      "measuredWriterValueInScope": true,
+      "readSideValidation": true,
+      "readSideStrategyId": "read-side:i32",
+      "valueScope": "bounded-primitive-values",
+      "leanCodec": "Shirika.Codec.Builtins.i32Codec",
+      "leanTheorems": ["Shirika.Codec.Builtins.i32_lawful"],
+      "codecWitness": {
+        "codecKind": "primitive",
+        "signature": "i32",
+        "leanCodec": "Shirika.Codec.Builtins.i32Codec",
+        "leanTheorems": ["Shirika.Codec.Builtins.i32_lawful"],
+        "conformanceVectors": ["primitive-i32"],
+        "valueScope": "bounded-primitive-values",
+        "measuredWriterFastPath": true,
+        "readSideValidation": true,
+        "readSideStrategyId": "read-side:i32",
+        "components": []
+      },
+      "value": -2,
+      "measure": 4,
+      "encodedLength": 4,
+      "encodedHex": "feffffff",
+      "selectedMeasuredWriter": { "strategyId": "primitive-measured-writer", "measuredLength": 4, "encodedHex": "feffffff" },
+      "validatedReadSide": { "strategyId": "read-side:i32", "payloadLength": 4, "decodedValue": -2 },
+      "decodedValue": -2
+    },
+    {
+      "name": "bytes-small",
+      "purpose": "selected small length-prefixed bytes payload",
+      "codecSignature": "bytes",
+      "prepared": true,
+      "measuredWriterFastPath": true,
+      "measuredWriterValueInScope": true,
+      "readSideValidation": false,
+      "valueScope": "small-length-prefix-values",
+      "leanCodec": "Shirika.Codec.Builtins.bytesCodec",
+      "leanTheorems": ["Shirika.Codec.Builtins.bytes_encode_length_eq_measure", "Shirika.Codec.Builtins.bytes_decode_encode"],
+      "codecWitness": {
+        "codecKind": "bytes",
+        "signature": "bytes",
+        "leanCodec": "Shirika.Codec.Builtins.bytesCodec",
+        "leanTheorems": ["Shirika.Codec.Builtins.bytes_encode_length_eq_measure", "Shirika.Codec.Builtins.bytes_decode_encode"],
+        "conformanceVectors": ["bytes-small"],
+        "valueScope": "small-length-prefix-values",
+        "measuredWriterFastPath": true,
+        "readSideValidation": false,
+        "components": []
+      },
+      "value": { "type": "Uint8Array", "hex": "dead" },
+      "measure": 6,
+      "encodedLength": 6,
+      "encodedHex": "02000000dead",
+      "selectedMeasuredWriter": { "strategyId": "bytes-measured-writer", "measuredLength": 6, "encodedHex": "02000000dead" },
+      "decodedValue": { "type": "Uint8Array", "hex": "dead" }
+    },
+    {
+      "name": "optional-u8-none",
+      "purpose": "optional empty value with only a presence byte",
+      "codecSignature": "optional(u8)",
+      "prepared": true,
+      "measuredWriterFastPath": true,
+      "measuredWriterValueInScope": true,
+      "readSideValidation": false,
+      "valueScope": "bounded-primitive-values",
+      "leanCodec": "Shirika.Codec.Examples.optionalU8Codec",
+      "leanTheorems": ["Shirika.Codec.Examples.optionalU8_lawful"],
+      "codecWitness": {
+        "codecKind": "optional",
+        "signature": "optional(u8)",
+        "leanCodec": "Shirika.Codec.Examples.optionalU8Codec",
+        "leanTheorems": ["Shirika.Codec.Examples.optionalU8_lawful"],
+        "conformanceVectors": ["optional-u8-none", "optional-u8-present"],
+        "valueScope": "bounded-primitive-values",
+        "measuredWriterFastPath": true,
+        "readSideValidation": false,
+        "components": [{ "signature": "u8", "leanCodec": "Shirika.Codec.Builtins.u8Codec", "leanTheorems": ["Shirika.Codec.Builtins.u8_lawful"] }]
+      },
+      "value": { "type": "undefined" },
+      "measure": 1,
+      "encodedLength": 1,
+      "encodedHex": "00",
+      "selectedMeasuredWriter": { "strategyId": "specialized:optional(u8)", "measuredLength": 1, "encodedHex": "00" },
+      "decodedValue": { "type": "undefined" }
+    },
+    {
+      "name": "optional-u8-present",
+      "purpose": "optional value with presence byte and primitive payload",
+      "codecSignature": "optional(u8)",
+      "prepared": true,
+      "measuredWriterFastPath": true,
+      "measuredWriterValueInScope": true,
+      "readSideValidation": false,
+      "valueScope": "bounded-primitive-values",
+      "leanCodec": "Shirika.Codec.Examples.optionalU8Codec",
+      "leanTheorems": ["Shirika.Codec.Examples.optionalU8_lawful"],
+      "codecWitness": {
+        "codecKind": "optional",
+        "signature": "optional(u8)",
+        "leanCodec": "Shirika.Codec.Examples.optionalU8Codec",
+        "leanTheorems": ["Shirika.Codec.Examples.optionalU8_lawful"],
+        "conformanceVectors": ["optional-u8-none", "optional-u8-present"],
+        "valueScope": "bounded-primitive-values",
+        "measuredWriterFastPath": true,
+        "readSideValidation": false,
+        "components": [{ "signature": "u8", "leanCodec": "Shirika.Codec.Builtins.u8Codec", "leanTheorems": ["Shirika.Codec.Builtins.u8_lawful"] }]
+      },
+      "value": 42,
+      "measure": 2,
+      "encodedLength": 2,
+      "encodedHex": "012a",
+      "selectedMeasuredWriter": { "strategyId": "specialized:optional(u8)", "measuredLength": 2, "encodedHex": "012a" },
+      "decodedValue": 42
+    },
+    {
+      "name": "optional-bytes-none",
+      "purpose": "optional bytes absent value with only a presence byte",
+      "codecSignature": "optional(bytes)",
+      "prepared": true,
+      "measuredWriterFastPath": true,
+      "measuredWriterValueInScope": true,
+      "readSideValidation": false,
+      "valueScope": "small-length-prefix-values",
+      "leanCodec": "Shirika.Codec.Combinators.optionalCodec Shirika.Codec.Builtins.bytesCodec",
+      "leanTheorems": ["Shirika.Codec.Combinators.optional_lawful", "Shirika.Codec.Builtins.bytes_lawful"],
+      "codecWitness": {
+        "codecKind": "optional",
+        "signature": "optional(bytes)",
+        "leanCodec": "Shirika.Codec.Combinators.optionalCodec Shirika.Codec.Builtins.bytesCodec",
+        "leanTheorems": ["Shirika.Codec.Combinators.optional_lawful", "Shirika.Codec.Builtins.bytes_lawful"],
+        "conformanceVectors": ["optional-bytes-none", "optional-bytes-small-present", "struct-nested-optional-bytes-array-tuple"],
+        "valueScope": "small-length-prefix-values",
+        "measuredWriterFastPath": true,
+        "readSideValidation": false,
+        "components": [
+          {
+            "signature": "bytes",
+            "leanCodec": "Shirika.Codec.Builtins.bytesCodec",
+            "leanTheorems": ["Shirika.Codec.Builtins.bytes_encode_length_eq_measure", "Shirika.Codec.Builtins.bytes_decode_encode"]
+          }
+        ]
+      },
+      "value": { "type": "undefined" },
+      "measure": 1,
+      "encodedLength": 1,
+      "encodedHex": "00",
+      "selectedMeasuredWriter": { "strategyId": "specialized:optional(bytes)", "measuredLength": 1, "encodedHex": "00" },
+      "decodedValue": { "type": "undefined" }
+    },
+    {
+      "name": "optional-bytes-small-present",
+      "purpose": "optional selected small length-prefixed bytes payload",
+      "codecSignature": "optional(bytes)",
+      "prepared": true,
+      "measuredWriterFastPath": true,
+      "measuredWriterValueInScope": true,
+      "readSideValidation": false,
+      "valueScope": "small-length-prefix-values",
+      "leanCodec": "Shirika.Codec.Combinators.optionalCodec Shirika.Codec.Builtins.bytesCodec",
+      "leanTheorems": ["Shirika.Codec.Combinators.optional_lawful", "Shirika.Codec.Builtins.bytes_lawful"],
+      "codecWitness": {
+        "codecKind": "optional",
+        "signature": "optional(bytes)",
+        "leanCodec": "Shirika.Codec.Combinators.optionalCodec Shirika.Codec.Builtins.bytesCodec",
+        "leanTheorems": ["Shirika.Codec.Combinators.optional_lawful", "Shirika.Codec.Builtins.bytes_lawful"],
+        "conformanceVectors": ["optional-bytes-none", "optional-bytes-small-present", "struct-nested-optional-bytes-array-tuple"],
+        "valueScope": "small-length-prefix-values",
+        "measuredWriterFastPath": true,
+        "readSideValidation": false,
+        "components": [
+          {
+            "signature": "bytes",
+            "leanCodec": "Shirika.Codec.Builtins.bytesCodec",
+            "leanTheorems": ["Shirika.Codec.Builtins.bytes_encode_length_eq_measure", "Shirika.Codec.Builtins.bytes_decode_encode"]
+          }
+        ]
+      },
+      "value": { "type": "Uint8Array", "hex": "cafe" },
+      "measure": 7,
+      "encodedLength": 7,
+      "encodedHex": "0102000000cafe",
+      "selectedMeasuredWriter": { "strategyId": "specialized:optional(bytes)", "measuredLength": 7, "encodedHex": "0102000000cafe" },
+      "decodedValue": { "type": "Uint8Array", "hex": "cafe" }
+    },
+    {
+      "name": "array-u8-three-items",
+      "purpose": "length-prefixed array with three primitive items",
+      "codecSignature": "array(u8)",
+      "prepared": true,
+      "measuredWriterFastPath": true,
+      "measuredWriterValueInScope": true,
+      "readSideValidation": false,
+      "valueScope": "small-length-prefix-values",
+      "leanCodec": "Shirika.Codec.Examples.arrayU8Codec",
+      "leanTheorems": ["Shirika.Codec.Examples.arrayU8_lawful"],
+      "codecWitness": {
+        "codecKind": "array",
+        "signature": "array(u8)",
+        "leanCodec": "Shirika.Codec.Examples.arrayU8Codec",
+        "leanTheorems": ["Shirika.Codec.Examples.arrayU8_lawful"],
+        "conformanceVectors": ["array-u8-three-items"],
+        "valueScope": "small-length-prefix-values",
+        "measuredWriterFastPath": true,
+        "readSideValidation": false,
+        "components": [{ "signature": "u8", "leanCodec": "Shirika.Codec.Builtins.u8Codec", "leanTheorems": ["Shirika.Codec.Builtins.u8_lawful"] }]
+      },
+      "value": [1, 2, 255],
+      "measure": 7,
+      "encodedLength": 7,
+      "encodedHex": "030000000102ff",
+      "selectedMeasuredWriter": { "strategyId": "specialized:array(u8)", "measuredLength": 7, "encodedHex": "030000000102ff" },
+      "decodedValue": [1, 2, 255]
+    },
+    {
+      "name": "tuple-bool-u8",
+      "purpose": "fixed tuple writes bool and u8 fields in declaration order",
+      "codecSignature": "tuple(bool,u8)",
+      "prepared": true,
+      "measuredWriterFastPath": true,
+      "measuredWriterValueInScope": true,
+      "readSideValidation": true,
+      "readSideStrategyId": "read-side:tuple(bool,u8)",
+      "valueScope": "bounded-primitive-values",
+      "leanCodec": "Shirika.Codec.Examples.tupleBoolU8Codec",
+      "leanTheorems": ["Shirika.Codec.Examples.tupleBoolU8_lawful"],
+      "codecWitness": {
+        "codecKind": "tuple",
+        "signature": "tuple(bool,u8)",
+        "leanCodec": "Shirika.Codec.Examples.tupleBoolU8Codec",
+        "leanTheorems": ["Shirika.Codec.Examples.tupleBoolU8_lawful"],
+        "conformanceVectors": ["tuple-bool-u8"],
+        "valueScope": "bounded-primitive-values",
+        "measuredWriterFastPath": true,
+        "readSideValidation": true,
+        "readSideStrategyId": "read-side:tuple(bool,u8)",
+        "components": [
+          { "signature": "bool", "leanCodec": "Shirika.Codec.Builtins.boolCodec", "leanTheorems": ["Shirika.Codec.Builtins.bool_lawful"] },
+          { "signature": "u8", "leanCodec": "Shirika.Codec.Builtins.u8Codec", "leanTheorems": ["Shirika.Codec.Builtins.u8_lawful"] }
+        ]
+      },
+      "value": [false, 9],
+      "measure": 2,
+      "encodedLength": 2,
+      "encodedHex": "0009",
+      "selectedMeasuredWriter": { "strategyId": "specialized:tuple(bool,u8)", "measuredLength": 2, "encodedHex": "0009" },
+      "validatedReadSide": { "strategyId": "read-side:tuple(bool,u8)", "payloadLength": 2, "decodedValue": [false, 9] },
+      "decodedValue": [false, 9]
+    },
+    {
+      "name": "tuple-bool-u16",
+      "purpose": "fixed tuple writes fields in declaration order",
+      "codecSignature": "tuple(bool,u16)",
+      "prepared": true,
+      "measuredWriterFastPath": true,
+      "measuredWriterValueInScope": true,
+      "readSideValidation": true,
+      "readSideStrategyId": "read-side:tuple(bool,u16)",
+      "valueScope": "bounded-primitive-values",
+      "leanCodec": "Shirika.Codec.Examples.tupleBoolU16Codec",
+      "leanTheorems": ["Shirika.Codec.Examples.tupleBoolU16_lawful"],
+      "codecWitness": {
+        "codecKind": "tuple",
+        "signature": "tuple(bool,u16)",
+        "leanCodec": "Shirika.Codec.Examples.tupleBoolU16Codec",
+        "leanTheorems": ["Shirika.Codec.Examples.tupleBoolU16_lawful"],
+        "conformanceVectors": ["tuple-bool-u16"],
+        "valueScope": "bounded-primitive-values",
+        "measuredWriterFastPath": true,
+        "readSideValidation": true,
+        "readSideStrategyId": "read-side:tuple(bool,u16)",
+        "components": [
+          { "signature": "bool", "leanCodec": "Shirika.Codec.Builtins.boolCodec", "leanTheorems": ["Shirika.Codec.Builtins.bool_lawful"] },
+          { "signature": "u16", "leanCodec": "Shirika.Codec.Builtins.u16Codec", "leanTheorems": ["Shirika.Codec.Builtins.u16_lawful"] }
+        ]
+      },
+      "value": [true, 4660],
+      "measure": 3,
+      "encodedLength": 3,
+      "encodedHex": "013412",
+      "selectedMeasuredWriter": { "strategyId": "specialized:tuple(bool,u16)", "measuredLength": 3, "encodedHex": "013412" },
+      "validatedReadSide": { "strategyId": "read-side:tuple(bool,u16)", "payloadLength": 3, "decodedValue": [true, 4660] },
+      "decodedValue": [true, 4660]
+    },
+    {
+      "name": "array-tuple-bool-u8",
+      "purpose": "length-prefixed array of selected tuple fields",
+      "codecSignature": "array(tuple(bool,u8))",
+      "prepared": true,
+      "measuredWriterFastPath": true,
+      "measuredWriterValueInScope": true,
+      "readSideValidation": false,
+      "valueScope": "small-length-prefix-values",
+      "leanCodec": "Shirika.Codec.Combinators.arrayCodec Shirika.Codec.Examples.tupleBoolU8Codec",
+      "leanTheorems": ["Shirika.Codec.Combinators.array_lawful", "Shirika.Codec.Examples.tupleBoolU8_lawful"],
+      "codecWitness": {
+        "codecKind": "array",
+        "signature": "array(tuple(bool,u8))",
+        "leanCodec": "Shirika.Codec.Combinators.arrayCodec Shirika.Codec.Examples.tupleBoolU8Codec",
+        "leanTheorems": ["Shirika.Codec.Combinators.array_lawful", "Shirika.Codec.Examples.tupleBoolU8_lawful"],
+        "conformanceVectors": ["array-tuple-bool-u8", "struct-nested-optional-bytes-array-tuple"],
+        "valueScope": "small-length-prefix-values",
+        "measuredWriterFastPath": true,
+        "readSideValidation": false,
+        "components": [
+          {
+            "signature": "tuple(bool,u8)",
+            "leanCodec": "Shirika.Codec.Examples.tupleBoolU8Codec",
+            "leanTheorems": ["Shirika.Codec.Examples.tupleBoolU8_lawful"]
+          }
+        ]
+      },
+      "value": [
+        [true, 1],
+        [false, 2]
+      ],
+      "measure": 8,
+      "encodedLength": 8,
+      "encodedHex": "0200000001010002",
+      "selectedMeasuredWriter": { "strategyId": "specialized:array(tuple(bool,u8))", "measuredLength": 8, "encodedHex": "0200000001010002" },
+      "decodedValue": [
+        [true, 1],
+        [false, 2]
+      ]
+    },
+    {
+      "name": "struct-simple",
+      "purpose": "representative struct writes fields in Object.entries declaration order",
+      "codecSignature": "struct(tag:u8,count:u16,ok:bool)",
+      "prepared": true,
+      "measuredWriterFastPath": true,
+      "measuredWriterValueInScope": true,
+      "readSideValidation": true,
+      "readSideStrategyId": "read-side:struct(tag:u8,count:u16,ok:bool)",
+      "valueScope": "bounded-primitive-values",
+      "leanCodec": "Shirika.Codec.Examples.simpleStructCodec",
+      "leanTheorems": ["Shirika.Codec.Examples.simpleStruct_lawful"],
+      "codecWitness": {
+        "codecKind": "struct",
+        "signature": "struct(tag:u8,count:u16,ok:bool)",
+        "leanCodec": "Shirika.Codec.Examples.simpleStructCodec",
+        "leanTheorems": ["Shirika.Codec.Examples.simpleStruct_lawful"],
+        "conformanceVectors": ["struct-simple"],
+        "valueScope": "bounded-primitive-values",
+        "measuredWriterFastPath": true,
+        "readSideValidation": true,
+        "readSideStrategyId": "read-side:struct(tag:u8,count:u16,ok:bool)",
+        "components": [
+          { "signature": "u8", "leanCodec": "Shirika.Codec.Builtins.u8Codec", "leanTheorems": ["Shirika.Codec.Builtins.u8_lawful"] },
+          { "signature": "u16", "leanCodec": "Shirika.Codec.Builtins.u16Codec", "leanTheorems": ["Shirika.Codec.Builtins.u16_lawful"] },
+          { "signature": "bool", "leanCodec": "Shirika.Codec.Builtins.boolCodec", "leanTheorems": ["Shirika.Codec.Builtins.bool_lawful"] }
+        ]
+      },
+      "value": { "count": 4660, "ok": true, "tag": 7 },
+      "measure": 4,
+      "encodedLength": 4,
+      "encodedHex": "07341201",
+      "selectedMeasuredWriter": { "strategyId": "specialized:struct(tag:u8,count:u16,ok:bool)", "measuredLength": 4, "encodedHex": "07341201" },
+      "validatedReadSide": {
+        "strategyId": "read-side:struct(tag:u8,count:u16,ok:bool)",
+        "payloadLength": 4,
+        "decodedValue": { "count": 4660, "ok": true, "tag": 7 }
+      },
+      "decodedValue": { "count": 4660, "ok": true, "tag": 7 }
+    },
+    {
+      "name": "struct-nested-optional-bytes-array-tuple",
+      "purpose": "nested representative struct with optional bytes and array of tuple fields",
+      "codecSignature": "struct(tag:u8,maybePayload:optional(bytes),pairs:array(tuple(bool,u8)))",
+      "prepared": true,
+      "measuredWriterFastPath": true,
+      "measuredWriterValueInScope": true,
+      "readSideValidation": false,
+      "valueScope": "small-length-prefix-values",
+      "leanCodec": "Shirika.Codec.Examples.representativeStructCodec",
+      "leanTheorems": ["Shirika.Codec.Examples.representativeStruct_encode_length_eq_measure", "Shirika.Codec.Examples.representativeStruct_decode_encode"],
+      "codecWitness": {
+        "codecKind": "struct",
+        "signature": "struct(tag:u8,maybePayload:optional(bytes),pairs:array(tuple(bool,u8)))",
+        "leanCodec": "Shirika.Codec.Examples.representativeStructCodec",
+        "leanTheorems": ["Shirika.Codec.Examples.representativeStruct_encode_length_eq_measure", "Shirika.Codec.Examples.representativeStruct_decode_encode"],
+        "conformanceVectors": ["struct-nested-optional-bytes-array-tuple"],
+        "valueScope": "small-length-prefix-values",
+        "measuredWriterFastPath": true,
+        "readSideValidation": false,
+        "components": [
+          { "signature": "u8", "leanCodec": "Shirika.Codec.Builtins.u8Codec", "leanTheorems": ["Shirika.Codec.Builtins.u8_lawful"] },
+          {
+            "signature": "optional(bytes)",
+            "leanCodec": "Shirika.Codec.Combinators.optionalCodec Shirika.Codec.Builtins.bytesCodec",
+            "leanTheorems": ["Shirika.Codec.Combinators.optional_lawful", "Shirika.Codec.Builtins.bytes_lawful"]
+          },
+          {
+            "signature": "array(tuple(bool,u8))",
+            "leanCodec": "Shirika.Codec.Combinators.arrayCodec Shirika.Codec.Examples.tupleBoolU8Codec",
+            "leanTheorems": ["Shirika.Codec.Combinators.array_lawful", "Shirika.Codec.Examples.tupleBoolU8_lawful"]
+          }
+        ]
+      },
+      "value": {
+        "maybePayload": { "type": "Uint8Array", "hex": "dead" },
+        "pairs": [
+          [true, 1],
+          [false, 2]
+        ],
+        "tag": 9
+      },
+      "measure": 16,
+      "encodedLength": 16,
+      "encodedHex": "090102000000dead0200000001010002",
+      "selectedMeasuredWriter": {
+        "strategyId": "specialized:struct(tag:u8,maybePayload:optional(bytes),pairs:array(tuple(bool,u8)))",
+        "measuredLength": 16,
+        "encodedHex": "090102000000dead0200000001010002"
+      },
+      "decodedValue": {
+        "maybePayload": { "type": "Uint8Array", "hex": "dead" },
+        "pairs": [
+          [true, 1],
+          [false, 2]
+        ],
+        "tag": 9
+      }
+    }
+  ],
+  "readSideInvalidCases": [
+    {
+      "name": "primitive-void-trailing",
+      "codecSignature": "void",
+      "strategyId": "read-side:void",
+      "invalidKind": "trailing",
+      "encodedHex": "ff",
+      "errorName": "ShirikaProtocolError",
+      "errorMessage": "Binary reader did not consume payload exactly: expected 1, read 0"
+    },
+    {
+      "name": "primitive-bool-too-short",
+      "codecSignature": "bool",
+      "strategyId": "read-side:bool",
+      "invalidKind": "too-short",
+      "encodedHex": "",
+      "errorName": "ShirikaProtocolError",
+      "errorMessage": "Binary reader underflow: need 1 bytes with only 0 bytes remaining"
+    },
+    {
+      "name": "primitive-bool-trailing",
+      "codecSignature": "bool",
+      "strategyId": "read-side:bool",
+      "invalidKind": "trailing",
+      "encodedHex": "01ff",
+      "errorName": "ShirikaProtocolError",
+      "errorMessage": "Binary reader did not consume payload exactly: expected 2, read 1"
+    },
+    {
+      "name": "primitive-u8-too-short",
+      "codecSignature": "u8",
+      "strategyId": "read-side:u8",
+      "invalidKind": "too-short",
+      "encodedHex": "",
+      "errorName": "ShirikaProtocolError",
+      "errorMessage": "Binary reader underflow: need 1 bytes with only 0 bytes remaining"
+    },
+    {
+      "name": "primitive-u8-trailing",
+      "codecSignature": "u8",
+      "strategyId": "read-side:u8",
+      "invalidKind": "trailing",
+      "encodedHex": "7fff",
+      "errorName": "ShirikaProtocolError",
+      "errorMessage": "Binary reader did not consume payload exactly: expected 2, read 1"
+    },
+    {
+      "name": "primitive-u16-too-short",
+      "codecSignature": "u16",
+      "strategyId": "read-side:u16",
+      "invalidKind": "too-short",
+      "encodedHex": "34",
+      "errorName": "ShirikaProtocolError",
+      "errorMessage": "Binary reader underflow: need 2 bytes with only 1 bytes remaining"
+    },
+    {
+      "name": "primitive-u16-trailing",
+      "codecSignature": "u16",
+      "strategyId": "read-side:u16",
+      "invalidKind": "trailing",
+      "encodedHex": "3412ff",
+      "errorName": "ShirikaProtocolError",
+      "errorMessage": "Binary reader did not consume payload exactly: expected 3, read 2"
+    },
+    {
+      "name": "primitive-u32-too-short",
+      "codecSignature": "u32",
+      "strategyId": "read-side:u32",
+      "invalidKind": "too-short",
+      "encodedHex": "785634",
+      "errorName": "ShirikaProtocolError",
+      "errorMessage": "Binary reader underflow: need 4 bytes with only 3 bytes remaining"
+    },
+    {
+      "name": "primitive-u32-trailing",
+      "codecSignature": "u32",
+      "strategyId": "read-side:u32",
+      "invalidKind": "trailing",
+      "encodedHex": "78563412ff",
+      "errorName": "ShirikaProtocolError",
+      "errorMessage": "Binary reader did not consume payload exactly: expected 5, read 4"
+    },
+    {
+      "name": "primitive-i32-too-short",
+      "codecSignature": "i32",
+      "strategyId": "read-side:i32",
+      "invalidKind": "too-short",
+      "encodedHex": "feffff",
+      "errorName": "ShirikaProtocolError",
+      "errorMessage": "Binary reader underflow: need 4 bytes with only 3 bytes remaining"
+    },
+    {
+      "name": "primitive-i32-trailing",
+      "codecSignature": "i32",
+      "strategyId": "read-side:i32",
+      "invalidKind": "trailing",
+      "encodedHex": "feffffffff",
+      "errorName": "ShirikaProtocolError",
+      "errorMessage": "Binary reader did not consume payload exactly: expected 5, read 4"
+    },
+    {
+      "name": "tuple-bool-u8-too-short",
+      "codecSignature": "tuple(bool,u8)",
+      "strategyId": "read-side:tuple(bool,u8)",
+      "invalidKind": "too-short",
+      "encodedHex": "00",
+      "errorName": "ShirikaProtocolError",
+      "errorMessage": "Binary reader underflow: need 1 bytes with only 0 bytes remaining"
+    },
+    {
+      "name": "tuple-bool-u8-trailing",
+      "codecSignature": "tuple(bool,u8)",
+      "strategyId": "read-side:tuple(bool,u8)",
+      "invalidKind": "trailing",
+      "encodedHex": "0009ff",
+      "errorName": "ShirikaProtocolError",
+      "errorMessage": "Binary reader did not consume payload exactly: expected 3, read 2"
+    },
+    {
+      "name": "tuple-bool-u16-too-short",
+      "codecSignature": "tuple(bool,u16)",
+      "strategyId": "read-side:tuple(bool,u16)",
+      "invalidKind": "too-short",
+      "encodedHex": "0134",
+      "errorName": "ShirikaProtocolError",
+      "errorMessage": "Binary reader underflow: need 2 bytes with only 1 bytes remaining"
+    },
+    {
+      "name": "tuple-bool-u16-trailing",
+      "codecSignature": "tuple(bool,u16)",
+      "strategyId": "read-side:tuple(bool,u16)",
+      "invalidKind": "trailing",
+      "encodedHex": "013412ff",
+      "errorName": "ShirikaProtocolError",
+      "errorMessage": "Binary reader did not consume payload exactly: expected 4, read 3"
+    },
+    {
+      "name": "struct-simple-too-short",
+      "codecSignature": "struct(tag:u8,count:u16,ok:bool)",
+      "strategyId": "read-side:struct(tag:u8,count:u16,ok:bool)",
+      "invalidKind": "too-short",
+      "encodedHex": "073412",
+      "errorName": "ShirikaProtocolError",
+      "errorMessage": "Binary reader underflow: need 1 bytes with only 0 bytes remaining"
+    },
+    {
+      "name": "struct-simple-trailing",
+      "codecSignature": "struct(tag:u8,count:u16,ok:bool)",
+      "strategyId": "read-side:struct(tag:u8,count:u16,ok:bool)",
+      "invalidKind": "trailing",
+      "encodedHex": "07341201ff",
+      "errorName": "ShirikaProtocolError",
+      "errorMessage": "Binary reader did not consume payload exactly: expected 5, read 4"
+    }
+  ],
+  "fallbackCases": [
+    {
+      "name": "custom-forged-u32-signature",
+      "purpose": "codec signatures alone are not enough to create a writer fast-path witness",
+      "codecSignature": "u32",
+      "prepared": false,
+      "safeFallback": true
+    },
+    {
+      "name": "custom-forged-bytes-signature",
+      "purpose": "aligned bytes payload fast path requires the internal bytes witness, not just a public signature",
+      "codecSignature": "bytes",
+      "prepared": false,
+      "safeFallback": true
+    },
+    {
+      "name": "custom-measure-write-mismatch",
+      "purpose": "custom codec without witness remains on checked writer fallback and mismatch is rejected",
+      "codecSignature": "binary",
+      "prepared": false,
+      "safeFallback": true,
+      "safeWriterRejectedMismatch": true
+    }
+  ]
+}

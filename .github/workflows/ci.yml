@@ -1,0 +1,330 @@
+name: Shirika-RPC CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PNPM_VERSION: 11.8.0
+
+jobs:
+  format:
+    name: Shirika-RPC formatting
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 26
+      - name: Enable Corepack
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare "pnpm@${PNPM_VERSION}" --activate
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts --strict-peer-dependencies
+      - name: Check repository formatting
+        run: pnpm run lint:format
+
+  yaml-and-actions:
+    name: Shirika-RPC YAML and Actions lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 26
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.4'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14.6'
+      - name: Enable Corepack
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare "pnpm@${PNPM_VERSION}" --activate
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts --strict-peer-dependencies
+      - name: Install YAML and Actions linters
+        run: |
+          set -euo pipefail
+          python -m pip install --user yamllint==1.38.0
+          go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
+          echo "${HOME}/go/bin" >> "$GITHUB_PATH"
+          echo "${HOME}/.local/bin" >> "$GITHUB_PATH"
+      - name: Local workflow policy
+        run: pnpm run lint:workflows
+      - name: actionlint
+        run: pnpm run lint:actions:external
+      - name: yamllint
+        run: pnpm run lint:yaml:external
+
+  quality:
+    name: Shirika-RPC static lints
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 26
+      - name: Enable Corepack
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare "pnpm@${PNPM_VERSION}" --activate
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts --strict-peer-dependencies
+      - name: Build
+        run: pnpm run build
+      - name: Shirika-RPC required policy lints
+        run: pnpm run lint:required:nonformat
+      - name: Shirika-RPC strict structural lints
+        run: pnpm run lint:strict
+      - name: Typecheck
+        run: pnpm run typecheck
+      - name: Formal bridge fixture check
+        run: pnpm run check:formal-bridge
+      - name: Formal codec vector check
+        run: pnpm run check:formal-codecs
+      - name: Formal contract/hash vector check
+        run: pnpm run check:formal-contract
+      - name: Formal lifecycle vector check
+        run: pnpm run check:formal-lifecycle
+
+  benchmark-smoke:
+    name: Shirika-RPC benchmark governance smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 26
+      - name: Enable Corepack
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare "pnpm@${PNPM_VERSION}" --activate
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts --strict-peer-dependencies
+      - name: Run benchmark governance smoke matrix
+        run: pnpm run bench:governance:smoke
+      - name: Publish benchmark smoke artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: benchmark-smoke
+          path: .benchmark/smoke
+          retention-days: 14
+
+  dependency-security:
+    name: Shirika-RPC dependency and license security
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 26
+      - name: Enable Corepack
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare "pnpm@${PNPM_VERSION}" --activate
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts --strict-peer-dependencies
+      - name: Dependency hygiene and npm audit
+        run: pnpm run check:deps
+      - name: License policy
+        run: pnpm run check:licenses
+      - name: audit-ci advisory policy
+        run: pnpm run lint:audit-ci
+
+  formal-lean:
+    name: Shirika-RPC Lean formal layer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Build Lean proofs
+        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
+        with:
+          auto-config: false
+          build: true
+          build-args: '--wfail'
+          lint: true
+          test: false
+          lake-package-directory: formal/lean
+          leanchecker: false
+          use-github-cache: false
+          use-mathlib-cache: false
+      - name: Check Lean environment
+        working-directory: formal/lean
+        run: lake env leanchecker --fresh Shirika
+
+  dependency-review:
+    name: Shirika-RPC dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Dependency review
+        uses: actions/dependency-review-action@v5
+        with:
+          config-file: ./.config/shirika/ci/dependency-review-config.yml
+
+  build-and-typecheck:
+    name: Shirika-RPC build and typecheck / Node ${{ matrix.node }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [26]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Enable Corepack
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare "pnpm@${PNPM_VERSION}" --activate
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts --strict-peer-dependencies
+      - name: Typecheck
+        run: pnpm run typecheck
+      - name: Build
+        run: pnpm run build
+
+  test-node:
+    name: Shirika-RPC Node tests / Node ${{ matrix.node }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [26]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Enable Corepack
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare "pnpm@${PNPM_VERSION}" --activate
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts --strict-peer-dependencies
+      - name: Test node
+        run: pnpm run test:node
+
+  test-browser:
+    name: Shirika-RPC browser tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 26
+      - name: Enable Corepack
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare "pnpm@${PNPM_VERSION}" --activate
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts --strict-peer-dependencies
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+      - name: Test browser
+        run: pnpm run test:browser
+
+  test-types:
+    name: Shirika-RPC type tests / Node ${{ matrix.node }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [26]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Enable Corepack
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare "pnpm@${PNPM_VERSION}" --activate
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts --strict-peer-dependencies
+      - name: Test types
+        run: pnpm run test:types
+
+  test-pack:
+    name: Shirika-RPC pack smoke / Node ${{ matrix.node }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [26]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Enable Corepack
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare "pnpm@${PNPM_VERSION}" --activate
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts --strict-peer-dependencies
+      - name: Pack smoke
+        run: pnpm run test:pack

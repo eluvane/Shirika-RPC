@@ -1,0 +1,13 @@
+{
+  "extends": "./base.json",
+  "compilerOptions": {
+    "composite": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "rootDir": "../../../src",
+    "outDir": "../../../dist",
+    "types": ["node"],
+    "tsBuildInfoFile": "../../../.tsbuildinfo/types.tsbuildinfo"
+  },
+  "include": ["../../../src/**/*.ts"]
+}
