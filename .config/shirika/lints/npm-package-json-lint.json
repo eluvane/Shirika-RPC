@@ -1,0 +1,14 @@
+{
+  "rules": {
+    "require-author": "off",
+    "require-description": "error",
+    "require-engines": "error",
+    "require-license": "error",
+    "require-name": "error",
+    "require-repository": "off",
+    "require-version": "error",
+    "valid-values-license": ["error", ["UNLICENSED"]],
+    "valid-values-private": "off",
+    "no-duplicate-properties": "error"
+  }
+}

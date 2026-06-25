@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "suite": "contract-preparation",
+  "generatedAt": "2026-06-25T17:59:06.615Z",
+  "runtime": {
+    "node": "v26.4.0",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "benchmark": {
+    "iterations": 100000,
+    "warmupIterations": 10000,
+    "methodCount": 64
+  },
+  "cases": [
+    {
+      "id": "describe-raw-contract",
+      "label": "describeContract(raw contract)",
+      "group": "description",
+      "metrics": {
+        "totalMs": 3166.6734,
+        "opsPerSec": 31578.880221749423
+      }
+    },
+    {
+      "id": "describe-prepared-contract",
+      "label": "describeContract(prepared)",
+      "group": "description",
+      "metrics": {
+        "totalMs": 703.4060999999997,
+        "opsPerSec": 142165.38639627953
+      }
+    },
+    {
+      "id": "hash-raw-contract",
+      "label": "getContractHash(raw contract)",
+      "group": "hash",
+      "metrics": {
+        "totalMs": 3036.7309000000005,
+        "opsPerSec": 32930.14866743707
+      }
+    },
+    {
+      "id": "hash-prepared-contract",
+      "label": "getContractHash(prepared)",
+      "group": "hash",
+      "metrics": {
+        "totalMs": 607.3060999999998,
+        "opsPerSec": 164661.60968908438
+      }
+    },
+    {
+      "id": "build-index-raw-contract",
+      "label": "buildMethodIndex(raw contract)",
+      "group": "method-index",
+      "metrics": {
+        "totalMs": 3385.065699999999,
+        "opsPerSec": 29541.52411281117
+      }
+    },
+    {
+      "id": "reuse-prepared-method-index",
+      "label": "prepared.methodIndex lookup",
+      "group": "method-index",
+      "metrics": {
+        "totalMs": 2.337499999999636,
+        "opsPerSec": 42780748.66310826
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "id": "description-prepared-vs-raw",
+      "label": "describe prepared vs raw",
+      "before": "describe-raw-contract",
+      "after": "describe-prepared-contract",
+      "timeReductionPct": 77.78722302085211,
+      "throughputImprovementPct": 350.19134750182025
+    },
+    {
+      "id": "hash-prepared-vs-raw",
+      "label": "hash prepared vs raw",
+      "before": "hash-raw-contract",
+      "after": "hash-prepared-contract",
+      "timeReductionPct": 80.0013198403586,
+      "throughputImprovementPct": 400.0329981865821
+    },
+    {
+      "id": "method-index-prepared-vs-raw",
+      "label": "prepared index lookup vs raw build",
+      "before": "build-index-raw-contract",
+      "after": "reuse-prepared-method-index",
+      "timeReductionPct": 99.93094668738631,
+      "throughputImprovementPct": 144715.64491980858
+    }
+  ]
+}

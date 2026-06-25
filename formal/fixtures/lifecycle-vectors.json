@@ -1,0 +1,94 @@
+{
+  "version": 2,
+  "sourceOfTruth": ["src/core/constants.ts", "src/core/rpc/cancel.ts", "src/core/rpc/pending.ts", "formal/lean/Shirika/Lifecycle.lean"],
+  "generatedBy": "scripts/formal/check-lifecycle-vectors.mjs --write",
+  "leanBoundary": "finite cancel-code and pure pending-set membership facts only; real AbortSignal delivery, timers, scheduling, races, and worker lifecycle remain runtime-test boundaries",
+  "cancelVectors": [
+    {
+      "name": "client-abort-cancel",
+      "purpose": "CLIENT_ABORT maps to the abstract cancelled terminal class and AbortError reason",
+      "codeName": "CLIENT_ABORT",
+      "code": 1,
+      "leanConstructor": "Shirika.Lifecycle.CancelCode.clientAbort",
+      "leanTheorems": [
+        "Shirika.Lifecycle.decodeCancelCode_cancelCodeValue",
+        "Shirika.Lifecycle.classifyCancelCodeValue_cancelCodeValue",
+        "Shirika.Lifecycle.clientAbort_value_classifies_cancelled"
+      ],
+      "expectedTerminalClass": "cancelled",
+      "emptyReasonPayload": { "code": 1, "message": null },
+      "messagePayload": { "code": 1, "message": "client aborted" },
+      "reason": { "name": "AbortError", "message": "client aborted" }
+    },
+    {
+      "name": "timeout-cancel",
+      "purpose": "TIMEOUT maps to the abstract timedOut terminal class and ShirikaTimeoutError reason",
+      "codeName": "TIMEOUT",
+      "code": 2,
+      "leanConstructor": "Shirika.Lifecycle.CancelCode.timeout",
+      "leanTheorems": [
+        "Shirika.Lifecycle.decodeCancelCode_cancelCodeValue",
+        "Shirika.Lifecycle.classifyCancelCodeValue_cancelCodeValue",
+        "Shirika.Lifecycle.timeout_value_classifies_timedOut"
+      ],
+      "expectedTerminalClass": "timedOut",
+      "emptyReasonPayload": { "code": 2, "message": null },
+      "messagePayload": { "code": 2, "message": "deadline expired" },
+      "reason": { "name": "ShirikaTimeoutError", "message": "deadline expired" }
+    },
+    {
+      "name": "client-close-cancel",
+      "purpose": "CLIENT_CLOSE maps to the abstract cancelled terminal class and ShirikaClosedError reason",
+      "codeName": "CLIENT_CLOSE",
+      "code": 3,
+      "leanConstructor": "Shirika.Lifecycle.CancelCode.clientClose",
+      "leanTheorems": [
+        "Shirika.Lifecycle.decodeCancelCode_cancelCodeValue",
+        "Shirika.Lifecycle.classifyCancelCodeValue_cancelCodeValue",
+        "Shirika.Lifecycle.clientClose_value_classifies_cancelled"
+      ],
+      "expectedTerminalClass": "cancelled",
+      "emptyReasonPayload": { "code": 3, "message": null },
+      "messagePayload": { "code": 3, "message": "client closed" },
+      "reason": { "name": "ShirikaClosedError", "message": "client closed" }
+    }
+  ],
+  "pendingWitnessVectors": [
+    {
+      "name": "allocated-fresh-request-id",
+      "purpose": "locally allocated request ids are nonzero and not already pending before insertion",
+      "abstractOperation": "allocateRequestId before insertAllocated",
+      "runtimeCoverage": ["test/node/pending-witness.test.ts allocation returns non-zero UInt32 ids and skips ids already pending"],
+      "leanTheorems": ["Shirika.Lifecycle.PendingSet.allocatedFresh_not_pending", "Shirika.Lifecycle.PendingSet.allocatedFresh_nonzero"]
+    },
+    {
+      "name": "insert-after-allocation-establishes-witness",
+      "purpose": "PendingRequestId witness exists only after the allocated id has been inserted into the pending set",
+      "abstractOperation": "insertAllocated creates PendingRequestId after map insertion",
+      "runtimeCoverage": ["test/node/pending-witness.test.ts witness is created only for an inserted pending entry"],
+      "leanTheorems": ["Shirika.Lifecycle.PendingSet.insert_after_allocation_establishes_witness"]
+    },
+    {
+      "name": "release-known-pending-removes-one-entry",
+      "purpose": "witness release removes the matching pending entry and leaves other ids unchanged in the abstract model",
+      "abstractOperation": "releaseByWitness consumes a locally owned pending request witness",
+      "runtimeCoverage": ["test/node/pending-witness.test.ts releaseByWitness consumes the pending entry exactly once"],
+      "leanTheorems": ["Shirika.Lifecycle.PendingSet.release_known_pending_removes_exactly_one"]
+    },
+    {
+      "name": "duplicate-release-idempotent",
+      "purpose": "a repeated release of the same abstract request id has no second terminal effect",
+      "abstractOperation": "releaseByWitness after release returns undefined",
+      "runtimeCoverage": ["test/node/pending-witness.test.ts stale witness cannot release a new entry that reused the numeric id"],
+      "leanTheorems": ["Shirika.Lifecycle.PendingSet.release_idempotent", "Shirika.Lifecycle.pending_terminal_exactly_once"]
+    }
+  ],
+  "outOfModelRuntimeFallback": {
+    "name": "unknown-cancel-code-runtime-fallback",
+    "purpose": "unknown runtime cancel codes fall back to AbortError but remain outside the finite Lean CancelCode model",
+    "code": 255,
+    "leanBoundary": "not decoded by Shirika.Lifecycle.decodeCancelCode",
+    "payload": { "code": 255, "message": "unknown cancellation" },
+    "reason": { "name": "AbortError", "message": "unknown cancellation" }
+  }
+}

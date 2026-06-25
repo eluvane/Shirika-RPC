@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "suite": "frame-receive",
+  "generatedAt": "2026-06-25T18:00:10.971Z",
+  "runtime": {
+    "node": "v26.4.0",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "benchmark": {
+    "iterations": 1000,
+    "warmupIterations": 100,
+    "dist": "../dist/index.js"
+  },
+  "cases": [
+    {
+      "id": "empty-request-frame",
+      "label": "empty request frame receive/read",
+      "group": "receive",
+      "metrics": {
+        "opsPerSec": 38013.129735010465,
+        "avgLatencyMs": 0.026306700000000006,
+        "p50LatencyMs": 0.026306700000000006,
+        "p95LatencyMs": 0.026306700000000006,
+        "p99LatencyMs": 0.026306700000000006,
+        "rmePct": 0,
+        "totalMs": 26.306700000000006
+      }
+    },
+    {
+      "id": "small-request-frame",
+      "label": "small request frame receive/read",
+      "group": "receive",
+      "metrics": {
+        "opsPerSec": 41532.89613038008,
+        "avgLatencyMs": 0.024077299999999992,
+        "p50LatencyMs": 0.024077299999999992,
+        "p95LatencyMs": 0.024077299999999992,
+        "p99LatencyMs": 0.024077299999999992,
+        "rmePct": 0,
+        "totalMs": 24.077299999999994
+      }
+    },
+    {
+      "id": "mixed-control-frames",
+      "label": "mixed request/response/cancel receive/read",
+      "group": "receive",
+      "metrics": {
+        "opsPerSec": 44294.63016198544,
+        "avgLatencyMs": 0.022576100000000012,
+        "p50LatencyMs": 0.022576100000000012,
+        "p95LatencyMs": 0.022576100000000012,
+        "p99LatencyMs": 0.022576100000000012,
+        "rmePct": 0,
+        "totalMs": 22.57610000000001
+      }
+    }
+  ]
+}

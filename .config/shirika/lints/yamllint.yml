@@ -1,0 +1,38 @@
+extends: default
+
+ignore: |
+  node_modules/
+  dist/
+  coverage/
+  .bench/
+  .benchmark/current/
+  .benchmark/previous/
+  .benchmark/comparison/
+  .benchmark/smoke/
+  pnpm-lock.yaml
+
+rules:
+  braces:
+    max-spaces-inside: 1
+  brackets:
+    max-spaces-inside: 1
+  comments:
+    min-spaces-from-content: 1
+  comments-indentation: disable
+  document-start:
+    present: false
+  empty-lines:
+    max: 1
+    max-start: 0
+    max-end: 1
+  indentation:
+    spaces: 2
+    indent-sequences: consistent
+    check-multi-line-strings: false
+  line-length:
+    max: 160
+    allow-non-breakable-words: true
+    allow-non-breakable-inline-mappings: true
+  truthy:
+    allowed-values: ['true', 'false', 'on', 'off']
+    check-keys: false

@@ -1,0 +1,16 @@
+dist
+node_modules
+coverage
+.bench
+../../../.benchmark/current/
+../../../.benchmark/previous/
+../../../.benchmark/comparison/
+../../../.benchmark/smoke/
+.benchmark/current
+.benchmark/previous
+.benchmark/comparison
+.benchmark/smoke
+.lake
+.tsbuildinfo
+*.tgz
+*.tsbuildinfo

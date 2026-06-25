@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "suite": "node-pool-contention",
+  "generatedAt": "2026-06-25T17:59:46.608Z",
+  "runtime": {
+    "node": "v26.4.0",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "cases": [
+    {
+      "id": "1 workers @ c=1",
+      "label": "1 workers @ c=1",
+      "workerCount": 1,
+      "concurrency": 1,
+      "group": "1 workers",
+      "metrics": {
+        "opsPerSec": 16853.586766729662,
+        "avgLatencyMs": 0.06346889907478172,
+        "p50LatencyMs": 0.05750000000000455,
+        "p95LatencyMs": 0.09420000000000073,
+        "p99LatencyMs": 0.14279999999996562,
+        "rmePct": 0.2800335538402188
+      }
+    },
+    {
+      "id": "1 workers @ c=8",
+      "label": "1 workers @ c=8",
+      "workerCount": 1,
+      "concurrency": 8,
+      "group": "1 workers",
+      "metrics": {
+        "opsPerSec": 4372.02836745489,
+        "avgLatencyMs": 0.23896957908163544,
+        "p50LatencyMs": 0.2220999999999549,
+        "p95LatencyMs": 0.3264000000001488,
+        "p99LatencyMs": 0.4782000000000153,
+        "rmePct": 0.5055349904367514
+      }
+    },
+    {
+      "id": "1 workers @ c=32",
+      "label": "1 workers @ c=32",
+      "workerCount": 1,
+      "concurrency": 32,
+      "group": "1 workers",
+      "metrics": {
+        "opsPerSec": 1244.9384235307662,
+        "avgLatencyMs": 0.814087947882742,
+        "p50LatencyMs": 0.7807999999999993,
+        "p95LatencyMs": 0.9686999999998989,
+        "p99LatencyMs": 1.4242999999999029,
+        "rmePct": 0.7831149777270854
+      }
+    },
+    {
+      "id": "2 workers @ c=1",
+      "label": "2 workers @ c=1",
+      "workerCount": 2,
+      "concurrency": 1,
+      "group": "2 workers",
+      "metrics": {
+        "opsPerSec": 16410.658882972864,
+        "avgLatencyMs": 0.06566516853932645,
+        "p50LatencyMs": 0.057400000000143336,
+        "p95LatencyMs": 0.10449999999991633,
+        "p99LatencyMs": 0.15670000000000073,
+        "rmePct": 0.32359538269724375
+      }
+    },
+    {
+      "id": "2 workers @ c=8",
+      "label": "2 workers @ c=8",
+      "workerCount": 2,
+      "concurrency": 8,
+      "group": "2 workers",
+      "metrics": {
+        "opsPerSec": 4629.992332293847,
+        "avgLatencyMs": 0.23085970425138694,
+        "p50LatencyMs": 0.2074999999999818,
+        "p95LatencyMs": 0.36409999999978027,
+        "p99LatencyMs": 0.4913000000001375,
+        "rmePct": 0.5585227902705527
+      }
+    },
+    {
+      "id": "2 workers @ c=32",
+      "label": "2 workers @ c=32",
+      "workerCount": 2,
+      "concurrency": 32,
+      "group": "2 workers",
+      "metrics": {
+        "opsPerSec": 1368.8001770815165,
+        "avgLatencyMs": 0.7506605000000032,
+        "p50LatencyMs": 0.7056999999995242,
+        "p95LatencyMs": 0.9484999999999673,
+        "p99LatencyMs": 1.3941999999997279,
+        "rmePct": 0.7682403390806968
+      }
+    },
+    {
+      "id": "4 workers @ c=1",
+      "label": "4 workers @ c=1",
+      "workerCount": 4,
+      "concurrency": 1,
+      "group": "4 workers",
+      "metrics": {
+        "opsPerSec": 16279.361693047544,
+        "avgLatencyMs": 0.06585599964785638,
+        "p50LatencyMs": 0.05820000000039727,
+        "p95LatencyMs": 0.10469999999986612,
+        "p99LatencyMs": 0.15100000000074942,
+        "rmePct": 0.3095366625213592
+      }
+    },
+    {
+      "id": "4 workers @ c=8",
+      "label": "4 workers @ c=8",
+      "workerCount": 4,
+      "concurrency": 8,
+      "group": "4 workers",
+      "metrics": {
+        "opsPerSec": 4164.60967956631,
+        "avgLatencyMs": 0.2506058174523534,
+        "p50LatencyMs": 0.23030000000017026,
+        "p95LatencyMs": 0.3602000000000771,
+        "p99LatencyMs": 0.49359999999978754,
+        "rmePct": 0.5415619117877896
+      }
+    },
+    {
+      "id": "4 workers @ c=32",
+      "label": "4 workers @ c=32",
+      "workerCount": 4,
+      "concurrency": 32,
+      "group": "4 workers",
+      "metrics": {
+        "opsPerSec": 1169.3694957712826,
+        "avgLatencyMs": 0.874538111888138,
+        "p50LatencyMs": 0.808100000000195,
+        "p95LatencyMs": 1.1963000000005195,
+        "p99LatencyMs": 1.8002999999998792,
+        "rmePct": 1.1001240371370868
+      }
+    }
+  ]
+}

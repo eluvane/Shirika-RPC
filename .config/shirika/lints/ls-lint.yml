@@ -1,0 +1,24 @@
+ls:
+  .dir: kebab-case | regex:^\.config$|^\.github$|^\.tsbuildinfo$|^Shirika$|^Codec$|^Generated$
+  .js: kebab-case
+  .mjs: kebab-case
+  .ts: kebab-case
+  .d.ts: kebab-case
+  .d.mts: kebab-case
+  .json: kebab-case | regex:^package\.json$|^tsconfig(\..+)?\.json$|^license-policy\.json$|^lockfile-policy\.json$|^audit-ci\.jsonc$|^biome\.jsonc$
+  .jsonc: kebab-case
+  .yml: kebab-case
+  .yaml: kebab-case
+  .md: regex:^(README|UPGRADE|ASSUMPTIONS|BENCHMARKS|COMMANDS|LEAN_PROOFS|QUALITY_AND_SECURITY|[a-z0-9]+(-[a-z0-9]+)*)$
+  .html: kebab-case
+ignore:
+  - node_modules
+  - dist
+  - coverage
+  - .bench
+  - .benchmark
+  - .lake
+  - formal/lean/.lake
+  - pnpm-lock.yaml
+  - .git
+  - '*.tgz'

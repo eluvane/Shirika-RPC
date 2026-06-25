@@ -1,0 +1,247 @@
+{
+  "schemaVersion": 2,
+  "suite": "codec-writer-fast-path",
+  "generatedAt": "2026-06-25T17:59:23.829Z",
+  "runtime": {
+    "node": "v26.4.0",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "benchmark": {
+    "iterations": 50000,
+    "warmupIterations": 5000,
+    "samples": 25
+  },
+  "cases": [
+    {
+      "id": "direct-u32-safe-writer",
+      "label": "u32 direct safe writer",
+      "group": "primitive fixed-width",
+      "strategy": "safe-writer",
+      "metrics": {
+        "totalMs": 16.985100000000003,
+        "opsPerSec": 2943756.586655362,
+        "avgMs": 0.00033970200000000005,
+        "p95Ms": 0.0004126000000000012,
+        "heapDeltaBytes": -423928
+      }
+    },
+    {
+      "id": "direct-u32-trusted-writer",
+      "label": "u32 direct trusted measured writer",
+      "group": "primitive fixed-width",
+      "strategy": "generic-trusted-measured-writer",
+      "metrics": {
+        "totalMs": 16.2907,
+        "opsPerSec": 3069235.8216651217,
+        "avgMs": 0.000325814,
+        "p95Ms": 0.0003958500000000029,
+        "heapDeltaBytes": 195664
+      }
+    },
+    {
+      "id": "direct-struct-safe-writer",
+      "label": "struct direct safe writer",
+      "group": "representative struct",
+      "strategy": "safe-writer",
+      "metrics": {
+        "totalMs": 19.830399999999997,
+        "opsPerSec": 2521381.3135388093,
+        "avgMs": 0.00039660799999999995,
+        "p95Ms": 0.00047535000000000594,
+        "heapDeltaBytes": 199504
+      }
+    },
+    {
+      "id": "direct-struct-generic-trusted-writer",
+      "label": "struct direct generic trusted writer",
+      "group": "representative struct",
+      "strategy": "generic-trusted-measured-writer",
+      "metrics": {
+        "totalMs": 19.745199999999997,
+        "opsPerSec": 2532261.005206329,
+        "avgMs": 0.00039490399999999996,
+        "p95Ms": 0.00048740000000000805,
+        "heapDeltaBytes": -318456
+      }
+    },
+    {
+      "id": "direct-struct-specialized-writer",
+      "label": "struct direct specialized writer",
+      "group": "representative struct",
+      "strategy": "specialized:struct(tag:u8,count:u16,ok:bool)",
+      "metrics": {
+        "totalMs": 17.088799999999992,
+        "opsPerSec": 2925892.982538272,
+        "avgMs": 0.00034177599999999985,
+        "p95Ms": 0.0003772500000000036,
+        "heapDeltaBytes": 947008
+      }
+    },
+    {
+      "id": "direct-nested-safe-writer",
+      "label": "nested direct safe writer",
+      "group": "nested optional/array/tuple",
+      "strategy": "safe-writer",
+      "metrics": {
+        "totalMs": 72.79940000000002,
+        "opsPerSec": 686818.8474080829,
+        "avgMs": 0.0014559880000000003,
+        "p95Ms": 0.0015987499999999954,
+        "heapDeltaBytes": -107352
+      }
+    },
+    {
+      "id": "direct-nested-generic-trusted-writer",
+      "label": "nested direct generic trusted writer",
+      "group": "nested optional/array/tuple",
+      "strategy": "generic-trusted-measured-writer",
+      "metrics": {
+        "totalMs": 70.77800000000002,
+        "opsPerSec": 706434.2027183586,
+        "avgMs": 0.0014155600000000004,
+        "p95Ms": 0.0016595000000000084,
+        "heapDeltaBytes": -57624
+      }
+    },
+    {
+      "id": "direct-nested-specialized-writer",
+      "label": "nested direct specialized writer",
+      "group": "nested optional/array/tuple",
+      "strategy": "specialized:struct(tag:u8,maybePayload:optional(bytes),pairs:array(tuple(bool,u8)))",
+      "metrics": {
+        "totalMs": 48.6216,
+        "opsPerSec": 1028349.5401220856,
+        "avgMs": 0.000972432,
+        "p95Ms": 0.0010573500000000137,
+        "heapDeltaBytes": -20800
+      }
+    },
+    {
+      "id": "frame-struct-safe-fallback",
+      "label": "frame struct safe fallback",
+      "group": "frame send small payload",
+      "strategy": "safe-fallback",
+      "metrics": {
+        "totalMs": 850.7338,
+        "opsPerSec": 58772.79120683815,
+        "avgMs": 0.017014676,
+        "p95Ms": 0.018756349999999998,
+        "heapDeltaBytes": -1454664
+      }
+    },
+    {
+      "id": "frame-struct-prepared-specialized",
+      "label": "frame struct prepared specialized writer",
+      "group": "frame send small payload",
+      "strategy": "specialized:struct(tag:u8,count:u16,ok:bool)",
+      "metrics": {
+        "totalMs": 1819.5074,
+        "opsPerSec": 27479.965181784915,
+        "avgMs": 0.036390148,
+        "p95Ms": 0.04131695000000014,
+        "heapDeltaBytes": 1791664
+      }
+    },
+    {
+      "id": "frame-nested-safe-fallback",
+      "label": "frame nested safe fallback",
+      "group": "frame send medium payload",
+      "strategy": "safe-fallback",
+      "metrics": {
+        "totalMs": 1220.0784999999996,
+        "opsPerSec": 40980.96966711569,
+        "avgMs": 0.024401569999999994,
+        "p95Ms": 0.04222600000000011,
+        "heapDeltaBytes": 1479560
+      }
+    },
+    {
+      "id": "frame-nested-prepared-specialized",
+      "label": "frame nested prepared specialized writer",
+      "group": "frame send medium payload",
+      "strategy": "specialized:struct(tag:u8,maybePayload:optional(bytes),pairs:array(tuple(bool,u8)))",
+      "metrics": {
+        "totalMs": 1780.4797999999992,
+        "opsPerSec": 28082.318035846307,
+        "avgMs": 0.035609595999999986,
+        "p95Ms": 0.046996399999999994,
+        "heapDeltaBytes": 4068792
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "id": "direct-u32-trusted-vs-safe",
+      "label": "u32 direct trusted measured vs safe",
+      "before": "direct-u32-safe-writer",
+      "after": "direct-u32-trusted-writer",
+      "throughputImprovementPct": 4.262554709128539,
+      "latencyReductionPct": 4.08828914754698
+    },
+    {
+      "id": "direct-struct-generic-vs-safe",
+      "label": "struct direct generic trusted vs safe",
+      "before": "direct-struct-safe-writer",
+      "after": "direct-struct-generic-trusted-writer",
+      "throughputImprovementPct": 0.4314972752871577,
+      "latencyReductionPct": 0.42964337582701206
+    },
+    {
+      "id": "direct-struct-specialized-vs-safe",
+      "label": "struct direct specialized vs safe",
+      "before": "direct-struct-safe-writer",
+      "after": "direct-struct-specialized-writer",
+      "throughputImprovementPct": 16.043256401853895,
+      "latencyReductionPct": 13.825238018396025
+    },
+    {
+      "id": "direct-struct-specialized-vs-generic",
+      "label": "struct direct specialized vs generic trusted",
+      "before": "direct-struct-generic-trusted-writer",
+      "after": "direct-struct-specialized-writer",
+      "throughputImprovementPct": 15.544684237629374,
+      "latencyReductionPct": 13.45339626846021
+    },
+    {
+      "id": "direct-nested-generic-vs-safe",
+      "label": "nested direct generic trusted vs safe",
+      "before": "direct-nested-safe-writer",
+      "after": "direct-nested-generic-trusted-writer",
+      "throughputImprovementPct": 2.855972194749768,
+      "latencyReductionPct": 2.776671236301391
+    },
+    {
+      "id": "direct-nested-specialized-vs-safe",
+      "label": "nested direct specialized vs safe",
+      "before": "direct-nested-safe-writer",
+      "after": "direct-nested-specialized-writer",
+      "throughputImprovementPct": 49.72645902232754,
+      "latencyReductionPct": 33.211537457726315
+    },
+    {
+      "id": "direct-nested-specialized-vs-generic",
+      "label": "nested direct specialized vs generic trusted",
+      "before": "direct-nested-generic-trusted-writer",
+      "after": "direct-nested-specialized-writer",
+      "throughputImprovementPct": 45.56904750152199,
+      "latencyReductionPct": 31.30407753821811
+    },
+    {
+      "id": "frame-struct-prepared-vs-safe",
+      "label": "frame struct prepared specialized vs safe",
+      "before": "frame-struct-safe-fallback",
+      "after": "frame-struct-prepared-specialized",
+      "throughputImprovementPct": -53.24372959406486,
+      "latencyReductionPct": -113.87505703899386
+    },
+    {
+      "id": "frame-nested-prepared-vs-safe",
+      "label": "frame nested prepared specialized vs safe",
+      "before": "frame-nested-safe-fallback",
+      "after": "frame-nested-prepared-specialized",
+      "throughputImprovementPct": -31.474735068603405,
+      "latencyReductionPct": -45.931577353424366
+    }
+  ]
+}

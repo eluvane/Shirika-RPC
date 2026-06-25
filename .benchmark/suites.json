@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "project": "Shirika-RPC",
+  "suites": [
+    {
+      "id": "contract-preparation",
+      "command": "pnpm run bench:contract",
+      "smokeCommand": "pnpm run bench:smoke",
+      "scope": "Contract preparation and codec setup overhead."
+    },
+    {
+      "id": "frame-and-codec-fast-paths",
+      "command": "pnpm run bench:collect",
+      "smokeCommand": "pnpm run bench:collect:smoke",
+      "scope": "Frame receive, aligned payloads, specialized codec writer/read paths and pending lifecycle."
+    },
+    {
+      "id": "node-ipc-and-pool",
+      "command": "pnpm run bench:ipc && pnpm run bench:pool",
+      "smokeCommand": "pnpm run bench:governance:smoke",
+      "scope": "Node worker postMessage versus SharedArrayBuffer path and worker-pool contention."
+    }
+  ]
+}

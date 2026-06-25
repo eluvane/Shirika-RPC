@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "project": "Shirika-RPC",
+  "generatedOutputRoot": ".benchmark",
+  "thresholds": {
+    "throughputRegressionPct": 5,
+    "latencyRegressionPct": 5,
+    "tailLatencyRegressionPct": 8
+  },
+  "comparisonRules": [
+    "Compare only rows with the same suite and case id.",
+    "Treat first-run comparisons without a previous artifact as informational only.",
+    "Use smoke mode for CI governance and full mode for release-facing baselines."
+  ]
+}

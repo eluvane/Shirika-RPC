@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "suite": "aligned-bytes-payload",
+  "generatedAt": "2026-06-25T18:00:11.214Z",
+  "runtime": {
+    "node": "v26.4.0",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "benchmark": {
+    "dist": "../dist/index.js",
+    "payloadSizes": [
+      "small",
+      "1MiB"
+    ],
+    "iterationsOverride": 3,
+    "warmupOverride": 1
+  },
+  "cases": [
+    {
+      "id": "small/no-wrap",
+      "label": "small/no-wrap",
+      "group": "no-wrap",
+      "metrics": {
+        "opsPerSec": 17311.021350259907,
+        "avgLatencyMs": 0.057766666666665856,
+        "p50LatencyMs": 0.057766666666665856,
+        "p95LatencyMs": 0.06360000000000099,
+        "p99LatencyMs": 0.06360000000000099,
+        "rmePct": 0,
+        "totalMs": 0.17329999999999757,
+        "payloadBytes": 32
+      }
+    },
+    {
+      "id": "small/prefix-wrap",
+      "label": "small/prefix-wrap",
+      "group": "prefix-wrap",
+      "metrics": {
+        "opsPerSec": 20847.810979846807,
+        "avgLatencyMs": 0.04796666666666738,
+        "p50LatencyMs": 0.04796666666666738,
+        "p95LatencyMs": 0.05530000000000257,
+        "p99LatencyMs": 0.05530000000000257,
+        "rmePct": 0,
+        "totalMs": 0.14390000000000214,
+        "payloadBytes": 32
+      }
+    },
+    {
+      "id": "small/body-wrap",
+      "label": "small/body-wrap",
+      "group": "body-wrap",
+      "metrics": {
+        "opsPerSec": 18529.95676343308,
+        "avgLatencyMs": 0.05396666666666997,
+        "p50LatencyMs": 0.05396666666666997,
+        "p95LatencyMs": 0.08300000000000551,
+        "p99LatencyMs": 0.08300000000000551,
+        "rmePct": 0,
+        "totalMs": 0.16190000000000992,
+        "payloadBytes": 32
+      }
+    },
+    {
+      "id": "1MiB/no-wrap",
+      "label": "1MiB/no-wrap",
+      "group": "no-wrap",
+      "metrics": {
+        "opsPerSec": 4797.697105389446,
+        "avgLatencyMs": 0.20843333333333192,
+        "p50LatencyMs": 0.20843333333333192,
+        "p95LatencyMs": 0.2335999999999956,
+        "p99LatencyMs": 0.2335999999999956,
+        "rmePct": 0,
+        "totalMs": 0.6252999999999957,
+        "payloadBytes": 1048576
+      }
+    },
+    {
+      "id": "1MiB/prefix-wrap",
+      "label": "1MiB/prefix-wrap",
+      "group": "prefix-wrap",
+      "metrics": {
+        "opsPerSec": 3362.8516982401106,
+        "avgLatencyMs": 0.2973666666666664,
+        "p50LatencyMs": 0.2973666666666664,
+        "p95LatencyMs": 0.31680000000000064,
+        "p99LatencyMs": 0.31680000000000064,
+        "rmePct": 0,
+        "totalMs": 0.8920999999999992,
+        "payloadBytes": 1048576
+      }
+    },
+    {
+      "id": "1MiB/body-wrap",
+      "label": "1MiB/body-wrap",
+      "group": "body-wrap",
+      "metrics": {
+        "opsPerSec": 3115.9119235564276,
+        "avgLatencyMs": 0.3209333333333196,
+        "p50LatencyMs": 0.3209333333333196,
+        "p95LatencyMs": 0.35069999999998913,
+        "p99LatencyMs": 0.35069999999998913,
+        "rmePct": 0,
+        "totalMs": 0.9627999999999588,
+        "payloadBytes": 1048576
+      }
+    }
+  ]
+}

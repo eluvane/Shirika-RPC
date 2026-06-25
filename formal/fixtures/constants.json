@@ -1,0 +1,379 @@
+{
+  "version": 1,
+  "sourceOfTruth": ["src/core/constants.ts"],
+  "generatedBy": "scripts/formal/check-formal-bridge.mjs --write",
+  "leanGeneratedMirror": "formal/lean/Shirika/Generated/Constants.lean",
+  "constants": [
+    {
+      "name": "CONTROL_I32_COUNT",
+      "value": 8,
+      "hex": "0x8",
+      "expectedType": "Nat",
+      "tsLocation": "src/core/constants.ts",
+      "leanName": "Shirika.Generated.Constants.controlI32Count",
+      "meaning": "control Int32 slots before the ring data region",
+      "sourceOfTruth": "TypeScript"
+    },
+    {
+      "name": "DEFAULT_CAPACITY_BYTES",
+      "value": 1048576,
+      "hex": "0x100000",
+      "expectedType": "Nat",
+      "tsLocation": "src/core/constants.ts",
+      "leanName": "Shirika.Generated.Constants.defaultCapacityBytes",
+      "meaning": "default data-region capacity",
+      "sourceOfTruth": "TypeScript"
+    },
+    {
+      "name": "HEADER_SIZE",
+      "value": 32,
+      "hex": "0x20",
+      "expectedType": "Nat",
+      "tsLocation": "src/core/constants.ts",
+      "leanName": "Shirika.Generated.Constants.headerSize",
+      "meaning": "frame header byte length",
+      "sourceOfTruth": "TypeScript"
+    },
+    {
+      "name": "MIN_CAPACITY_BYTES",
+      "value": 32,
+      "hex": "0x20",
+      "expectedType": "Nat",
+      "tsLocation": "src/core/constants.ts",
+      "leanName": "Shirika.Generated.Constants.minCapacityBytes",
+      "meaning": "minimum supported ring data-region capacity",
+      "sourceOfTruth": "TypeScript"
+    },
+    {
+      "name": "MAX_CAPACITY_BYTES",
+      "value": 1073741824,
+      "hex": "0x40000000",
+      "expectedType": "Nat",
+      "tsLocation": "src/core/constants.ts",
+      "leanName": "Shirika.Generated.Constants.maxCapacityBytes",
+      "meaning": "maximum supported ring data-region capacity",
+      "sourceOfTruth": "TypeScript"
+    },
+    {
+      "name": "FRAME_MAGIC",
+      "value": 1398034481,
+      "hex": "0x53545031",
+      "expectedType": "UInt32",
+      "tsLocation": "src/core/constants.ts",
+      "leanName": "Shirika.Generated.Constants.frameMagic",
+      "meaning": "wire frame magic",
+      "sourceOfTruth": "TypeScript"
+    },
+    {
+      "name": "FRAME_VERSION",
+      "value": 1,
+      "hex": "0x1",
+      "expectedType": "UInt16",
+      "tsLocation": "src/core/constants.ts",
+      "leanName": "Shirika.Generated.Constants.frameVersion",
+      "meaning": "wire frame version",
+      "sourceOfTruth": "TypeScript"
+    },
+    {
+      "name": "NORMALIZE_THRESHOLD",
+      "value": 1073741824,
+      "hex": "0x40000000",
+      "expectedType": "Nat",
+      "tsLocation": "src/core/constants.ts",
+      "leanName": "Shirika.Generated.Constants.normalizeThreshold",
+      "meaning": "empty-ring sequence normalization threshold",
+      "sourceOfTruth": "TypeScript"
+    },
+    {
+      "name": "UINT32_MAX",
+      "value": 4294967295,
+      "hex": "0xffffffff",
+      "expectedType": "UInt32",
+      "tsLocation": "src/core/constants.ts",
+      "leanName": "Shirika.Generated.Constants.uint32Max",
+      "meaning": "maximum DataView/Atomics UInt32 field value",
+      "sourceOfTruth": "TypeScript"
+    },
+    {
+      "name": "MAX_METHOD_ID",
+      "value": 4294967295,
+      "hex": "0xffffffff",
+      "expectedType": "UInt32",
+      "tsLocation": "src/core/constants.ts",
+      "leanName": "Shirika.Generated.Constants.maxMethodId",
+      "meaning": "maximum contract method id",
+      "sourceOfTruth": "TypeScript"
+    }
+  ],
+  "enums": {
+    "ControlIndex": [
+      {
+        "member": "READ_SEQ",
+        "value": 0,
+        "hex": "0x0",
+        "tsLocation": "src/core/constants.ts:ControlIndex.READ_SEQ",
+        "leanName": "Shirika.Generated.Constants.controlIndexReadSeq",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "WRITE_SEQ",
+        "value": 1,
+        "hex": "0x1",
+        "tsLocation": "src/core/constants.ts:ControlIndex.WRITE_SEQ",
+        "leanName": "Shirika.Generated.Constants.controlIndexWriteSeq",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "DATA_SEQ",
+        "value": 2,
+        "hex": "0x2",
+        "tsLocation": "src/core/constants.ts:ControlIndex.DATA_SEQ",
+        "leanName": "Shirika.Generated.Constants.controlIndexDataSeq",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "SPACE_SEQ",
+        "value": 3,
+        "hex": "0x3",
+        "tsLocation": "src/core/constants.ts:ControlIndex.SPACE_SEQ",
+        "leanName": "Shirika.Generated.Constants.controlIndexSpaceSeq",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "STATE",
+        "value": 4,
+        "hex": "0x4",
+        "tsLocation": "src/core/constants.ts:ControlIndex.STATE",
+        "leanName": "Shirika.Generated.Constants.controlIndexState",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "LAST_ERROR",
+        "value": 5,
+        "hex": "0x5",
+        "tsLocation": "src/core/constants.ts:ControlIndex.LAST_ERROR",
+        "leanName": "Shirika.Generated.Constants.controlIndexLastError",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "RESERVED_0",
+        "value": 6,
+        "hex": "0x6",
+        "tsLocation": "src/core/constants.ts:ControlIndex.RESERVED_0",
+        "leanName": "Shirika.Generated.Constants.controlIndexReserved0",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "RESERVED_1",
+        "value": 7,
+        "hex": "0x7",
+        "tsLocation": "src/core/constants.ts:ControlIndex.RESERVED_1",
+        "leanName": "Shirika.Generated.Constants.controlIndexReserved1",
+        "sourceOfTruth": "TypeScript"
+      }
+    ],
+    "TransportState": [
+      {
+        "member": "OPEN",
+        "value": 0,
+        "hex": "0x0",
+        "tsLocation": "src/core/constants.ts:TransportState.OPEN",
+        "leanName": "Shirika.Generated.Constants.transportStateOpen",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "CLOSING",
+        "value": 1,
+        "hex": "0x1",
+        "tsLocation": "src/core/constants.ts:TransportState.CLOSING",
+        "leanName": "Shirika.Generated.Constants.transportStateClosing",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "CLOSED",
+        "value": 2,
+        "hex": "0x2",
+        "tsLocation": "src/core/constants.ts:TransportState.CLOSED",
+        "leanName": "Shirika.Generated.Constants.transportStateClosed",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "ERRORED",
+        "value": 3,
+        "hex": "0x3",
+        "tsLocation": "src/core/constants.ts:TransportState.ERRORED",
+        "leanName": "Shirika.Generated.Constants.transportStateErrored",
+        "sourceOfTruth": "TypeScript"
+      }
+    ],
+    "Opcode": [
+      {
+        "member": "REQUEST",
+        "value": 1,
+        "hex": "0x1",
+        "tsLocation": "src/core/constants.ts:Opcode.REQUEST",
+        "leanName": "Shirika.Generated.Constants.opcodeRequest",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "RESPONSE_OK",
+        "value": 2,
+        "hex": "0x2",
+        "tsLocation": "src/core/constants.ts:Opcode.RESPONSE_OK",
+        "leanName": "Shirika.Generated.Constants.opcodeResponseOk",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "RESPONSE_ERR",
+        "value": 3,
+        "hex": "0x3",
+        "tsLocation": "src/core/constants.ts:Opcode.RESPONSE_ERR",
+        "leanName": "Shirika.Generated.Constants.opcodeResponseErr",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "NOTIFY",
+        "value": 4,
+        "hex": "0x4",
+        "tsLocation": "src/core/constants.ts:Opcode.NOTIFY",
+        "leanName": "Shirika.Generated.Constants.opcodeNotify",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "CLOSE",
+        "value": 5,
+        "hex": "0x5",
+        "tsLocation": "src/core/constants.ts:Opcode.CLOSE",
+        "leanName": "Shirika.Generated.Constants.opcodeClose",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "CANCEL",
+        "value": 6,
+        "hex": "0x6",
+        "tsLocation": "src/core/constants.ts:Opcode.CANCEL",
+        "leanName": "Shirika.Generated.Constants.opcodeCancel",
+        "sourceOfTruth": "TypeScript"
+      }
+    ],
+    "FrameFlag": [
+      {
+        "member": "NONE",
+        "value": 0,
+        "hex": "0x0",
+        "tsLocation": "src/core/constants.ts:FrameFlag.NONE",
+        "leanName": "Shirika.Generated.Constants.frameFlagNone",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "HAS_DEADLINE",
+        "value": 1,
+        "hex": "0x1",
+        "tsLocation": "src/core/constants.ts:FrameFlag.HAS_DEADLINE",
+        "leanName": "Shirika.Generated.Constants.frameFlagHasDeadline",
+        "sourceOfTruth": "TypeScript"
+      }
+    ],
+    "CancelCode": [
+      {
+        "member": "CLIENT_ABORT",
+        "value": 1,
+        "hex": "0x1",
+        "tsLocation": "src/core/constants.ts:CancelCode.CLIENT_ABORT",
+        "leanName": "Shirika.Generated.Constants.cancelCodeClientAbort",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "TIMEOUT",
+        "value": 2,
+        "hex": "0x2",
+        "tsLocation": "src/core/constants.ts:CancelCode.TIMEOUT",
+        "leanName": "Shirika.Generated.Constants.cancelCodeTimeout",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "CLIENT_CLOSE",
+        "value": 3,
+        "hex": "0x3",
+        "tsLocation": "src/core/constants.ts:CancelCode.CLIENT_CLOSE",
+        "leanName": "Shirika.Generated.Constants.cancelCodeClientClose",
+        "sourceOfTruth": "TypeScript"
+      }
+    ],
+    "TransportErrorHint": [
+      {
+        "member": "NONE",
+        "value": 0,
+        "hex": "0x0",
+        "tsLocation": "src/core/constants.ts:TransportErrorHint.NONE",
+        "leanName": "Shirika.Generated.Constants.transportErrorHintNone",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "CLOSED",
+        "value": 1,
+        "hex": "0x1",
+        "tsLocation": "src/core/constants.ts:TransportErrorHint.CLOSED",
+        "leanName": "Shirika.Generated.Constants.transportErrorHintClosed",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "PROTOCOL",
+        "value": 2,
+        "hex": "0x2",
+        "tsLocation": "src/core/constants.ts:TransportErrorHint.PROTOCOL",
+        "leanName": "Shirika.Generated.Constants.transportErrorHintProtocol",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "OVERSIZE",
+        "value": 3,
+        "hex": "0x3",
+        "tsLocation": "src/core/constants.ts:TransportErrorHint.OVERSIZE",
+        "leanName": "Shirika.Generated.Constants.transportErrorHintOversize",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "TIMEOUT",
+        "value": 4,
+        "hex": "0x4",
+        "tsLocation": "src/core/constants.ts:TransportErrorHint.TIMEOUT",
+        "leanName": "Shirika.Generated.Constants.transportErrorHintTimeout",
+        "sourceOfTruth": "TypeScript"
+      },
+      {
+        "member": "INTERNAL",
+        "value": 5,
+        "hex": "0x5",
+        "tsLocation": "src/core/constants.ts:TransportErrorHint.INTERNAL",
+        "leanName": "Shirika.Generated.Constants.transportErrorHintInternal",
+        "sourceOfTruth": "TypeScript"
+      }
+    ]
+  },
+  "bounds": {
+    "capacityBytes": {
+      "minimum": 32,
+      "maximum": 1073741824,
+      "powerOfTwo": true,
+      "controlByteLength": 32,
+      "totalByteLengthLaw": "controlByteLength + capacityBytes",
+      "sourceOfTruth": ["src/core/constants.ts", "src/core/ring/layout.ts"]
+    },
+    "frameSizeBytes": {
+      "minimum": 32,
+      "maximum": "capacityBytes",
+      "maximumPayloadLengthLaw": "capacityBytes - HEADER_SIZE",
+      "alignmentBytes": 8,
+      "paddingRangeInclusive": [0, 7],
+      "sourceOfTruth": ["src/core/ring/endpoint.ts", "src/core/utils.ts"]
+    },
+    "methodId": {
+      "wireMinimum": 0,
+      "contractMinimum": 1,
+      "maximum": 4294967295,
+      "invalidRuntimeBehavior": "fail-fast; no UInt32 truncation or wrap is accepted for method ids",
+      "sourceOfTruth": ["src/core/rpc/contract.ts", "src/core/ring/endpoint.ts"]
+    }
+  }
+}

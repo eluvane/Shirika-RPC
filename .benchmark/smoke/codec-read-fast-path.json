@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "suite": "codec-read-fast-path",
+  "generatedAt": "2026-06-25T18:00:11.791Z",
+  "runtime": {
+    "node": "v26.4.0",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "benchmark": {
+    "iterations": 3000,
+    "warmupIterations": 300,
+    "samples": 5
+  },
+  "cases": [
+    {
+      "id": "direct-u32-safe-reader",
+      "label": "u32 direct safe reader",
+      "group": "primitive fixed-width",
+      "strategy": "safe-ring-binary-reader",
+      "metrics": {
+        "totalMs": 1.9432000000000045,
+        "opsPerSec": 1543845.2037875634,
+        "avgMs": 0.0006477333333333348,
+        "p95Ms": 0.0009519999999999958,
+        "heapDeltaBytes": 769016
+      }
+    },
+    {
+      "id": "direct-u32-validated-read-side",
+      "label": "u32 direct validated read-side",
+      "group": "primitive fixed-width",
+      "strategy": "read-side:u32",
+      "metrics": {
+        "totalMs": 22.897199999999998,
+        "opsPerSec": 131020.38677218175,
+        "avgMs": 0.007632399999999999,
+        "p95Ms": 0.007882333333333342,
+        "heapDeltaBytes": 1161456
+      }
+    },
+    {
+      "id": "direct-tuple-safe-reader",
+      "label": "tuple(bool,u16) direct safe reader",
+      "group": "tuple of primitives",
+      "strategy": "safe-ring-binary-reader",
+      "metrics": {
+        "totalMs": 1.8797999999999888,
+        "opsPerSec": 1595914.4589850078,
+        "avgMs": 0.0006265999999999963,
+        "p95Ms": 0.0009068333333333337,
+        "heapDeltaBytes": -1202248
+      }
+    },
+    {
+      "id": "direct-tuple-validated-read-side",
+      "label": "tuple(bool,u16) direct validated read-side",
+      "group": "tuple of primitives",
+      "strategy": "read-side:tuple(bool,u16)",
+      "metrics": {
+        "totalMs": 23.16680000000001,
+        "opsPerSec": 129495.65757894915,
+        "avgMs": 0.00772226666666667,
+        "p95Ms": 0.008125833333333337,
+        "heapDeltaBytes": -236784
+      }
+    },
+    {
+      "id": "direct-struct-safe-reader",
+      "label": "struct direct safe reader",
+      "group": "representative simple struct",
+      "strategy": "safe-ring-binary-reader",
+      "metrics": {
+        "totalMs": 1.8311999999999955,
+        "opsPerSec": 1638269.986893844,
+        "avgMs": 0.0006103999999999985,
+        "p95Ms": 0.0010903333333333383,
+        "heapDeltaBytes": 226976
+      }
+    },
+    {
+      "id": "direct-struct-validated-read-side",
+      "label": "struct direct validated read-side",
+      "group": "representative simple struct",
+      "strategy": "read-side:struct(tag:u8,count:u16,ok:bool)",
+      "metrics": {
+        "totalMs": 22.274399999999986,
+        "opsPerSec": 134683.76252559,
+        "avgMs": 0.007424799999999995,
+        "p95Ms": 0.007553500000000024,
+        "heapDeltaBytes": 1041344
+      }
+    },
+    {
+      "id": "frame-struct-safe-fallback",
+      "label": "frame struct safe reader fallback",
+      "group": "frame read simple struct",
+      "strategy": "safe-reader-fallback",
+      "metrics": {
+        "totalMs": 45.6806,
+        "opsPerSec": 65673.39308152694,
+        "avgMs": 0.015226866666666667,
+        "p95Ms": 0.01662033333333331,
+        "heapDeltaBytes": 248448
+      }
+    },
+    {
+      "id": "frame-struct-validated-read-side",
+      "label": "frame struct validated read-side",
+      "group": "frame read simple struct",
+      "strategy": "read-side:struct(tag:u8,count:u16,ok:bool)",
+      "metrics": {
+        "totalMs": 65.31629999999998,
+        "opsPerSec": 45930.34204325721,
+        "avgMs": 0.021772099999999996,
+        "p95Ms": 0.022133000000000038,
+        "heapDeltaBytes": -896424
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "id": "direct-u32-validated-vs-safe",
+      "label": "u32 direct validated read-side vs safe",
+      "before": "direct-u32-safe-reader",
+      "after": "direct-u32-validated-read-side",
+      "throughputImprovementPct": -91.5133728141432,
+      "latencyReductionPct": -1078.3244133388196
+    },
+    {
+      "id": "direct-tuple-validated-vs-safe",
+      "label": "tuple direct validated read-side vs safe",
+      "before": "direct-tuple-safe-reader",
+      "after": "direct-tuple-validated-read-side",
+      "throughputImprovementPct": -91.88580209610309,
+      "latencyReductionPct": -1132.40770294713
+    },
+    {
+      "id": "direct-struct-validated-vs-safe",
+      "label": "struct direct validated read-side vs safe",
+      "before": "direct-struct-safe-reader",
+      "after": "direct-struct-validated-read-side",
+      "throughputImprovementPct": -91.77890313543801,
+      "latencyReductionPct": -1116.3826998689408
+    },
+    {
+      "id": "frame-struct-validated-vs-safe",
+      "label": "frame struct validated read-side vs safe",
+      "before": "frame-struct-safe-fallback",
+      "after": "frame-struct-validated-read-side",
+      "throughputImprovementPct": -30.062480575292817,
+      "latencyReductionPct": -42.98476815103126
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "src/index.ts",
+    "src/browser.ts",
+    "src/node.ts",
+    "src/worker-browser.ts",
+    "src/worker-node.ts",
+    ".config/shirika/**/*.{cjs,mjs,ts}",
+    "scripts/**/*.mjs",
+    "bench/**/*.mjs",
+    "demo/**/*.mjs",
+    "test/**/*.ts",
+    "test/**/*.mjs",
+    "test-d/**/*.ts",
+    "shared/**/*.mjs"
+  ],
+  "project": [
+    "src/**/*.ts",
+    "shared/**/*.{mjs,ts,mts}",
+    "test/**/*.{ts,mjs}",
+    "test-d/**/*.ts",
+    ".config/shirika/**/*.{cjs,mjs,ts}",
+    "scripts/**/*.mjs",
+    "bench/**/*.mjs",
+    "demo/**/*.mjs"
+  ],
+  "ignore": ["shared/*.d.ts", "shared/*.d.mts"],
+  "ignoreDependencies": ["dependency-cruiser", "syncpack"],
+  "ignoreBinaries": ["gitleaks", "lake", "osv-scanner", "python"],
+  "ignoreIssues": {
+    "src/core/constants.ts": ["duplicates", "enumMembers"],
+    "src/core/codec/combinators.ts": ["types"],
+    "src/core/codec/witness.ts": ["exports", "types"],
+    "src/core/fast-path-strategy.ts": ["exports", "types"],
+    "src/core/rpc/pending.ts": ["types"],
+    "test/shared/contract.ts": ["exports"]
+  }
+}

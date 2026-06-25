@@ -1,0 +1,7 @@
+[formatting]
+align_comments = true
+align_entries = false
+array_trailing_comma = true
+column_width = 120
+indent_string = "    "
+reorder_keys = false

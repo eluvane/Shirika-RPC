@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "suite": "node-postmessage-vs-sab",
+  "generatedAt": "2026-06-25T17:59:39.470Z",
+  "runtime": {
+    "node": "v26.4.0",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "benchmark": {
+    "runner": "tinybench",
+    "timeMs": 500,
+    "iterations": 50,
+    "warmupIterations": 16
+  },
+  "cases": [
+    {
+      "id": "postMessage 32B",
+      "label": "postMessage 32B",
+      "group": "Payload 32B",
+      "payloadBytes": 32,
+      "capacityBytes": 1048576,
+      "metrics": {
+        "opsPerSec": 54033.96808200796,
+        "avgLatencyMs": 0.018886023916292505,
+        "p50LatencyMs": 0.017899999999997362,
+        "p95LatencyMs": 0.022799999999989495,
+        "p99LatencyMs": 0.037699999999858846,
+        "rmePct": 0.1552107446967505
+      }
+    },
+    {
+      "id": "sab-binary 32B",
+      "label": "sab-binary 32B",
+      "group": "Payload 32B",
+      "payloadBytes": 32,
+      "capacityBytes": 1048576,
+      "metrics": {
+        "opsPerSec": 12980.69210612294,
+        "avgLatencyMs": 0.08281612759313053,
+        "p50LatencyMs": 0.07460000000014588,
+        "p95LatencyMs": 0.12200000000007094,
+        "p99LatencyMs": 0.177599999999984,
+        "rmePct": 0.3053805774460067
+      }
+    },
+    {
+      "id": "sab-msgpack 32B",
+      "label": "sab-msgpack 32B",
+      "group": "Payload 32B",
+      "payloadBytes": 32,
+      "capacityBytes": 1048576,
+      "metrics": {
+        "opsPerSec": 15888.464882265976,
+        "avgLatencyMs": 0.0665791110314544,
+        "p50LatencyMs": 0.05940000000009604,
+        "p95LatencyMs": 0.10030000000006112,
+        "p99LatencyMs": 0.1516999999998916,
+        "rmePct": 0.3587292265062996
+      }
+    },
+    {
+      "id": "postMessage 4KiB",
+      "label": "postMessage 4KiB",
+      "group": "Payload 4KiB",
+      "payloadBytes": 4096,
+      "capacityBytes": 1048576,
+      "metrics": {
+        "opsPerSec": 49675.13380492607,
+        "avgLatencyMs": 0.021887767793382706,
+        "p50LatencyMs": 0.018700000000080763,
+        "p95LatencyMs": 0.038000000000010914,
+        "p99LatencyMs": 0.07619999999997162,
+        "rmePct": 0.24902822563649882
+      }
+    },
+    {
+      "id": "sab-binary 4KiB",
+      "label": "sab-binary 4KiB",
+      "group": "Payload 4KiB",
+      "payloadBytes": 4096,
+      "capacityBytes": 1048576,
+      "metrics": {
+        "opsPerSec": 12526.311131154964,
+        "avgLatencyMs": 0.08258679622431747,
+        "p50LatencyMs": 0.07540000000017244,
+        "p95LatencyMs": 0.11789999999973588,
+        "p99LatencyMs": 0.16169999999965512,
+        "rmePct": 0.3353105224543165
+      }
+    },
+    {
+      "id": "sab-msgpack 4KiB",
+      "label": "sab-msgpack 4KiB",
+      "group": "Payload 4KiB",
+      "payloadBytes": 4096,
+      "capacityBytes": 1048576,
+      "metrics": {
+        "opsPerSec": 14812.541728477438,
+        "avgLatencyMs": 0.06998041964621687,
+        "p50LatencyMs": 0.06199999999989814,
+        "p95LatencyMs": 0.10819999999966967,
+        "p99LatencyMs": 0.1548000000002503,
+        "rmePct": 0.42005486605384307
+      }
+    },
+    {
+      "id": "postMessage 64KiB",
+      "label": "postMessage 64KiB",
+      "group": "Payload 64KiB",
+      "payloadBytes": 65536,
+      "capacityBytes": 1048576,
+      "metrics": {
+        "opsPerSec": 21139.119261861226,
+        "avgLatencyMs": 0.07127073147621715,
+        "p50LatencyMs": 0.062199999999393185,
+        "p95LatencyMs": 0.11620000000038999,
+        "p99LatencyMs": 0.1849000000001979,
+        "rmePct": 0.914479247507459
+      }
+    },
+    {
+      "id": "sab-binary 64KiB",
+      "label": "sab-binary 64KiB",
+      "group": "Payload 64KiB",
+      "payloadBytes": 65536,
+      "capacityBytes": 1048576,
+      "metrics": {
+        "opsPerSec": 8865.0641937587,
+        "avgLatencyMs": 0.12054554423418741,
+        "p50LatencyMs": 0.09959999999955471,
+        "p95LatencyMs": 0.19840000000021973,
+        "p99LatencyMs": 0.2734999999993306,
+        "rmePct": 0.7330509708990777
+      }
+    },
+    {
+      "id": "sab-msgpack 64KiB",
+      "label": "sab-msgpack 64KiB",
+      "group": "Payload 64KiB",
+      "payloadBytes": 65536,
+      "capacityBytes": 1048576,
+      "metrics": {
+        "opsPerSec": 11098.37325370798,
+        "avgLatencyMs": 0.1028037951973461,
+        "p50LatencyMs": 0.0820000000003347,
+        "p95LatencyMs": 0.18620000000009895,
+        "p99LatencyMs": 0.25759999999991123,
+        "rmePct": 0.5668229973636795
+      }
+    }
+  ]
+}

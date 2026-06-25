@@ -1,0 +1,491 @@
+{
+  "version": 3,
+  "sourceOfTruth": ["src/core/constants.ts", "src/core/ring/endpoint.ts", "formal/lean/Shirika/Frame.lean"],
+  "generatedBy": "scripts/formal/check-formal-bridge.mjs --write",
+  "headerSize": 32,
+  "layout": [
+    { "field": "magic", "offset": 0, "width": 4, "accessor": "Uint32", "type": "uint32", "endian": "little" },
+    { "field": "version", "offset": 4, "width": 2, "accessor": "Uint16", "type": "uint16", "endian": "little" },
+    { "field": "opcode", "offset": 6, "width": 2, "accessor": "Uint16", "type": "uint16", "endian": "little" },
+    { "field": "flags", "offset": 8, "width": 4, "accessor": "Uint32", "type": "uint32", "endian": "little" },
+    { "field": "requestId", "offset": 12, "width": 4, "accessor": "Uint32", "type": "uint32", "endian": "little" },
+    { "field": "methodId", "offset": 16, "width": 4, "accessor": "Uint32", "type": "uint32", "endian": "little" },
+    { "field": "statusCode", "offset": 20, "width": 4, "accessor": "Int32", "type": "int32", "endian": "little" },
+    { "field": "payloadLength", "offset": 24, "width": 4, "accessor": "Uint32", "type": "uint32", "endian": "little" },
+    { "field": "reserved", "offset": 28, "width": 4, "accessor": "Uint32", "type": "uint32", "endian": "little" }
+  ],
+  "vectors": [
+    {
+      "name": "minimal-close-frame",
+      "purpose": "minimum valid frame: header only, methodId boundary 0",
+      "capacityBytes": 64,
+      "frameSize": 32,
+      "payloadRange": { "readSeq": 0, "payloadSeq": 32, "payloadLength": 0, "paddingSeq": 32, "paddingLength": 0, "nextReadSeq": 32 },
+      "header": {
+        "magic": 1398034481,
+        "version": 1,
+        "opcode": 5,
+        "flags": 0,
+        "requestId": 0,
+        "methodId": 0,
+        "statusCode": 0,
+        "payloadLength": 0,
+        "reserved": 0
+      },
+      "headerHex": "3150545301000500000000000000000000000000000000000000000000000000",
+      "payloadHex": "",
+      "paddingHex": ""
+    },
+    {
+      "name": "request-method-one-with-padding",
+      "purpose": "request frame with methodId 1 and five bytes of padding",
+      "capacityBytes": 64,
+      "frameSize": 40,
+      "payloadRange": { "readSeq": 0, "payloadSeq": 32, "payloadLength": 3, "paddingSeq": 35, "paddingLength": 5, "nextReadSeq": 40 },
+      "header": {
+        "magic": 1398034481,
+        "version": 1,
+        "opcode": 1,
+        "flags": 0,
+        "requestId": 1,
+        "methodId": 1,
+        "statusCode": 0,
+        "payloadLength": 3,
+        "reserved": 0
+      },
+      "headerHex": "3150545301000100000000000100000001000000000000000300000000000000",
+      "payloadHex": "aabbcc",
+      "paddingHex": "0000000000"
+    },
+    {
+      "name": "response-ok-empty",
+      "purpose": "response-ok frame with empty payload",
+      "capacityBytes": 64,
+      "frameSize": 32,
+      "payloadRange": { "readSeq": 0, "payloadSeq": 32, "payloadLength": 0, "paddingSeq": 32, "paddingLength": 0, "nextReadSeq": 32 },
+      "header": {
+        "magic": 1398034481,
+        "version": 1,
+        "opcode": 2,
+        "flags": 0,
+        "requestId": 2,
+        "methodId": 1,
+        "statusCode": 0,
+        "payloadLength": 0,
+        "reserved": 0
+      },
+      "headerHex": "3150545301000200000000000200000001000000000000000000000000000000",
+      "payloadHex": "",
+      "paddingHex": ""
+    },
+    {
+      "name": "response-error-negative-status",
+      "purpose": "error frame with signed statusCode encoded as little-endian Int32",
+      "capacityBytes": 64,
+      "frameSize": 40,
+      "payloadRange": { "readSeq": 0, "payloadSeq": 32, "payloadLength": 4, "paddingSeq": 36, "paddingLength": 4, "nextReadSeq": 40 },
+      "header": {
+        "magic": 1398034481,
+        "version": 1,
+        "opcode": 3,
+        "flags": 0,
+        "requestId": 3,
+        "methodId": 1,
+        "statusCode": -7,
+        "payloadLength": 4,
+        "reserved": 0
+      },
+      "headerHex": "3150545301000300000000000300000001000000f9ffffff0400000000000000",
+      "payloadHex": "deadbeef",
+      "paddingHex": "00000000"
+    },
+    {
+      "name": "cancel-method-id-max",
+      "purpose": "cancel frame with methodId boundary 0xffffffff",
+      "capacityBytes": 64,
+      "frameSize": 40,
+      "payloadRange": { "readSeq": 0, "payloadSeq": 32, "payloadLength": 1, "paddingSeq": 33, "paddingLength": 7, "nextReadSeq": 40 },
+      "header": {
+        "magic": 1398034481,
+        "version": 1,
+        "opcode": 6,
+        "flags": 0,
+        "requestId": 4,
+        "methodId": 4294967295,
+        "statusCode": 0,
+        "payloadLength": 1,
+        "reserved": 0
+      },
+      "headerHex": "31505453010006000000000004000000ffffffff000000000100000000000000",
+      "payloadHex": "01",
+      "paddingHex": "00000000000000"
+    },
+    {
+      "name": "capacity-local-max-frame-size",
+      "purpose": "maximum frame size for a 64-byte ring capacity",
+      "capacityBytes": 64,
+      "frameSize": 64,
+      "payloadRange": { "readSeq": 0, "payloadSeq": 32, "payloadLength": 32, "paddingSeq": 64, "paddingLength": 0, "nextReadSeq": 64 },
+      "header": {
+        "magic": 1398034481,
+        "version": 1,
+        "opcode": 1,
+        "flags": 0,
+        "requestId": 5,
+        "methodId": 1,
+        "statusCode": 0,
+        "payloadLength": 32,
+        "reserved": 0
+      },
+      "headerHex": "3150545301000100000000000500000001000000000000002000000000000000",
+      "payloadHex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+      "paddingHex": ""
+    },
+    {
+      "name": "wrapped-read-seq-payload-range",
+      "purpose": "validated payload range remains stable when the logical frame wraps the ring boundary",
+      "capacityBytes": 64,
+      "frameSize": 40,
+      "payloadRange": { "readSeq": 48, "payloadSeq": 80, "payloadLength": 7, "paddingSeq": 87, "paddingLength": 1, "nextReadSeq": 88 },
+      "header": {
+        "magic": 1398034481,
+        "version": 1,
+        "opcode": 4,
+        "flags": 0,
+        "requestId": 6,
+        "methodId": 1,
+        "statusCode": 0,
+        "payloadLength": 7,
+        "reserved": 0
+      },
+      "headerHex": "3150545301000400000000000600000001000000000000000700000000000000",
+      "payloadHex": "10111213141516",
+      "paddingHex": "00"
+    }
+  ],
+  "alignedBytesPayload": {
+    "flag": 1073741824,
+    "prefixLength": 8,
+    "relationLaw": "payloadLength === byteLength + 8",
+    "leanTheorems": [
+      "Shirika.Frame.alignedBytes_prefix_range_inside_payload",
+      "Shirika.Frame.alignedBytes_bytes_range_inside_payload",
+      "Shirika.Frame.validateHeader_success_and_alignedBytes_implies_bytes_range_readable"
+    ],
+    "benchmarkPayloadSizes": ["1MiB", "8MiB", "32MiB"],
+    "vectors": [
+      {
+        "name": "aligned-empty-bytes",
+        "purpose": "empty aligned bytes payload validates to an empty byte body",
+        "capacityBytes": 64,
+        "frameSize": 40,
+        "payloadRange": { "readSeq": 0, "payloadSeq": 32, "payloadLength": 8, "paddingSeq": 40, "paddingLength": 0, "nextReadSeq": 40 },
+        "alignedBytesRange": {
+          "prefixSeq": 32,
+          "prefixLength": 8,
+          "prefixReserved": 0,
+          "byteLength": 0,
+          "bytesSeq": 40,
+          "payloadLength": 8,
+          "bytesHex": "",
+          "binaryBytesHex": "00000000"
+        },
+        "header": {
+          "magic": 1398034481,
+          "version": 1,
+          "opcode": 1,
+          "flags": 1073741824,
+          "requestId": 10,
+          "methodId": 1,
+          "statusCode": 0,
+          "payloadLength": 8,
+          "reserved": 0
+        },
+        "headerHex": "3150545301000100000000400a00000001000000000000000800000000000000",
+        "payloadHex": "0000000000000000",
+        "paddingHex": ""
+      },
+      {
+        "name": "aligned-one-byte",
+        "purpose": "one-byte aligned bytes payload validates and decodes through the bytes codec path",
+        "capacityBytes": 64,
+        "frameSize": 48,
+        "payloadRange": { "readSeq": 0, "payloadSeq": 32, "payloadLength": 9, "paddingSeq": 41, "paddingLength": 7, "nextReadSeq": 48 },
+        "alignedBytesRange": {
+          "prefixSeq": 32,
+          "prefixLength": 8,
+          "prefixReserved": 0,
+          "byteLength": 1,
+          "bytesSeq": 40,
+          "payloadLength": 9,
+          "bytesHex": "2a",
+          "binaryBytesHex": "010000002a"
+        },
+        "header": {
+          "magic": 1398034481,
+          "version": 1,
+          "opcode": 1,
+          "flags": 1073741824,
+          "requestId": 11,
+          "methodId": 1,
+          "statusCode": 0,
+          "payloadLength": 9,
+          "reserved": 0
+        },
+        "headerHex": "3150545301000100000000400b00000001000000000000000900000000000000",
+        "payloadHex": "01000000000000002a",
+        "paddingHex": "00000000000000"
+      },
+      {
+        "name": "aligned-small-bytes",
+        "purpose": "small aligned bytes payload validates with ordinary no-wrap layout",
+        "capacityBytes": 64,
+        "frameSize": 56,
+        "payloadRange": { "readSeq": 0, "payloadSeq": 32, "payloadLength": 17, "paddingSeq": 49, "paddingLength": 7, "nextReadSeq": 56 },
+        "alignedBytesRange": {
+          "prefixSeq": 32,
+          "prefixLength": 8,
+          "prefixReserved": 0,
+          "byteLength": 9,
+          "bytesSeq": 40,
+          "payloadLength": 17,
+          "bytesHex": "000102030405060708",
+          "binaryBytesHex": "09000000000102030405060708"
+        },
+        "header": {
+          "magic": 1398034481,
+          "version": 1,
+          "opcode": 1,
+          "flags": 1073741824,
+          "requestId": 12,
+          "methodId": 1,
+          "statusCode": 0,
+          "payloadLength": 17,
+          "reserved": 0
+        },
+        "headerHex": "3150545301000100000000400c00000001000000000000001100000000000000",
+        "payloadHex": "0900000000000000000102030405060708",
+        "paddingHex": "00000000000000"
+      },
+      {
+        "name": "aligned-prefix-wraps",
+        "purpose": "the 8-byte aligned prefix wraps around the ring boundary and is still validated once",
+        "capacityBytes": 128,
+        "frameSize": 48,
+        "payloadRange": { "readSeq": 94, "payloadSeq": 126, "payloadLength": 11, "paddingSeq": 137, "paddingLength": 5, "nextReadSeq": 142 },
+        "alignedBytesRange": {
+          "prefixSeq": 126,
+          "prefixLength": 8,
+          "prefixReserved": 0,
+          "byteLength": 3,
+          "bytesSeq": 134,
+          "payloadLength": 11,
+          "bytesHex": "616263",
+          "binaryBytesHex": "03000000616263"
+        },
+        "header": {
+          "magic": 1398034481,
+          "version": 1,
+          "opcode": 1,
+          "flags": 1073741824,
+          "requestId": 13,
+          "methodId": 1,
+          "statusCode": 0,
+          "payloadLength": 11,
+          "reserved": 0
+        },
+        "headerHex": "3150545301000100000000400d00000001000000000000000b00000000000000",
+        "payloadHex": "0300000000000000616263",
+        "paddingHex": "0000000000"
+      },
+      {
+        "name": "aligned-body-wraps",
+        "purpose": "the byte body wraps around the ring boundary after a contiguous aligned prefix",
+        "capacityBytes": 128,
+        "frameSize": 48,
+        "payloadRange": { "readSeq": 86, "payloadSeq": 118, "payloadLength": 12, "paddingSeq": 130, "paddingLength": 4, "nextReadSeq": 134 },
+        "alignedBytesRange": {
+          "prefixSeq": 118,
+          "prefixLength": 8,
+          "prefixReserved": 0,
+          "byteLength": 4,
+          "bytesSeq": 126,
+          "payloadLength": 12,
+          "bytesHex": "71727374",
+          "binaryBytesHex": "0400000071727374"
+        },
+        "header": {
+          "magic": 1398034481,
+          "version": 1,
+          "opcode": 1,
+          "flags": 1073741824,
+          "requestId": 14,
+          "methodId": 1,
+          "statusCode": 0,
+          "payloadLength": 12,
+          "reserved": 0
+        },
+        "headerHex": "3150545301000100000000400e00000001000000000000000c00000000000000",
+        "payloadHex": "040000000000000071727374",
+        "paddingHex": "00000000"
+      }
+    ],
+    "invalidCases": [
+      {
+        "name": "aligned-payload-length-too-small",
+        "purpose": "header payloadLength is one byte smaller than byteLength + 8",
+        "capacityBytes": 64,
+        "expectedErrorClass": "ShirikaProtocolError",
+        "header": {
+          "magic": 1398034481,
+          "version": 1,
+          "opcode": 1,
+          "flags": 1073741824,
+          "requestId": 20,
+          "methodId": 1,
+          "statusCode": 0,
+          "payloadLength": 11,
+          "reserved": 0
+        },
+        "payloadHex": "040000000000000080818283",
+        "relation": { "headerPayloadLength": 11, "prefixByteLength": 4, "expectedPayloadLength": 12, "actualBodyLength": 4 }
+      },
+      {
+        "name": "aligned-payload-length-too-large",
+        "purpose": "header payloadLength is one byte larger than byteLength + 8",
+        "capacityBytes": 64,
+        "expectedErrorClass": "ShirikaProtocolError",
+        "header": {
+          "magic": 1398034481,
+          "version": 1,
+          "opcode": 1,
+          "flags": 1073741824,
+          "requestId": 21,
+          "methodId": 1,
+          "statusCode": 0,
+          "payloadLength": 13,
+          "reserved": 0
+        },
+        "payloadHex": "040000000000000080818283",
+        "relation": { "headerPayloadLength": 13, "prefixByteLength": 4, "expectedPayloadLength": 12, "actualBodyLength": 4 }
+      },
+      {
+        "name": "aligned-declared-byte-length-too-small",
+        "purpose": "prefix byteLength is smaller than the body implied by the header payloadLength",
+        "capacityBytes": 64,
+        "expectedErrorClass": "ShirikaProtocolError",
+        "header": {
+          "magic": 1398034481,
+          "version": 1,
+          "opcode": 1,
+          "flags": 1073741824,
+          "requestId": 22,
+          "methodId": 1,
+          "statusCode": 0,
+          "payloadLength": 12,
+          "reserved": 0
+        },
+        "payloadHex": "030000000000000080818283",
+        "relation": { "headerPayloadLength": 12, "prefixByteLength": 3, "expectedPayloadLength": 11, "actualBodyLength": 4 }
+      },
+      {
+        "name": "aligned-declared-byte-length-too-large",
+        "purpose": "prefix byteLength is larger than the body implied by the header payloadLength",
+        "capacityBytes": 64,
+        "expectedErrorClass": "ShirikaProtocolError",
+        "header": {
+          "magic": 1398034481,
+          "version": 1,
+          "opcode": 1,
+          "flags": 1073741824,
+          "requestId": 23,
+          "methodId": 1,
+          "statusCode": 0,
+          "payloadLength": 12,
+          "reserved": 0
+        },
+        "payloadHex": "050000000000000080818283",
+        "relation": { "headerPayloadLength": 12, "prefixByteLength": 5, "expectedPayloadLength": 13, "actualBodyLength": 4 }
+      },
+      {
+        "name": "aligned-payload-shorter-than-prefix",
+        "purpose": "payloadLength shorter than the mandatory 8-byte prefix is rejected before branding",
+        "capacityBytes": 64,
+        "expectedErrorClass": "ShirikaProtocolError",
+        "header": {
+          "magic": 1398034481,
+          "version": 1,
+          "opcode": 1,
+          "flags": 1073741824,
+          "requestId": 24,
+          "methodId": 1,
+          "statusCode": 0,
+          "payloadLength": 4,
+          "reserved": 0
+        },
+        "payloadHex": "0000000000000000",
+        "relation": { "headerPayloadLength": 4, "prefixByteLength": 0, "expectedPayloadLength": 8, "actualBodyLength": 0 }
+      }
+    ]
+  },
+  "paddingLengthCases": [
+    { "payloadLength": 0, "frameSize": 32, "payloadSeq": 32, "paddingSeq": 32, "paddingLength": 0, "nextReadSeq": 32 },
+    { "payloadLength": 1, "frameSize": 40, "payloadSeq": 32, "paddingSeq": 33, "paddingLength": 7, "nextReadSeq": 40 },
+    { "payloadLength": 2, "frameSize": 40, "payloadSeq": 32, "paddingSeq": 34, "paddingLength": 6, "nextReadSeq": 40 },
+    { "payloadLength": 3, "frameSize": 40, "payloadSeq": 32, "paddingSeq": 35, "paddingLength": 5, "nextReadSeq": 40 },
+    { "payloadLength": 4, "frameSize": 40, "payloadSeq": 32, "paddingSeq": 36, "paddingLength": 4, "nextReadSeq": 40 },
+    { "payloadLength": 5, "frameSize": 40, "payloadSeq": 32, "paddingSeq": 37, "paddingLength": 3, "nextReadSeq": 40 },
+    { "payloadLength": 6, "frameSize": 40, "payloadSeq": 32, "paddingSeq": 38, "paddingLength": 2, "nextReadSeq": 40 },
+    { "payloadLength": 7, "frameSize": 40, "payloadSeq": 32, "paddingSeq": 39, "paddingLength": 1, "nextReadSeq": 40 }
+  ],
+  "invalidCases": [
+    {
+      "name": "capacity-below-frame-header",
+      "purpose": "ring capacity must be large enough to hold a minimum frame header",
+      "input": { "capacityBytes": 16 },
+      "expectedErrorClass": "ShirikaError"
+    },
+    {
+      "name": "payload-exceeds-capacity-local-frame-max",
+      "purpose": "payloadLength greater than capacityBytes - HEADER_SIZE is rejected before align8",
+      "input": { "capacityBytes": 64, "payloadLength": 33 },
+      "expectedErrorClass": "ShirikaOversizeError on send / ShirikaProtocolError on receive"
+    },
+    {
+      "name": "invalid-magic",
+      "purpose": "receive boundary rejects headers before creating a ValidatedFrame witness",
+      "input": { "magic": 3735928559 },
+      "expectedErrorClass": "ShirikaProtocolError"
+    },
+    {
+      "name": "invalid-version",
+      "purpose": "receive boundary rejects unsupported frame versions before creating a ValidatedFrame witness",
+      "input": { "version": 2 },
+      "expectedErrorClass": "ShirikaProtocolError"
+    },
+    {
+      "name": "invalid-opcode",
+      "purpose": "receive boundary rejects unknown opcodes before creating a ValidatedFrame witness",
+      "input": { "opcode": 65535 },
+      "expectedErrorClass": "ShirikaProtocolError"
+    },
+    {
+      "name": "truncated-after-valid-header",
+      "purpose": "full-frame-readable check is still required after successful header validation",
+      "input": { "capacityBytes": 64, "payloadLength": 8, "committedBytes": 32 },
+      "expectedErrorClass": "ShirikaProtocolError"
+    },
+    {
+      "name": "contract-method-id-zero",
+      "purpose": "contract methods are 1-based even though the wire UInt32 field allows 0",
+      "input": { "methodId": 0 },
+      "expectedErrorClass": "TypeError"
+    },
+    {
+      "name": "method-id-over-uint32",
+      "purpose": "method ids above UInt32 max fail fast instead of wrapping to the wire field",
+      "input": { "methodId": 4294967296 },
+      "expectedErrorClass": "TypeError or ShirikaProtocolError"
+    }
+  ]
+}

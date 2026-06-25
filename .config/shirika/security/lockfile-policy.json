@@ -1,0 +1,6 @@
+{
+  "allowedLockfiles": ["pnpm-lock.yaml"],
+  "forbiddenLockfiles": ["package-lock.json", "npm-shrinkwrap.json", "yarn.lock", "bun.lock", "bun.lockb"],
+  "allowedTarballHosts": ["registry.npmjs.org"],
+  "forbiddenSpecProtocols": ["file:", "link:", "git+", "github:", "http:", "https:"]
+}

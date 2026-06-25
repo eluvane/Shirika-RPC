@@ -1,0 +1,189 @@
+{
+  "name": "shirika-rpc",
+  "version": "0.0.0",
+  "description": "Shirika-RPC: typed RPC over SharedArrayBuffer and Atomics for Web Workers and Node worker_threads",
+  "license": "UNLICENSED",
+  "type": "module",
+  "engines": {
+    "node": ">=26"
+  },
+  "sideEffects": false,
+  "packageManager": "pnpm@11.8.0",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "browser": [
+        "./dist/browser.d.ts"
+      ],
+      "node": [
+        "./dist/node.d.ts"
+      ],
+      "worker-browser": [
+        "./dist/worker-browser.d.ts"
+      ],
+      "worker-node": [
+        "./dist/worker-node.d.ts"
+      ]
+    }
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./browser": {
+      "types": "./dist/browser.d.ts",
+      "import": "./dist/browser.js"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js"
+    },
+    "./worker-browser": {
+      "types": "./dist/worker-browser.d.ts",
+      "import": "./dist/worker-browser.js"
+    },
+    "./worker-node": {
+      "types": "./dist/worker-node.d.ts",
+      "import": "./dist/worker-node.js"
+    }
+  },
+  "scripts": {
+    "lint": "node scripts/quality/lint.mjs required",
+    "lint:required": "node scripts/quality/lint.mjs required",
+    "lint:strict": "node scripts/quality/lint.mjs strict",
+    "lint:paranoid": "node scripts/quality/lint.mjs paranoid",
+    "lint:all": "node scripts/quality/lint.mjs all",
+    "lint:eslint": "eslint --config .config/shirika/lints/eslint.config.mjs . --max-warnings=0",
+    "lint:format": "prettier --config .config/shirika/formatters/prettier.json --ignore-path .config/shirika/formatters/prettierignore --check .",
+    "lint:text": "node scripts/quality/check-text.mjs",
+    "lint:json": "node scripts/quality/check-json.mjs",
+    "lint:markdown": "node scripts/quality/check-markdown.mjs",
+    "lint:package": "node scripts/quality/check-package-policy.mjs",
+    "lint:lockfile": "node scripts/quality/check-lockfile-policy.mjs",
+    "lint:tsconfig": "node scripts/quality/check-tsconfig-policy.mjs",
+    "lint:source": "node scripts/quality/check-source-policy.mjs",
+    "lint:imports": "node scripts/quality/check-import-boundaries.mjs",
+    "lint:declarations": "node scripts/quality/check-declarations.mjs",
+    "lint:workflows": "node scripts/quality/check-workflows.mjs",
+    "lint:ci-consistency": "node scripts/quality/check-ci-consistency.mjs",
+    "lint:markdown:external": "pnpm dlx markdownlint-cli2@0.22.1 --config .config/shirika/lints/markdownlint-cli2.jsonc \"**/*.md\"",
+    "lint:yaml:external": "python -m yamllint -c .config/shirika/lints/yamllint.yml .",
+    "lint:actions:external": "node scripts/quality/run-actionlint.mjs",
+    "lint:zizmor": "node scripts/quality/run-zizmor.mjs",
+    "lint:secrets": "gitleaks detect --no-git --source . --config .config/shirika/security/gitleaks.toml --redact --no-banner",
+    "lint:spelling:cspell": "pnpm dlx cspell@10.0.1 --config .config/shirika/security/cspell.config.yaml .",
+    "lint:osv": "osv-scanner scan source --config .config/shirika/security/osv-scanner.toml -r .",
+    "lint:audit-ci": "pnpm dlx audit-ci@7.1.0 --config .config/shirika/security/audit-ci.jsonc",
+    "lint:biome": "pnpm dlx @biomejs/biome@2.5.0 ci --config-path=.config/shirika/formatters/biome.jsonc .",
+    "lint:oxlint": "pnpm dlx oxlint@1.70.0 --config .config/shirika/lints/oxlint.json",
+    "lint:depcruise": "pnpm dlx dependency-cruiser@17.4.3 --config .config/shirika/lints/dependency-cruiser.cjs src test scripts .config/shirika",
+    "lint:syncpack": "pnpm dlx syncpack@15.3.2 lint --config .config/shirika/lints/syncpack.config.cjs --dependency-types prod,dev,peer",
+    "lint:package-json-lint": "pnpm dlx npm-package-json-lint@10.4.1 --configFile .config/shirika/lints/npm-package-json-lint.json .",
+    "lint:ls": "pnpm dlx @ls-lint/ls-lint@2.3.1 --config .config/shirika/lints/ls-lint.yml",
+    "lint:toml": "pnpm dlx @taplo/cli@0.7.0 fmt --check --config .config/shirika/formatters/taplo.toml \"**/*.toml\"",
+    "lint:types-package": "node scripts/quality/check-types-package.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint:fix": "eslint --config .config/shirika/lints/eslint.config.mjs . --fix",
+    "format": "prettier --config .config/shirika/formatters/prettier.json --ignore-path .config/shirika/formatters/prettierignore --write .",
+    "format:check": "prettier --config .config/shirika/formatters/prettier.json --ignore-path .config/shirika/formatters/prettierignore --check .",
+    "check:formal-bridge": "node scripts/formal/check-formal-bridge.mjs",
+    "check:formal-codecs": "node scripts/formal/check-codec-vectors.mjs",
+    "check:formal-contract": "node scripts/formal/check-contract-vectors.mjs",
+    "check:formal-lifecycle": "node scripts/formal/check-lifecycle-vectors.mjs",
+    "check:licenses": "node scripts/quality/check-license-policy.mjs --prod",
+    "check:licenses:all": "node scripts/quality/check-license-policy.mjs --all",
+    "check:deps": "knip --config .config/shirika/lints/knip.json --dependencies && node scripts/quality/run-publint.mjs && pnpm audit --prod --audit-level high",
+    "check:deps:paranoid": "knip --config .config/shirika/lints/knip.json && pnpm audit --audit-level moderate && pnpm run check:licenses:all",
+    "check:static": "pnpm run lint:required && pnpm run lint:strict",
+    "build": "pnpm run build:types && pnpm run build:js",
+    "build:js": "rollup -c .config/shirika/build/rollup.config.mjs",
+    "build:types": "tsc -b .config/shirika/typescript/build.json",
+    "test": "pnpm run test:node && pnpm run test:browser && pnpm run test:types",
+    "test:node": "pnpm run build && vitest run --config .config/shirika/test/vitest.config.mjs --configLoader native --project node",
+    "test:browser": "pnpm run build && vitest run --config .config/shirika/test/vitest.config.mjs --configLoader native --project browser",
+    "test:types": "pnpm run build && tsd",
+    "bench": "pnpm run bench:ipc && pnpm run bench:pool",
+    "bench:ipc": "pnpm run build && node bench/node-postmessage-vs-sab.mjs",
+    "bench:frame": "pnpm run build && node bench/frame-receive.mjs",
+    "bench:ipc:large": "pnpm run build && node bench/node-postmessage-vs-sab.mjs --payload-sizes 1MiB,8MiB,32MiB --time 1000 --iterations 10",
+    "bench:large": "pnpm run bench:ipc:large",
+    "bench:pool": "pnpm run build && node bench/node-pool-contention.mjs",
+    "bench:contract": "pnpm run build && node bench/contract-preparation.mjs",
+    "bench:collect": "pnpm run build && node scripts/bench/collect.mjs",
+    "bench:compare": "node scripts/bench/compare.mjs",
+    "test:pack": "pnpm run build && node scripts/quality/pack-smoke.mjs",
+    "check": "pnpm run check:static && pnpm run typecheck && pnpm run build && pnpm run check:formal-bridge && pnpm run check:formal-codecs && pnpm run check:formal-contract && pnpm run check:formal-lifecycle && pnpm run check:deps && pnpm run check:licenses && pnpm run test:node && pnpm run test:types && pnpm run test:pack",
+    "check:ci": "pnpm run check && pnpm run test:browser",
+    "check:paranoid": "pnpm run check:ci && pnpm run lint:paranoid && pnpm run security:paranoid",
+    "prepack": "pnpm run build",
+    "ci": "pnpm run check:ci",
+    "formal:bridge:update": "node scripts/formal/check-formal-bridge.mjs --write",
+    "formal:codecs:update": "node scripts/formal/check-codec-vectors.mjs --write",
+    "formal:contract:update": "node scripts/formal/check-contract-vectors.mjs --write",
+    "formal:lifecycle:update": "node scripts/formal/check-lifecycle-vectors.mjs --write",
+    "formal:lean": "cd formal/lean && lake build --wfail",
+    "bench:aligned-bytes": "pnpm run build && node bench/aligned-bytes-payload.mjs",
+    "bench:codec-writer": "pnpm run build && node bench/codec-writer-fast-path.mjs",
+    "lint:required:nonformat": "node scripts/quality/lint.mjs required-no-format",
+    "lint:repo": "node scripts/quality/lint.mjs repo",
+    "lint:ci": "pnpm run lint:workflows && pnpm run lint:ci-consistency && pnpm run lint:actions:external && pnpm run lint:yaml:external",
+    "lint:deps": "pnpm run check:deps && pnpm run check:licenses && pnpm run lint:audit-ci",
+    "lint:docs": "pnpm run lint:markdown && pnpm run lint:markdown:external",
+    "lint:web": "pnpm run lint:eslint && pnpm run typecheck",
+    "lint:tooling-policy": "node scripts/quality/check-tooling-policy.mjs",
+    "lint:lean-source": "node scripts/quality/check-lean-policy.mjs",
+    "formal:lean:lint": "cd formal/lean && lake lint --builtin-lint",
+    "formal:lean:check": "cd formal/lean && lake build --wfail && lake lint --builtin-lint && lake env leanchecker --fresh Shirika",
+    "bench:codec-read": "pnpm run build && node bench/codec-read-fast-path.mjs",
+    "bench:pending": "pnpm run build && node bench/pending-lifecycle.mjs",
+    "check:fast-path-governance": "node scripts/quality/check-fast-path-governance.mjs",
+    "lint:fast-path-governance": "node scripts/quality/check-fast-path-governance.mjs",
+    "bench:governance:smoke": "pnpm run build && node scripts/bench/collect.mjs --smoke --out-dir .benchmark/smoke",
+    "bench:compare:gate": "node scripts/bench/compare.mjs --fail-on-regression",
+    "security": "pnpm run security:npm-audit && pnpm run security:gitleaks && pnpm run security:osv && pnpm run check:licenses",
+    "security:npm-audit": "pnpm audit --prod --audit-level high",
+    "security:gitleaks": "pnpm run lint:secrets",
+    "security:osv": "pnpm run lint:osv",
+    "security:paranoid": "pnpm run security && pnpm run check:deps:paranoid",
+    "bench:smoke": "pnpm run build && node scripts/bench/collect.mjs --smoke --out-dir .benchmark/smoke",
+    "bench:collect:smoke": "pnpm run build && node scripts/bench/collect.mjs --smoke --out-dir .benchmark/smoke"
+  },
+  "tsd": {
+    "directory": "test-d",
+    "compilerOptions": {
+      "noUncheckedIndexedAccess": true,
+      "exactOptionalPropertyTypes": true
+    }
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@rollup/plugin-commonjs": "^29.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-typescript": "^12.3.0",
+    "@types/node": "^26.0.0",
+    "@vitest/browser": "4.1.9",
+    "@vitest/browser-playwright": "4.1.9",
+    "@vitest/web-worker": "4.1.9",
+    "eslint": "^10.5.0",
+    "eslint-plugin-promise": "^7.3.0",
+    "eslint-plugin-security": "^4.0.1",
+    "eslint-plugin-unicorn": "^68.0.0",
+    "globals": "^17.6.0",
+    "knip": "^6.17.1",
+    "playwright": "^1.61.0",
+    "prettier": "^3.8.4",
+    "publint": "^0.3.21",
+    "rollup": "^4.62.2",
+    "tinybench": "^6.0.2",
+    "tsd": "^0.33.0",
+    "tslib": "^2.8.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.61.1",
+    "vitest": "4.1.9"
+  }
+}

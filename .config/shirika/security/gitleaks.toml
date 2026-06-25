@@ -1,0 +1,11 @@
+title = "Shirika-RPC gitleaks policy"
+minVersion = "v8.25.0"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Repository-local generated metadata that is not a secret."
+paths = [
+  '''^pnpm-lock\.yaml$''',
+]
