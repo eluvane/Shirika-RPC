@@ -1,6 +1,6 @@
 {
   "name": "shirika-rpc",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Shirika-RPC: typed RPC over SharedArrayBuffer and Atomics for Web Workers and Node worker_threads",
   "license": "UNLICENSED",
   "type": "module",

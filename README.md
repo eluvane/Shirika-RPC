@@ -24,11 +24,7 @@ It uses SharedArrayBuffer and Atomics for the hot path, with regular worker mess
 ## Quick start
 
 ```bash
-corepack enable
-corepack prepare pnpm@11.8.0 --activate
-pnpm install --ignore-scripts --strict-peer-dependencies
-pnpm run build
-pnpm run test:node
+npm install shirika-rpc
 ```
 
 ```ts
