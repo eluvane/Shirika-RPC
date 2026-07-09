@@ -7,7 +7,7 @@ const packageJsonPath = path.join(rootDir, 'package.json');
 const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf8'));
 const errors = [];
 
-const expectedFiles = ['dist', 'README.md'];
+const expectedFiles = ['LICENSE', 'README.md', 'dist'];
 const forbiddenLifecycleScripts = new Set(['preinstall', 'install', 'postinstall', 'prepare']);
 const forbiddenLockfiles = ['package-lock.json', 'npm-shrinkwrap.json', 'yarn.lock', 'bun.lockb', 'bun.lock'];
 const dependencySections = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
@@ -38,10 +38,21 @@ function isSorted(values) {
 function checkRequiredMetadata() {
     assert(packageJson.type === 'module', 'package.json must remain ESM-only: "type" must be "module"');
     assert(packageJson.sideEffects === false, 'package.json must explicitly declare "sideEffects": false');
-    assert(packageJson.license && typeof packageJson.license === 'string', 'package.json must make package license metadata explicit');
+    assert(packageJson.license === 'AGPL-3.0', 'package.json license must be AGPL-3.0 (matches GitHub SPDX)');
     assert(/^pnpm@\d+\.\d+\.\d+$/.test(packageJson.packageManager ?? ''), 'packageManager must pin an exact pnpm version');
     assert(packageJson.engines?.node === '>=26', 'engines.node must stay pinned to the supported Node.js floor (>=26)');
     assert(JSON.stringify(packageJson.files) === JSON.stringify(expectedFiles), `files must be exactly ${JSON.stringify(expectedFiles)}`);
+}
+
+async function checkLicenseFile() {
+    const licensePath = path.join(rootDir, 'LICENSE');
+    try {
+        const text = await readFile(licensePath, 'utf8');
+        assert(text.includes('GNU AFFERO GENERAL PUBLIC LICENSE'), 'LICENSE must contain the AGPL-3.0 title');
+        assert(text.includes('Version 3, 19 November 2007'), 'LICENSE must be AGPL version 3 text');
+    } catch {
+        fail('LICENSE file must exist at repository root (AGPL-3.0)');
+    }
 }
 
 function checkExports() {
@@ -88,11 +99,35 @@ function checkDependencies() {
             for (const pattern of forbiddenSpecPatterns) {
                 assert(!pattern.test(spec), `${section}.${name} must use a registry semver range, not ${JSON.stringify(spec)}`);
             }
+            // npm: aliases are allowed only for the TypeScript 6/7 dual-stack (native CLI + JS API).
+            if (spec.startsWith('npm:') && name !== '@typescript/native' && name !== 'typescript') {
+                fail(`${section}.${name} must not use npm: aliases outside the TypeScript dual-stack`);
+            }
             const previousSection = seen.get(name);
             assert(!previousSection, `${name} is duplicated in ${previousSection} and ${section}`);
             seen.set(name, section);
         }
     }
+    checkTypeScriptDualStack();
+}
+
+function checkTypeScriptDualStack() {
+    const deps = packageJson.devDependencies ?? {};
+    const nativeSpec = deps['@typescript/native'];
+    const typescriptSpec = deps.typescript;
+    assert(
+        typeof nativeSpec === 'string' && /^npm:typescript@\^7\.\d+\.\d+$/.test(nativeSpec),
+        'devDependencies.@typescript/native must be npm:typescript@^7.x (native Go tsc CLI)',
+    );
+    assert(
+        typeof typescriptSpec === 'string' && /^npm:@typescript\/typescript6@\^6\.\d+\.\d+$/.test(typescriptSpec),
+        'devDependencies.typescript must be npm:@typescript/typescript6@^6.x (JS API for eslint/rollup/tsd until TS 7.1)',
+    );
+    const typecheck = packageJson.scripts?.typecheck ?? '';
+    const buildTypes = packageJson.scripts?.['build:types'] ?? '';
+    assert(/\btsc\b/.test(typecheck), 'scripts.typecheck must invoke the native tsc binary from @typescript/native');
+    assert(/\btsc\b/.test(buildTypes), 'scripts.build:types must invoke the native tsc binary from @typescript/native');
+    assert(!/\btsc6\b/.test(typecheck) && !/\btsc6\b/.test(buildTypes), 'typecheck/build:types must not call tsc6 (API-only package)');
 }
 
 async function checkLockfiles() {
@@ -110,6 +145,7 @@ checkRequiredMetadata();
 checkExports();
 checkScripts();
 checkDependencies();
+await checkLicenseFile();
 await checkLockfiles();
 
 if (errors.length > 0) {

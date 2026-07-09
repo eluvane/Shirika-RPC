@@ -40,6 +40,18 @@ This directory is the canonical home for repository quality tooling. Root files 
 | CodeQL               | `.github/workflows/codeql.yml`                              | `.config/shirika/ci/codeql-config.yml`                                                                           |
 | Dependency Review    | `.github/workflows/ci.yml` dependency-review job            | `.config/shirika/ci/dependency-review-config.yml`                                                                |
 | Lean formal layer    | `pnpm run formal:lean:check`                                | `formal/lean/lean-toolchain`, `formal/lean/lakefile.toml`, `scripts/quality/check-lean-policy.mjs`               |
+| TypeScript dual stack | `pnpm run typecheck`, `pnpm run build:types`               | `@typescript/native` → native `tsc` (TS 7); `typescript` → `@typescript/typescript6` JS API (TS 6 until 7.1)   |
+
+## TypeScript 7 dual stack
+
+TypeScript 7 ships a native Go `tsc` but no programmatic compiler API yet (planned for 7.1). This repo follows the official side-by-side install:
+
+| Package alias | Resolves to | Role |
+| ------------- | ----------- | ---- |
+| `@typescript/native` | `typescript@^7` | CLI binary `tsc` used by `typecheck` / `build:types` |
+| `typescript` | `@typescript/typescript6@^6` | JS API for `typescript-eslint`, `@rollup/plugin-typescript`, and peer resolution |
+
+`scripts/quality/check-package-policy.mjs` enforces this dual stack. Do not point `typescript` at 7 alone until tools that import the compiler API support the 7.1 API.
 
 ## Local commands
 

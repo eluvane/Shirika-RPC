@@ -7,7 +7,7 @@
     "require-name": "error",
     "require-repository": "off",
     "require-version": "error",
-    "valid-values-license": ["error", ["UNLICENSED"]],
+    "valid-values-license": ["error", ["AGPL-3.0"]],
     "valid-values-private": "off",
     "no-duplicate-properties": "error"
   }
