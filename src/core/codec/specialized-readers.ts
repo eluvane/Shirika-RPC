@@ -53,7 +53,7 @@ const u32Strategy = defineStrategy({
     conformanceVectors: ['primitive-u32'],
     validateAndDecode(ring, range) {
         validateFixedReadPlan(range.payloadLength, [{ size: 4 }]);
-        return readU32At(ring, range.payloadSeq);
+        return readFixedAt(ring, range.payloadSeq, 4, (view) => view.getUint32(0, true));
     },
 });
 
@@ -62,7 +62,7 @@ const i32Strategy = defineStrategy({
     conformanceVectors: ['primitive-i32'],
     validateAndDecode(ring, range) {
         validateFixedReadPlan(range.payloadLength, [{ size: 4 }]);
-        return readI32At(ring, range.payloadSeq);
+        return readFixedAt(ring, range.payloadSeq, 4, (view) => view.getInt32(0, true));
     },
 });
 
@@ -140,31 +140,15 @@ function readBoolAt(ring: SharedRingBuffer, seq: number): boolean {
 }
 
 function readU16At(ring: SharedRingBuffer, seq: number): number {
-    const view = ring.getContiguousDataView(seq, 2);
-    if (view !== null) {
-        return view.getUint16(0, true);
-    }
-    const scratch = new Uint8Array(2);
-    ring.readInto(seq, scratch, 0, 2);
-    return new DataView(scratch.buffer, scratch.byteOffset, scratch.byteLength).getUint16(0, true);
+    return readFixedAt(ring, seq, 2, (view) => view.getUint16(0, true));
 }
 
-function readU32At(ring: SharedRingBuffer, seq: number): number {
-    const view = ring.getContiguousDataView(seq, 4);
+function readFixedAt(ring: SharedRingBuffer, seq: number, size: number, read: (view: DataView) => number): number {
+    const view = ring.getContiguousDataView(seq, size);
     if (view !== null) {
-        return view.getUint32(0, true);
+        return read(view);
     }
-    const scratch = new Uint8Array(4);
-    ring.readInto(seq, scratch, 0, 4);
-    return new DataView(scratch.buffer, scratch.byteOffset, scratch.byteLength).getUint32(0, true);
-}
-
-function readI32At(ring: SharedRingBuffer, seq: number): number {
-    const view = ring.getContiguousDataView(seq, 4);
-    if (view !== null) {
-        return view.getInt32(0, true);
-    }
-    const scratch = new Uint8Array(4);
-    ring.readInto(seq, scratch, 0, 4);
-    return new DataView(scratch.buffer, scratch.byteOffset, scratch.byteLength).getInt32(0, true);
+    const scratch = new Uint8Array(size);
+    ring.readInto(seq, scratch, 0, size);
+    return read(new DataView(scratch.buffer, scratch.byteOffset, scratch.byteLength));
 }

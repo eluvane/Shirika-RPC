@@ -1,7 +1,7 @@
 import { bool, bytes, f64, i32, string, u8, u16, u32, void_ } from './builtins.js';
 import { array, optional, struct, tuple } from './combinators.js';
 import { msgpack } from './msgpack.js';
-export const codecs = {
+export const codecs = Object.freeze({
     void: void_,
     bool,
     u8,
@@ -16,7 +16,7 @@ export const codecs = {
     tuple,
     struct,
     msgpack,
-};
+});
 export { bool, bytes, f64, i32, string, u8, u16, u32, void_ as voidCodec } from './builtins.js';
 export { array, optional, struct, tuple } from './combinators.js';
 export { msgpack } from './msgpack.js';

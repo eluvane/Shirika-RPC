@@ -21,7 +21,7 @@ export const textExtensions = new Set([
     '.yaml',
     '.yml',
 ]);
-export const generatedDirectories = new Set(['.bench', '.git', '.lake', '.tsbuildinfo', 'coverage', 'dist', 'node_modules']);
+export const generatedDirectories = new Set(['.bench', '.git', '.lake', '.tsbuildinfo', '.tools', '.pi-glla', 'coverage', 'dist', 'node_modules']);
 export const generatedRelativeDirectories = new Set(['.benchmark/current', '.benchmark/previous', '.benchmark/comparison', '.benchmark/smoke']);
 
 export function toPosix(filePath) {

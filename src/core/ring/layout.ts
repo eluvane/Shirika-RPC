@@ -16,11 +16,12 @@ function assertCapacityBytes(capacityBytes: number): void {
     if (!Number.isInteger(capacityBytes)) {
         throw new ShirikaError(`capacityBytes must be an integer, received ${capacityBytes}`);
     }
-    if (capacityBytes < MIN_CAPACITY_BYTES) {
-        throw new ShirikaError(`capacityBytes must be at least ${MIN_CAPACITY_BYTES} bytes, received ${capacityBytes}`);
-    }
-    if (capacityBytes > MAX_CAPACITY_BYTES) {
-        throw new ShirikaError(`capacityBytes must be at most ${MAX_CAPACITY_BYTES} bytes, received ${capacityBytes}`);
+    if (capacityBytes < MIN_CAPACITY_BYTES || capacityBytes > MAX_CAPACITY_BYTES) {
+        throw new ShirikaError(
+            capacityBytes < MIN_CAPACITY_BYTES
+                ? `capacityBytes must be at least ${MIN_CAPACITY_BYTES} bytes, received ${capacityBytes}`
+                : `capacityBytes must be at most ${MAX_CAPACITY_BYTES} bytes, received ${capacityBytes}`,
+        );
     }
     assertPowerOfTwo(capacityBytes, 'capacityBytes');
 }

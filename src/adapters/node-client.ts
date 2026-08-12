@@ -1,5 +1,5 @@
 import type { Worker } from 'node:worker_threads';
-import { createBootstrapMessage, isErrorMessage, isReadyMessage } from '../core/bootstrap.js';
+import { createBootstrapMessage, interpretReadyHandshake } from '../core/bootstrap.js';
 import { DEFAULT_CAPACITY_BYTES } from '../core/constants.js';
 import { ShirikaEnvironmentError } from '../core/errors.js';
 import { DuplexEndpoint } from '../core/ring/endpoint.js';
@@ -40,24 +40,16 @@ export async function createNodeWorkerRpcClient<C extends ContractShape>(
             reject(new ShirikaEnvironmentError(`Timed out waiting for node worker bootstrap after ${bootstrapTimeoutMs}ms`));
         }, bootstrapTimeoutMs);
         const onMessage = (message: unknown) => {
-            if (isReadyMessage(message)) {
-                if (message.contractHash !== contractHash) {
-                    cleanup();
-                    reject(
-                        new ShirikaEnvironmentError(
-                            `Node worker bootstrap failed: RPC contract hash mismatch (expected ${contractHash}, received ${message.contractHash})`,
-                        ),
-                    );
-                    return;
-                }
-                cleanup();
-                resolve();
+            const handshake = interpretReadyHandshake(message, contractHash, { platform: 'Node' });
+            if (handshake.kind === 'ignore') {
                 return;
             }
-            if (isErrorMessage(message)) {
-                cleanup();
-                reject(new ShirikaEnvironmentError(`Node worker bootstrap failed: ${message.message}`));
+            cleanup();
+            if (handshake.kind === 'error') {
+                reject(handshake.error);
+                return;
             }
+            resolve();
         };
         const onError = (error: Error) => {
             cleanup();

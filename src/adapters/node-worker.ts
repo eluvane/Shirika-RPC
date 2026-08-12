@@ -1,5 +1,5 @@
 import type { MessagePort } from 'node:worker_threads';
-import { createErrorMessage, createReadyMessage, isBootstrapLike, isBootstrapMessage } from '../core/bootstrap.js';
+import { acceptBootstrapMessage, createErrorMessage, createReadyMessage, isBootstrapLike } from '../core/bootstrap.js';
 import { ShirikaEnvironmentError } from '../core/errors.js';
 import { DuplexEndpoint } from '../core/ring/endpoint.js';
 import { createRingLayout } from '../core/ring/layout.js';
@@ -9,11 +9,13 @@ import { createRpcServer } from '../core/rpc/server.js';
 import type { RpcHandlers, RpcServer, RpcTransportOptions } from '../core/rpc/types.js';
 import { describeError } from '../core/utils.js';
 import { createWaitStrategy } from '../core/wait.js';
+
 export interface NodeWorkerRpcServerOptions<C extends ContractShape> extends RpcTransportOptions {
     readonly contract: ContractInput<C>;
     readonly handlers: RpcHandlers<C>;
     readonly parentPortRef?: MessagePort | null;
 }
+
 export function runNodeWorkerRpcServer<C extends ContractShape>(options: NodeWorkerRpcServerOptions<C>): Promise<RpcServer<C>> {
     const port = options.parentPortRef;
     if (!port) {
@@ -28,31 +30,25 @@ export function runNodeWorkerRpcServer<C extends ContractShape>(options: NodeWor
                 return;
             }
             port.off('message', onMessage);
-            if (!isBootstrapMessage(message)) {
-                const error = new ShirikaEnvironmentError('Invalid shirika-rpc bootstrap payload received in node worker');
-                port.postMessage(createErrorMessage(error.message));
-                reject(error);
-                return;
-            }
             if (bootstrapped) {
                 return;
             }
             bootstrapped = true;
-            if (message.contractHash !== contractHash) {
-                const error = new ShirikaEnvironmentError(`RPC contract hash mismatch (expected ${contractHash}, received ${message.contractHash})`);
-                port.postMessage(createErrorMessage(error.message));
-                reject(error);
+            const accepted = acceptBootstrapMessage(message, contractHash, 'Invalid shirika-rpc bootstrap payload received in node worker');
+            if (!accepted.ok) {
+                port.postMessage(createErrorMessage(accepted.error.message));
+                reject(accepted.error);
                 return;
             }
             try {
                 const endpoint = new DuplexEndpoint({
                     inbound: new SharedRingBuffer(
-                        createRingLayout(message.clientToServerSab, message.capacityBytes),
+                        createRingLayout(accepted.message.clientToServerSab, accepted.message.capacityBytes),
                         createWaitStrategy(false),
                         'node main -> worker',
                     ),
                     outbound: new SharedRingBuffer(
-                        createRingLayout(message.serverToClientSab, message.capacityBytes),
+                        createRingLayout(accepted.message.serverToClientSab, accepted.message.capacityBytes),
                         createWaitStrategy(false),
                         'node worker -> main',
                     ),

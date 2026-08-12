@@ -12,70 +12,30 @@ const remoteErrorCodec = msgpack<RemoteErrorPayload>();
 const REMOTE_ERROR_MAX_DEPTH = 5;
 export function toRemoteErrorPayload(error: unknown): RemoteErrorPayload {
     if (error instanceof Error) {
-        const withMetadata = error as Error & {
-            code?: string | number;
-            data?: unknown;
-        };
-        const payload: RemoteErrorPayload = {
+        const withMetadata = error as Error & { code?: string | number; data?: unknown };
+        return {
             name: normalizeRemoteErrorName(error.name),
             message: normalizeRemoteErrorMessage(error.message, error),
+            ...(error.stack !== undefined ? { stack: error.stack } : {}),
+            ...(isRemoteErrorCode(withMetadata.code) ? { code: withMetadata.code } : {}),
+            ...(withMetadata.data !== undefined ? { data: toTransportSafeValue(withMetadata.data) } : {}),
         };
-        if (error.stack !== undefined) {
-            (
-                payload as RemoteErrorPayload & {
-                    stack: string;
-                }
-            ).stack = error.stack;
-        }
-        if (isRemoteErrorCode(withMetadata.code)) {
-            (
-                payload as RemoteErrorPayload & {
-                    code: string | number;
-                }
-            ).code = withMetadata.code;
-        }
-        if (withMetadata.data !== undefined) {
-            (
-                payload as RemoteErrorPayload & {
-                    data: unknown;
-                }
-            ).data = toTransportSafeValue(withMetadata.data);
-        }
-        return payload;
     }
     if (isRecord(error)) {
-        const name = typeof error.name === 'string' ? error.name : 'Error';
-        const message = typeof error.message === 'string' ? error.message : normalizeRemoteErrorMessage(describeError(error), error);
-        const payload: RemoteErrorPayload = {
-            name: normalizeRemoteErrorName(name),
-            message,
-        };
-        if (typeof error.stack === 'string') {
-            (
-                payload as RemoteErrorPayload & {
-                    stack: string;
-                }
-            ).stack = error.stack;
-        }
-        if (isRemoteErrorCode(error.code)) {
-            (
-                payload as RemoteErrorPayload & {
-                    code: string | number;
-                }
-            ).code = error.code;
-        }
+        const data = error['data'];
+        const name = error['name'];
+        const message = error['message'];
+        const stack = error['stack'];
+        const code = error['code'];
         const recordData =
-            error.data !== undefined
-                ? toTransportSafeValue(error.data)
-                : toTransportSafeRecord(error, new Set(['name', 'message', 'stack', 'code', 'statusCode']));
-        if (recordData !== undefined) {
-            (
-                payload as RemoteErrorPayload & {
-                    data: unknown;
-                }
-            ).data = recordData;
-        }
-        return payload;
+            data !== undefined ? toTransportSafeValue(data) : toTransportSafeRecord(error, new Set(['name', 'message', 'stack', 'code', 'statusCode']));
+        return {
+            name: normalizeRemoteErrorName(typeof name === 'string' ? name : 'Error'),
+            message: typeof message === 'string' ? message : normalizeRemoteErrorMessage(describeError(error), error),
+            ...(typeof stack === 'string' ? { stack } : {}),
+            ...(isRemoteErrorCode(code) ? { code } : {}),
+            ...(recordData !== undefined ? { data: recordData } : {}),
+        };
     }
     return {
         name: 'Error',
@@ -89,23 +49,15 @@ export function decodeRemoteErrorPayload(bytes: Uint8Array): RemoteErrorPayload 
     return remoteErrorCodec.decode(bytes);
 }
 export function createRemoteError(payload: RemoteErrorPayload, statusCode?: number): ShirikaRemoteError {
+    const normalizedStatusCode = typeof statusCode === 'number' && Number.isInteger(statusCode) && statusCode > 0 ? statusCode : undefined;
     const init: ShirikaRemoteErrorInit = {
         remoteName: normalizeRemoteErrorName(payload.name),
         message: normalizeRemoteErrorMessage(payload.message, payload),
+        ...(payload.stack !== undefined ? { remoteStack: payload.stack } : {}),
+        ...(payload.code !== undefined ? { code: payload.code } : {}),
+        ...(payload.data !== undefined ? { data: payload.data } : {}),
+        ...(normalizedStatusCode !== undefined ? { statusCode: normalizedStatusCode } : {}),
     };
-    if (payload.stack !== undefined) {
-        init.remoteStack = payload.stack;
-    }
-    if (payload.code !== undefined) {
-        init.code = payload.code;
-    }
-    if (payload.data !== undefined) {
-        init.data = payload.data;
-    }
-    const normalizedStatusCode = normalizeRemoteErrorStatusCode(statusCode);
-    if (normalizedStatusCode !== undefined) {
-        init.statusCode = normalizedStatusCode;
-    }
     return new ShirikaRemoteError(init);
 }
 function normalizeRemoteErrorName(name: unknown): string {
@@ -120,9 +72,6 @@ function normalizeRemoteErrorMessage(message: unknown, original: unknown): strin
 }
 function isRemoteErrorCode(value: unknown): value is string | number {
     return typeof value === 'string' || typeof value === 'number';
-}
-function normalizeRemoteErrorStatusCode(statusCode: number | undefined): number | undefined {
-    return typeof statusCode === 'number' && Number.isInteger(statusCode) && statusCode > 0 ? statusCode : undefined;
 }
 function toTransportSafeRecord(value: Record<string, unknown>, omit: ReadonlySet<string>): Record<string, unknown> | undefined {
     const result: Record<string, unknown> = {};
@@ -194,14 +143,14 @@ function toTransportSafeValue(value: unknown, depth = 0, seen = new WeakSet<obje
         for (const [key, item] of Object.entries(value)) {
             result[key] = toTransportSafeValue(item, depth + 1, seen);
         }
-        return Object.keys(result).length > 0 ? result : describeObject(value);
+        if (Object.keys(result).length > 0) {
+            return result;
+        }
+        const constructorName = value.constructor?.name;
+        return constructorName && constructorName !== 'Object' ? constructorName : '[Object]';
     } finally {
         seen.delete(value);
     }
-}
-function describeObject(value: object): string {
-    const constructorName = value.constructor?.name;
-    return constructorName && constructorName !== 'Object' ? constructorName : '[Object]';
 }
 
 export { remoteErrorCodec };

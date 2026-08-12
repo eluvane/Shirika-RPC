@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const excludedDirectories = new Set(['.bench', '.git', '.lake', '.tsbuildinfo', 'coverage', 'dist', 'node_modules']);
+const excludedDirectories = new Set(['.bench', '.git', '.lake', '.tsbuildinfo', '.tools', '.pi-glla', 'coverage', 'dist', 'node_modules']);
 const excludedRelativeDirectories = new Set(['.benchmark/current', '.benchmark/previous', '.benchmark/comparison', '.benchmark/smoke']);
 const textExtensions = new Set([
     '.cjs',

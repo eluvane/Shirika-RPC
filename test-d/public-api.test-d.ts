@@ -50,7 +50,7 @@ expectType<number>(snapshot.counters.completed);
 expectType<number>(snapshot.endpoint.metrics.messageSizes.sent.totalCount);
 expectType<number | undefined>(snapshot.endpoint.metrics.messageSizes.sent.buckets[0]?.count);
 expectType<number | null | undefined>(snapshot.endpoint.metrics.saturationTimeline.inbound.events[0]?.exitedAt);
-expectType<number>(snapshot.metrics.handlerLatencyByMethod.ping?.stats.avgMs ?? 0);
+expectType<number>(snapshot.metrics.handlerLatencyByMethod['ping']?.stats.avgMs ?? 0);
 expectType<'client' | 'server'>(fatalEvent.role);
 expectType<number>(notifyEvent.snapshot.counters.notifyErrors);
 expectType<number>(duration.avgMs);

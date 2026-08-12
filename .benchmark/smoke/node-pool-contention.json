@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "suite": "node-pool-contention",
-  "generatedAt": "2026-06-25T18:00:16.952Z",
+  "generatedAt": "2026-08-12T15:36:59.553Z",
   "runtime": {
-    "node": "v26.4.0",
+    "node": "v26.0.0",
     "platform": "win32",
     "arch": "x64"
   },
@@ -15,12 +15,12 @@
       "concurrency": 1,
       "group": "1 workers",
       "metrics": {
-        "opsPerSec": 15752.284160353765,
-        "avgLatencyMs": 0.07135741005821154,
-        "p50LatencyMs": 0.058699999999930697,
-        "p95LatencyMs": 0.129099999999994,
-        "p99LatencyMs": 0.2077000000000453,
-        "rmePct": 0.46130867775433054
+        "opsPerSec": 16339.335063009376,
+        "avgLatencyMs": 0.06617298947182144,
+        "p50LatencyMs": 0.058300000000031105,
+        "p95LatencyMs": 0.10540000000000305,
+        "p99LatencyMs": 0.17640000000005784,
+        "rmePct": 0.3477999731762464
       }
     },
     {
@@ -30,12 +30,12 @@
       "concurrency": 8,
       "group": "1 workers",
       "metrics": {
-        "opsPerSec": 4255.457282843537,
-        "avgLatencyMs": 0.25076719116170326,
-        "p50LatencyMs": 0.2300999999999931,
-        "p95LatencyMs": 0.3681000000001404,
-        "p99LatencyMs": 0.5330999999998767,
-        "rmePct": 0.5774140287984555
+        "opsPerSec": 4197.761912966014,
+        "avgLatencyMs": 0.24917140006651153,
+        "p50LatencyMs": 0.22580000000016298,
+        "p95LatencyMs": 0.36850000000004,
+        "p99LatencyMs": 0.5380000000000109,
+        "rmePct": 0.6515678368583228
       }
     },
     {
@@ -45,12 +45,12 @@
       "concurrency": 32,
       "group": "1 workers",
       "metrics": {
-        "opsPerSec": 1231.5421151561586,
-        "avgLatencyMs": 0.823573903508768,
-        "p50LatencyMs": 0.7946999999999207,
-        "p95LatencyMs": 0.9708000000000538,
-        "p99LatencyMs": 1.3633999999997286,
-        "rmePct": 0.7114841631844556
+        "opsPerSec": 1266.7115667193839,
+        "avgLatencyMs": 0.7985596174282714,
+        "p50LatencyMs": 0.7614000000003216,
+        "p95LatencyMs": 0.9642000000003463,
+        "p99LatencyMs": 1.381900000000087,
+        "rmePct": 0.7714730060443842
       }
     },
     {
@@ -60,12 +60,12 @@
       "concurrency": 1,
       "group": "2 workers",
       "metrics": {
-        "opsPerSec": 16209.028838541306,
-        "avgLatencyMs": 0.06460063039723697,
-        "p50LatencyMs": 0.05690000000004147,
-        "p95LatencyMs": 0.09910000000036234,
-        "p99LatencyMs": 0.14699999999993452,
-        "rmePct": 0.3781254628370162
+        "opsPerSec": 16927.915925230627,
+        "avgLatencyMs": 0.06230660283097482,
+        "p50LatencyMs": 0.056599999999889405,
+        "p95LatencyMs": 0.08959999999979118,
+        "p99LatencyMs": 0.13940000000002328,
+        "rmePct": 0.2794949229656664
       }
     },
     {
@@ -75,12 +75,12 @@
       "concurrency": 8,
       "group": "2 workers",
       "metrics": {
-        "opsPerSec": 4270.998098530701,
-        "avgLatencyMs": 0.24325381369685067,
-        "p50LatencyMs": 0.21539999999959036,
-        "p95LatencyMs": 0.3996999999999389,
-        "p99LatencyMs": 0.5186000000003332,
-        "rmePct": 0.9289725550676959
+        "opsPerSec": 4675.767958731702,
+        "avgLatencyMs": 0.22240593295758176,
+        "p50LatencyMs": 0.20659999999998035,
+        "p95LatencyMs": 0.3065999999998894,
+        "p99LatencyMs": 0.4183999999995649,
+        "rmePct": 0.4525935896249651
       }
     },
     {
@@ -90,12 +90,12 @@
       "concurrency": 32,
       "group": "2 workers",
       "metrics": {
-        "opsPerSec": 1289.4722478998306,
-        "avgLatencyMs": 0.8061619506966575,
-        "p50LatencyMs": 0.7219000000000051,
-        "p95LatencyMs": 1.275499999999738,
-        "p99LatencyMs": 1.640799999999217,
-        "rmePct": 1.335792158710816
+        "opsPerSec": 1305.8865423036805,
+        "avgLatencyMs": 0.778501869158885,
+        "p50LatencyMs": 0.7220999999999549,
+        "p95LatencyMs": 1.0304999999998472,
+        "p99LatencyMs": 1.3955000000005384,
+        "rmePct": 0.9554155641094455
       }
     },
     {
@@ -105,12 +105,12 @@
       "concurrency": 1,
       "group": "4 workers",
       "metrics": {
-        "opsPerSec": 16130.234342808762,
-        "avgLatencyMs": 0.07201615792008127,
-        "p50LatencyMs": 0.056599999999889405,
-        "p95LatencyMs": 0.13670000000001892,
-        "p99LatencyMs": 0.1772000000000844,
-        "rmePct": 0.49900379271382334
+        "opsPerSec": 16895.971064824298,
+        "avgLatencyMs": 0.062266930182243795,
+        "p50LatencyMs": 0.055899999999383,
+        "p95LatencyMs": 0.09690000000045984,
+        "p99LatencyMs": 0.15169999999943684,
+        "rmePct": 0.33182655103724695
       }
     },
     {
@@ -120,12 +120,12 @@
       "concurrency": 8,
       "group": "4 workers",
       "metrics": {
-        "opsPerSec": 3930.6526658789444,
-        "avgLatencyMs": 0.2903362896979043,
-        "p50LatencyMs": 0.2466999999996915,
-        "p95LatencyMs": 0.4926000000004933,
-        "p99LatencyMs": 0.6409999999996217,
-        "rmePct": 1.1378034958962644
+        "opsPerSec": 4613.310401679147,
+        "avgLatencyMs": 0.23111498612395906,
+        "p50LatencyMs": 0.20820000000003347,
+        "p95LatencyMs": 0.37340000000040163,
+        "p99LatencyMs": 0.5111000000006243,
+        "rmePct": 0.4604112628521246
       }
     },
     {
@@ -135,12 +135,12 @@
       "concurrency": 32,
       "group": "4 workers",
       "metrics": {
-        "opsPerSec": 1024.3330530643552,
-        "avgLatencyMs": 1.0731849785407734,
-        "p50LatencyMs": 0.914400000000569,
-        "p95LatencyMs": 1.8815999999997075,
-        "p99LatencyMs": 2.3442999999997483,
-        "rmePct": 2.4937763166822715
+        "opsPerSec": 1321.3948271128868,
+        "avgLatencyMs": 0.7749250000000257,
+        "p50LatencyMs": 0.7313999999996668,
+        "p95LatencyMs": 0.9664999999995416,
+        "p99LatencyMs": 1.4259000000001834,
+        "rmePct": 0.787188663095492
       }
     }
   ]

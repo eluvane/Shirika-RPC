@@ -1,28 +1,30 @@
+import { ByteArrayBinaryReader } from './byte-array-reader.js';
 import { defineCodecSignature } from './signature.js';
 import type { BinaryReader, BinaryWriter, MsgpackCodec } from './types.js';
 
-enum Marker {
-    NIL = 0xc0,
-    FALSE = 0xc2,
-    TRUE = 0xc3,
-    BIN8 = 0xc4,
-    BIN16 = 0xc5,
-    BIN32 = 0xc6,
-    FLOAT64 = 0xcb,
-    UINT8 = 0xcc,
-    UINT16 = 0xcd,
-    UINT32 = 0xce,
-    INT8 = 0xd0,
-    INT16 = 0xd1,
-    INT32 = 0xd2,
-    STR8 = 0xd9,
-    STR16 = 0xda,
-    STR32 = 0xdb,
-    ARRAY16 = 0xdc,
-    ARRAY32 = 0xdd,
-    MAP16 = 0xde,
-    MAP32 = 0xdf,
-}
+const Marker = {
+    NIL: 0xc0,
+    FALSE: 0xc2,
+    TRUE: 0xc3,
+    BIN8: 0xc4,
+    BIN16: 0xc5,
+    BIN32: 0xc6,
+    FLOAT64: 0xcb,
+    UINT8: 0xcc,
+    UINT16: 0xcd,
+    UINT32: 0xce,
+    INT8: 0xd0,
+    INT16: 0xd1,
+    INT32: 0xd2,
+    STR8: 0xd9,
+    STR16: 0xda,
+    STR32: 0xdb,
+    ARRAY16: 0xdc,
+    ARRAY32: 0xdd,
+    MAP16: 0xde,
+    MAP32: 0xdf,
+} as const;
+Object.freeze(Marker);
 
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
@@ -88,7 +90,7 @@ function measureMsgpackValue(value: unknown): number {
         return measureBinaryHeader(value.byteLength) + value.byteLength;
     }
     if (Array.isArray(value)) {
-        let size = measureArrayHeader(value.length);
+        let size = measureContainerHeader(value.length);
         for (const item of value) {
             size += measureMsgpackValue(item);
         }
@@ -183,7 +185,7 @@ function readMsgpackValue(reader: BinaryReader): unknown {
             return value > 0x7fff ? value - 0x1_0000 : value;
         }
         case Marker.INT32:
-            return readI32BE(reader);
+            return readU32BE(reader) | 0;
         case Marker.FLOAT64: {
             const bytes = reader.readBytes(8);
             const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
@@ -227,25 +229,15 @@ function measureObject(value: Record<string, unknown>): number {
         const keyByteLength = getUtf8Bytes(key).byteLength;
         entriesSize += measureStringHeader(keyByteLength) + keyByteLength + measureMsgpackValue(entryValue);
     }
-    return measureMapHeader(entryCount) + entriesSize;
+    return measureContainerHeader(entryCount) + entriesSize;
 }
 
 function writeObject(writer: BinaryWriter, value: Record<string, unknown>): void {
-    const keys = Object.keys(value);
-    let entryCount = 0;
+    const keys = Object.keys(value).filter((key) => value[key] !== undefined);
+    writeMapHeader(writer, keys.length);
     for (const key of keys) {
-        if (value[key] !== undefined) {
-            entryCount += 1;
-        }
-    }
-    writeMapHeader(writer, entryCount);
-    for (const key of keys) {
-        const entryValue = value[key];
-        if (entryValue === undefined) {
-            continue;
-        }
         writeString(writer, key);
-        writeMsgpackValue(writer, entryValue);
+        writeMsgpackValue(writer, value[key]);
     }
 }
 
@@ -414,7 +406,7 @@ function writeBinary(writer: BinaryWriter, bytes: Uint8Array): void {
     writer.writeBytes(bytes);
 }
 
-function measureArrayHeader(length: number): number {
+function measureContainerHeader(length: number): number {
     if (length <= 15) {
         return 1;
     }
@@ -452,16 +444,6 @@ function assertContainerLength(reader: BinaryReader, kind: 'array' | 'map', leng
     if (length * minimumBytesPerEntry > reader.remainingBytes) {
         throw new RangeError(`Msgpack ${kind} length ${length} exceeds remaining payload`);
     }
-}
-
-function measureMapHeader(length: number): number {
-    if (length <= 15) {
-        return 1;
-    }
-    if (length <= 0xffff) {
-        return 3;
-    }
-    return 5;
 }
 
 function writeMapHeader(writer: BinaryWriter, length: number): void {
@@ -503,10 +485,6 @@ function readU16BE(reader: BinaryReader): number {
 
 function readU32BE(reader: BinaryReader): number {
     return (reader.readU8() * 0x1_00_00_00 + (reader.readU8() << 16) + (reader.readU8() << 8) + reader.readU8()) >>> 0;
-}
-
-function readI32BE(reader: BinaryReader): number {
-    return readU32BE(reader) | 0;
 }
 
 class ByteArrayBinaryWriter implements BinaryWriter {
@@ -567,78 +545,6 @@ class ByteArrayBinaryWriter implements BinaryWriter {
     private ensureCapacity(requiredBytes: number): void {
         if (requiredBytes > this.remainingBytes) {
             throw new TypeError(`Msgpack writer overflow: need ${requiredBytes} bytes with only ${this.remainingBytes} bytes remaining`);
-        }
-    }
-}
-
-class ByteArrayBinaryReader implements BinaryReader {
-    readonly #bytes: Uint8Array;
-    readonly #view: DataView;
-    #offset = 0;
-    constructor(bytes: Uint8Array) {
-        this.#bytes = bytes;
-        this.#view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-    }
-    get remainingBytes(): number {
-        return this.#bytes.byteLength - this.#offset;
-    }
-    readU8(): number {
-        this.ensureCapacity(1);
-        const value = this.#bytes[this.#offset] ?? 0;
-        this.#offset += 1;
-        return value;
-    }
-    readU16(): number {
-        this.ensureCapacity(2);
-        const value = this.#view.getUint16(this.#offset, true);
-        this.#offset += 2;
-        return value;
-    }
-    readU32(): number {
-        this.ensureCapacity(4);
-        const value = this.#view.getUint32(this.#offset, true);
-        this.#offset += 4;
-        return value;
-    }
-    readI32(): number {
-        this.ensureCapacity(4);
-        const value = this.#view.getInt32(this.#offset, true);
-        this.#offset += 4;
-        return value;
-    }
-    readF64(): number {
-        this.ensureCapacity(8);
-        const value = this.#view.getFloat64(this.#offset, true);
-        this.#offset += 8;
-        return value;
-    }
-    readBool(): boolean {
-        return this.readU8() !== 0;
-    }
-    readBytes(length: number): Uint8Array {
-        this.ensureCapacity(length);
-        const value = this.#bytes.slice(this.#offset, this.#offset + length);
-        this.#offset += length;
-        return value;
-    }
-    readStringUtf8(): string {
-        const byteLength = this.readU32();
-        return byteLength === 0 ? '' : textDecoder.decode(this.readBytes(byteLength));
-    }
-    readVarBytes(): Uint8Array {
-        return this.readBytes(this.readU32());
-    }
-    readArrayHeader(): number {
-        return this.readU32();
-    }
-    assertFullyRead(): void {
-        if (this.#offset !== this.#bytes.byteLength) {
-            throw new TypeError(`Msgpack reader consumed ${this.#offset} bytes, expected ${this.#bytes.byteLength}`);
-        }
-    }
-    private ensureCapacity(requiredBytes: number): void {
-        if (requiredBytes > this.remainingBytes) {
-            throw new TypeError(`Msgpack reader underflow: need ${requiredBytes} bytes with only ${this.remainingBytes} bytes remaining`);
         }
     }
 }

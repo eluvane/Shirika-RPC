@@ -1,4 +1,5 @@
 import { throwIfAborted } from '../abort.js';
+import { void_ as voidCodec } from '../codec/builtins.js';
 import type { BinaryCodec, Codec, MsgpackCodec } from '../codec/types.js';
 import {
     hasMeasuredWriterFastPathWitness,
@@ -143,19 +144,18 @@ export class FrameReadView {
         return this.#payloadRangeSnapshot;
     }
     readBinary<T>(codec: BinaryCodec<T>): T {
-        try {
+        return this.withFinish(() => {
             if (isBytesCodec(codec) && this.#frame.hasAlignedBytesPayload) {
-                const value = this.shouldUseAlignedBytesFastPath()
-                    ? unsafeReadAlignedBytesPayload(this.#ring, this.requireAlignedBytesPayloadRange())
-                    : safeReadAlignedBytesPayload(this.#ring, this.#frame);
-                this.finish();
-                return value as T;
+                return (
+                    this.shouldUseAlignedBytesFastPath()
+                        ? unsafeReadAlignedBytesPayload(this.#ring, this.requireAlignedBytesPayloadRange())
+                        : safeReadAlignedBytesPayload(this.#ring, this.#frame)
+                ) as T;
             }
             const prepared = prepareBinaryCodec(codec);
             if (prepared !== undefined && this.#useValidatedFrameFastPaths) {
                 const decoded = validateAndDecodePreparedEncodedPayload(prepared, this.#ring, this.#frame);
                 if (decoded !== undefined) {
-                    this.finish();
                     return decoded.value;
                 }
             }
@@ -163,41 +163,38 @@ export class FrameReadView {
             const fallbackCodec = prepared?.codec ?? (isPreparedBinaryCodec(codec) ? codec.codec : codec);
             const value = fallbackCodec.read(reader);
             reader.assertFullyRead();
-            this.finish();
             return value;
-        } catch (error) {
-            this.finish();
-            throw error;
-        }
+        });
     }
     readMsgpack<T>(codec: MsgpackCodec<T>): T {
-        if (codec.read) {
-            try {
-                const reader = createFramePayloadReader(this.#ring, this.#frame);
-                const value = codec.read(reader, this.payloadLength);
-                reader.assertFullyRead();
-                this.finish();
-                return value;
-            } catch (error) {
-                this.finish();
-                throw error;
-            }
+        if (!codec.read) {
+            return codec.decode(this.readPayloadBytes());
         }
-        const bytes = this.readPayloadBytes();
-        return codec.decode(bytes);
+        const read = codec.read.bind(codec);
+        return this.withFinish(() => {
+            const reader = createFramePayloadReader(this.#ring, this.#frame);
+            const value = read(reader, this.payloadLength);
+            reader.assertFullyRead();
+            return value;
+        });
     }
     readWithCodec<T>(codec: Codec<T>): T {
         return codec.kind === 'binary' ? this.readBinary(codec) : this.readMsgpack(codec);
     }
     readPayloadBytes(): Uint8Array {
-        try {
-            const bytes = this.#frame.hasAlignedBytesPayload
+        return this.withFinish(() =>
+            this.#frame.hasAlignedBytesPayload
                 ? this.shouldUseAlignedBytesFastPath()
                     ? unsafeReadAlignedBytesPayloadAsBinaryBytes(this.#ring, this.requireAlignedBytesPayloadRange())
                     : safeReadAlignedBytesPayloadAsBinaryBytes(this.#ring, this.#frame)
-                : this.#ring.readBytes(this.#frame.payloadSeq, this.#frame.payloadLength);
+                : this.#ring.readBytes(this.#frame.payloadSeq, this.#frame.payloadLength),
+        );
+    }
+    private withFinish<T>(read: () => T): T {
+        try {
+            const value = read();
             this.finish();
-            return bytes;
+            return value;
         } catch (error) {
             this.finish();
             throw error;
@@ -358,7 +355,7 @@ export class DuplexEndpoint {
         if (!this.#closed) {
             try {
                 const deadline = deadlineFromTimeout(timeoutMs);
-                await this.send(Opcode.CLOSE, 0, 0, VOID_CODEC, undefined, deadline === undefined ? { timeoutMs } : { timeoutMs, deadline });
+                await this.send(Opcode.CLOSE, 0, 0, voidCodec(), undefined, deadline === undefined ? { timeoutMs } : { timeoutMs, deadline });
             } catch {
                 return;
             }
@@ -478,15 +475,14 @@ export class DuplexEndpoint {
         this.observeSaturation(this.outbound, this.#outboundSaturationTimeline);
     }
     private observeInboundSaturation(snapshot: RingSnapshot): void {
-        try {
-            observeRingSaturation(this.#inboundSaturationTimeline, snapshot);
-        } catch {
-            return;
-        }
+        this.observeSnapshotSaturation(this.#inboundSaturationTimeline, snapshot);
     }
     private observeOutboundSaturation(snapshot: RingSnapshot): void {
+        this.observeSnapshotSaturation(this.#outboundSaturationTimeline, snapshot);
+    }
+    private observeSnapshotSaturation(timeline: ReturnType<typeof createRingSaturationTimeline>, snapshot: RingSnapshot): void {
         try {
-            observeRingSaturation(this.#outboundSaturationTimeline, snapshot);
+            observeRingSaturation(timeline, snapshot);
         } catch {
             return;
         }
@@ -499,16 +495,6 @@ export class DuplexEndpoint {
         }
     }
 }
-const VOID_CODEC: BinaryCodec<void> = {
-    kind: 'binary',
-    measure: () => 0,
-    write() {
-        return undefined;
-    },
-    read() {
-        return undefined;
-    },
-};
 function resolveEffectiveTimeout(options: SendFrameOptions): number | undefined {
     if (options.deadline !== undefined) {
         return remainingTimeout(options.deadline);
@@ -714,20 +700,12 @@ function validateFrameHeader(header: FrameHeader, capacityBytes: number): Valida
 }
 function frameSizeForPayloadLength(payloadLength: number, capacityBytes: number, direction: 'send' | 'receive'): number {
     if (!Number.isInteger(payloadLength) || payloadLength < 0) {
-        const message = `Invalid payloadLength=${payloadLength}; payload length must be a non-negative integer`;
-        if (direction === 'send') {
-            throw new ShirikaProtocolError(message);
-        }
-        throw new ShirikaProtocolError(message);
+        throw new ShirikaProtocolError(`Invalid payloadLength=${payloadLength}; payload length must be a non-negative integer`);
     }
     const maxPayloadLength = capacityBytes - HEADER_SIZE;
     if (payloadLength > maxPayloadLength) {
-        const frameSize = `${HEADER_SIZE}+${payloadLength}`;
-        const message = `Invalid payloadLength=${payloadLength}; frameSize=${frameSize} exceeds capacity=${capacityBytes}`;
-        if (direction === 'send') {
-            throw new ShirikaOversizeError(message);
-        }
-        throw new ShirikaProtocolError(message);
+        const message = `Invalid payloadLength=${payloadLength}; frameSize=${HEADER_SIZE}+${payloadLength} exceeds capacity=${capacityBytes}`;
+        throw direction === 'send' ? new ShirikaOversizeError(message) : new ShirikaProtocolError(message);
     }
     return align8(HEADER_SIZE + payloadLength);
 }
@@ -736,13 +714,7 @@ function assertUInt32(value: number, label: string): void {
         throw new ShirikaProtocolError(`${label} must be a UInt32 value in range 0..${UINT32_MAX}, received ${value}`);
     }
 }
+const OPCODE_VALUES = new Set<number>([Opcode.REQUEST, Opcode.RESPONSE_OK, Opcode.RESPONSE_ERR, Opcode.NOTIFY, Opcode.CLOSE, Opcode.CANCEL]);
 function isOpcode(opcode: number): opcode is Opcode {
-    return (
-        opcode === Opcode.REQUEST ||
-        opcode === Opcode.RESPONSE_OK ||
-        opcode === Opcode.RESPONSE_ERR ||
-        opcode === Opcode.NOTIFY ||
-        opcode === Opcode.CLOSE ||
-        opcode === Opcode.CANCEL
-    );
+    return OPCODE_VALUES.has(opcode);
 }

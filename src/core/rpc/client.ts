@@ -4,7 +4,7 @@ import { CancelCode, FrameFlag, Opcode, TransportErrorHint } from '../constants.
 import { ShirikaClosedError, ShirikaProtocolError, ShirikaTimeoutError } from '../errors.js';
 import { isFastPathEnabled } from '../fast-path-strategy.js';
 import type { DuplexEndpoint, SendFrameOptions } from '../ring/endpoint.js';
-import { deadlineFromTimeout, describeError } from '../utils.js';
+import { classifyTerminalReason, deadlineFromTimeout, describeError } from '../utils.js';
 import { cancelPayloadCodec, createCancelPayload } from './cancel.js';
 import {
     type ContractInput,
@@ -56,15 +56,12 @@ interface Deferred<T> {
 }
 
 function createDeferred<T>(): Deferred<T> {
-    let resolveDeferred: ((value: T | PromiseLike<T>) => void) | undefined;
-    let rejectDeferred: ((reason?: unknown) => void) | undefined;
+    let resolveDeferred!: (value: T | PromiseLike<T>) => void;
+    let rejectDeferred!: (reason?: unknown) => void;
     const promise = new Promise<T>((resolve, reject) => {
         resolveDeferred = resolve;
         rejectDeferred = reject;
     });
-    if (resolveDeferred === undefined || rejectDeferred === undefined) {
-        throw new ShirikaProtocolError('Promise executor did not initialize deferred callbacks');
-    }
     return { promise, resolve: resolveDeferred, reject: rejectDeferred };
 }
 
@@ -130,10 +127,7 @@ export class RpcClientImpl<C extends ContractShape> implements RpcClientControl<
         if (closedError) {
             return Promise.reject(closedError);
         }
-        const entry = this.#preparedContract.methodsByName.get(String(method));
-        if (!entry) {
-            throw new ShirikaProtocolError(`Unknown RPC method ${String(method)}`);
-        }
+        const entry = this.requireMethod(method);
         if (options.signal?.aborted) {
             const reason = normalizeAbortReason(options.signal.reason, `RPC call '${String(method)}' was aborted`);
             this.recordTerminalReason(reason);
@@ -157,10 +151,11 @@ export class RpcClientImpl<C extends ContractShape> implements RpcClientControl<
         if (!registration.registered) {
             return registration.pending.promise as Promise<ResponseOf<C, K>>;
         }
-        const sendOptions = createRequestSendOptions(timing, sendController.signal);
-        void this.#endpoint.send(Opcode.REQUEST, requestId, entry.id, def.request, request, sendOptions).catch((error: unknown) => {
-            this.rejectPendingRegistration(registration, error);
-        });
+        void this.#endpoint
+            .send(Opcode.REQUEST, requestId, entry.id, def.request, request, createRequestSendOptions(timing, sendController.signal))
+            .catch((error: unknown) => {
+                this.rejectPendingRegistration(registration, error);
+            });
         return registration.pending.promise as Promise<ResponseOf<C, K>>;
     }
 
@@ -169,16 +164,20 @@ export class RpcClientImpl<C extends ContractShape> implements RpcClientControl<
         if (closedError) {
             return Promise.reject(closedError);
         }
+        const entry = this.requireMethod(method);
+        if (options.signal?.aborted) {
+            return Promise.reject(normalizeAbortReason(options.signal.reason, `RPC notify '${String(method)}' was aborted`));
+        }
+        const timing = resolveCallTiming(options.timeoutMs, this.#defaultCallTimeoutMs);
+        return this.#endpoint.send(Opcode.NOTIFY, 0, entry.id, entry.def.request, request, createRequestSendOptions(timing, options.signal));
+    }
+
+    private requireMethod<K extends MethodNames<C>>(method: K) {
         const entry = this.#preparedContract.methodsByName.get(String(method));
         if (!entry) {
             throw new ShirikaProtocolError(`Unknown RPC method ${String(method)}`);
         }
-        if (options.signal?.aborted) {
-            return Promise.reject(normalizeAbortReason(options.signal.reason, `RPC notify '${String(method)}' was aborted`));
-        }
-        const def = entry.def;
-        const timing = resolveCallTiming(options.timeoutMs, this.#defaultCallTimeoutMs);
-        return this.#endpoint.send(Opcode.NOTIFY, 0, entry.id, def.request, request, createRequestSendOptions(timing, options.signal));
+        return entry;
     }
 
     async close(): Promise<void> {
@@ -471,20 +470,6 @@ function createRequestSendOptions(timing: CallTiming, signal: AbortSignal | unde
         ...(timing.timeoutMs !== undefined ? { timeoutMs: timing.timeoutMs } : {}),
         ...(timing.deadline !== undefined ? { deadline: timing.deadline, flags: FrameFlag.HAS_DEADLINE } : {}),
     };
-}
-
-function classifyTerminalReason(reason: unknown): 'timed-out' | 'cancelled' | 'failed' {
-    if (reason instanceof ShirikaTimeoutError) {
-        return 'timed-out';
-    }
-    if (reason instanceof ShirikaClosedError || isAbortLike(reason)) {
-        return 'cancelled';
-    }
-    return 'failed';
-}
-
-function isAbortLike(reason: unknown): boolean {
-    return reason instanceof DOMException ? reason.name === 'AbortError' : reason instanceof Error ? reason.name === 'AbortError' : false;
 }
 
 export function createRpcClient<C extends ContractShape>(

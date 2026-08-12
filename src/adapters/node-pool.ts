@@ -85,22 +85,16 @@ class NodeWorkerPoolImpl<C extends ContractShape> implements NodeWorkerPool<C> {
         await Promise.all(this.#slots.map((slot) => this.bootstrapSlot(slot)));
     }
     call<K extends MethodNames<C>>(method: K, request: RequestOf<C, K>, options?: RpcCallOptions): Promise<ResponseOf<C, K>> {
-        return this.runWithSlot((slot) => {
-            const client = slot.client;
-            if (!client) {
-                throw new ShirikaClosedError(`Node worker pool slot ${slot.index} has no active client`);
-            }
-            return client.call(method, request, options);
-        });
+        return this.runWithSlot((slot) => this.requireClient(slot).call(method, request, options));
     }
     notify<K extends MethodNames<C>>(method: K, request: RequestOf<C, K>, options?: RpcCallOptions): Promise<void> {
-        return this.runWithSlot((slot) => {
-            const client = slot.client;
-            if (!client) {
-                throw new ShirikaClosedError(`Node worker pool slot ${slot.index} has no active client`);
-            }
-            return client.notify(method, request, options);
-        });
+        return this.runWithSlot((slot) => this.requireClient(slot).notify(method, request, options));
+    }
+    private requireClient(slot: PoolSlot<C>): RpcClientControl<C> {
+        if (!slot.client) {
+            throw new ShirikaClosedError(`Node worker pool slot ${slot.index} has no active client`);
+        }
+        return slot.client;
     }
     async close(): Promise<void> {
         if (this.#closePromise) {
@@ -360,24 +354,10 @@ class NodeWorkerPoolImpl<C extends ContractShape> implements NodeWorkerPool<C> {
         await Promise.allSettled([graceful ? safeCloseClient(client) : safeAbortClient(client, reason), safeTerminate(worker)]);
     }
     private invokeWorkerCrashHook(workerId: NodeWorkerPoolWorkerId, error: ShirikaWorkerCrashedError): void {
-        if (!this.#onWorkerCrash) {
-            return;
-        }
-        try {
-            this.#onWorkerCrash(workerId, error);
-        } catch (hookError) {
-            console.error('[shirika-rpc] onWorkerCrash hook failed', hookError);
-        }
+        invokePoolHook(this.#onWorkerCrash, 'onWorkerCrash', workerId, error);
     }
     private invokeWorkerRespawnHook(workerId: NodeWorkerPoolWorkerId): void {
-        if (!this.#onWorkerRespawn) {
-            return;
-        }
-        try {
-            this.#onWorkerRespawn(workerId);
-        } catch (hookError) {
-            console.error('[shirika-rpc] onWorkerRespawn hook failed', hookError);
-        }
+        invokePoolHook(this.#onWorkerRespawn, 'onWorkerRespawn', workerId);
     }
     private assertOpen(): void {
         if (this.#closed) {
@@ -457,19 +437,28 @@ function normalizeRespawnPolicy(policy: NodeWorkerRespawnPolicy | undefined): No
     };
 }
 function normalizeAttempts(value: number | undefined): number {
-    if (value === undefined) {
+    if (value === undefined || value === Number.POSITIVE_INFINITY) {
         return Number.POSITIVE_INFINITY;
-    }
-    if (!Number.isFinite(value)) {
-        if (value === Number.POSITIVE_INFINITY) {
-            return value;
-        }
-        throw new TypeError(`respawnPolicy.maxAttempts must be a non-negative integer or Infinity, received ${value}`);
     }
     if (!Number.isInteger(value) || value < 0) {
         throw new TypeError(`respawnPolicy.maxAttempts must be a non-negative integer or Infinity, received ${value}`);
     }
     return value;
+}
+function invokePoolHook(
+    hook: ((workerId: NodeWorkerPoolWorkerId, ...args: never[]) => void) | undefined,
+    name: string,
+    workerId: NodeWorkerPoolWorkerId,
+    ...args: unknown[]
+): void {
+    if (!hook) {
+        return;
+    }
+    try {
+        (hook as (workerId: NodeWorkerPoolWorkerId, ...rest: unknown[]) => void)(workerId, ...args);
+    } catch (hookError) {
+        console.error(`[shirika-rpc] ${name} hook failed`, hookError);
+    }
 }
 function normalizeFiniteNonNegative(value: number | undefined, fallback: number, label: string): number {
     const candidate = value ?? fallback;

@@ -74,7 +74,7 @@ export function prepareContract<C extends ContractShape>(contract: ContractInput
     return getPreparedContract(contract);
 }
 export function describeContract<C extends ContractShape>(contract: ContractInput<C>): ContractDescriptionEntry[] {
-    return getPreparedContract(contract).description.map(cloneDescriptionEntry);
+    return getPreparedContract(contract).description.map((entry) => ({ ...entry }));
 }
 export function getContractHash<C extends ContractShape>(contract: ContractInput<C>): string {
     return getPreparedContract(contract).hash;
@@ -115,7 +115,7 @@ function createPreparedContract<C extends ContractShape>(contract: C): PreparedC
         }
         const id = assertMethodId(def.id, `Method id for ${String(methodName)}`);
         assertMethodIdIsUnique(seenIds, id, String(methodName));
-        const description = freezeDescriptionEntry({
+        const description = Object.freeze({
             method: methodName,
             id,
             request: describeCodec(def.request),
@@ -132,7 +132,9 @@ function createPreparedContract<C extends ContractShape>(contract: C): PreparedC
         methodIndexEntries.push([id, indexEntry]);
         methodNameEntries.push([methodName, preparedMethod]);
     }
-    const canonicalMethods = Object.freeze([...methodEntries].sort((left, right) => left.id - right.id || compareMethodNames(left.method, right.method)));
+    const canonicalMethods = Object.freeze(
+        [...methodEntries].sort((left, right) => left.id - right.id || (left.method < right.method ? -1 : left.method > right.method ? 1 : 0)),
+    );
     const description = Object.freeze(canonicalMethods.map((entry) => entry.description));
     const witness: ContractWitness<C> = Object.freeze({
         [contractWitnessBrand]: true as const,
@@ -156,12 +158,6 @@ function createPreparedContract<C extends ContractShape>(contract: C): PreparedC
 function rememberPreparedContract<C extends ContractShape>(contract: C, prepared: PreparedContract<C>): void {
     preparedContractCache.set(contract, prepared);
 }
-function freezeDescriptionEntry(entry: ContractDescriptionEntry): ContractDescriptionEntry {
-    return Object.freeze({ ...entry });
-}
-function cloneDescriptionEntry(entry: ContractDescriptionEntry): ContractDescriptionEntry {
-    return { ...entry };
-}
 function hashContractDescriptionJson(description: string): string {
     let hash = 0x811c9dc5;
     for (let index = 0; index < description.length; index += 1) {
@@ -182,16 +178,6 @@ function assertMethodIdIsUnique(seenIds: Map<number, string>, id: MethodId, meth
         throw new TypeError(`Duplicate method id ${id} detected for methods ${previous} and ${methodName}`);
     }
     seenIds.set(id, methodName);
-}
-function compareMethodNames(left: string, right: string): number {
-    const length = Math.min(left.length, right.length);
-    for (let index = 0; index < length; index += 1) {
-        const diff = left.charCodeAt(index) - right.charCodeAt(index);
-        if (diff !== 0) {
-            return diff;
-        }
-    }
-    return left.length - right.length;
 }
 
 class ReadonlyMapView<K, V> implements ReadonlyMap<K, V> {

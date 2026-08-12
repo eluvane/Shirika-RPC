@@ -1,4 +1,5 @@
 import { FRAME_VERSION } from './constants.js';
+import { ShirikaEnvironmentError } from './errors.js';
 import { isRecord } from './utils.js';
 
 const BOOTSTRAP_TYPE = 'shirika-rpc/bootstrap';
@@ -61,23 +62,67 @@ export function createErrorMessage(message: string): ShirikaErrorMessage {
 export function isBootstrapMessage(value: unknown): value is ShirikaBootstrapMessage {
     return (
         isRecord(value) &&
-        value.type === BOOTSTRAP_TYPE &&
-        value.version === FRAME_VERSION &&
-        typeof value.capacityBytes === 'number' &&
-        typeof value.contractHash === 'string' &&
-        value.clientToServerSab instanceof SharedArrayBuffer &&
-        value.serverToClientSab instanceof SharedArrayBuffer
+        value['type'] === BOOTSTRAP_TYPE &&
+        value['version'] === FRAME_VERSION &&
+        typeof value['capacityBytes'] === 'number' &&
+        typeof value['contractHash'] === 'string' &&
+        value['clientToServerSab'] instanceof SharedArrayBuffer &&
+        value['serverToClientSab'] instanceof SharedArrayBuffer
     );
 }
 
 export function isReadyMessage(value: unknown): value is ShirikaReadyMessage {
-    return isRecord(value) && value.type === READY_TYPE && value.version === FRAME_VERSION && typeof value.contractHash === 'string';
+    return isRecord(value) && value['type'] === READY_TYPE && value['version'] === FRAME_VERSION && typeof value['contractHash'] === 'string';
 }
 
 export function isErrorMessage(value: unknown): value is ShirikaErrorMessage {
-    return isRecord(value) && value.type === ERROR_TYPE && typeof value.message === 'string';
+    return isRecord(value) && value['type'] === ERROR_TYPE && typeof value['message'] === 'string';
 }
 
 export function isBootstrapLike(value: unknown): value is { type: typeof BOOTSTRAP_TYPE } {
-    return isRecord(value) && value.type === BOOTSTRAP_TYPE;
+    return isRecord(value) && value['type'] === BOOTSTRAP_TYPE;
+}
+
+export type BootstrapAcceptResult =
+    { readonly ok: true; readonly message: ShirikaBootstrapMessage } | { readonly ok: false; readonly error: ShirikaEnvironmentError };
+
+export function acceptBootstrapMessage(value: unknown, expectedContractHash: string, invalidPayloadMessage: string): BootstrapAcceptResult {
+    if (!isBootstrapMessage(value)) {
+        return { ok: false, error: new ShirikaEnvironmentError(invalidPayloadMessage) };
+    }
+    if (value.contractHash !== expectedContractHash) {
+        return {
+            ok: false,
+            error: new ShirikaEnvironmentError(contractHashMismatchMessage(expectedContractHash, value.contractHash)),
+        };
+    }
+    return { ok: true, message: value };
+}
+
+export type ReadyHandshakeResult =
+    { readonly kind: 'ready' } | { readonly kind: 'error'; readonly error: ShirikaEnvironmentError } | { readonly kind: 'ignore' };
+
+export function interpretReadyHandshake(value: unknown, expectedContractHash: string, labels: { readonly platform: string }): ReadyHandshakeResult {
+    if (isReadyMessage(value)) {
+        if (value.contractHash !== expectedContractHash) {
+            return {
+                kind: 'error',
+                error: new ShirikaEnvironmentError(
+                    `${labels.platform} worker bootstrap failed: ${contractHashMismatchMessage(expectedContractHash, value.contractHash)}`,
+                ),
+            };
+        }
+        return { kind: 'ready' };
+    }
+    if (isErrorMessage(value)) {
+        return {
+            kind: 'error',
+            error: new ShirikaEnvironmentError(`${labels.platform} worker bootstrap failed: ${value.message}`),
+        };
+    }
+    return { kind: 'ignore' };
+}
+
+function contractHashMismatchMessage(expected: string, received: string): string {
+    return `RPC contract hash mismatch (expected ${expected}, received ${received})`;
 }

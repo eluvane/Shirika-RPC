@@ -1,11 +1,9 @@
-# OS / filesystem
 .DS_Store
 .AppleDouble
 .LSOverride
 Thumbs.db
 desktop.ini
 
-# Editors / IDEs
 .idea/
 .vscode/
 *.swp
@@ -13,13 +11,11 @@ desktop.ini
 *.swn
 *~
 
-# Environment / local config
 .env
 .env.*
 !.env.example
 .npmrc.local
 
-# Logs
 *.log
 *.log.*
 npm-debug.log*
@@ -27,7 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Package managers / dependency caches
 node_modules/
 .npm/
 .pnpm-store/
@@ -36,7 +31,6 @@ node_modules/
 .yarn/build-state.yml
 .yarn/install-state.gz
 
-# JavaScript / TypeScript build outputs
 coverage/
 .nyc_output/
 dist/
@@ -48,7 +42,6 @@ temp/
 .tsbuildinfo/
 *.tsbuildinfo
 
-# Browser test artifacts
 playwright-report/
 test-results/
 blob-report/
@@ -57,29 +50,44 @@ playwright/.cache/
 **/test-results/
 **/*.trace.zip
 
-# Lean / Lake generated state
 .lake/
 formal/lean/.lake/
 formal/lean/build/
 
-# Benchmark outputs generated locally
 .bench/
 .benchmark/previous/
 
-# Package artifacts
 *.tgz
 
-# Archives / release scratch files
+.tools/
+.pi-glla/
+CONTINUITY.md
+PLANS.md
+*.session.json
+*.session.jsonl
+
+scripts/quality/collapse-candidates.mjs
+.config/shirika/quality/collapse-candidates.json
+**/collapse-candidates*.json
+**/collapse-strict*
+**/collapse-now*
+**/collapse-after*
+**/collapse-final*
+
+node-v*/
+node-*-win-x64/
+node-*-linux-x64/
+node*.zip
+
 *.zip
 *.tar
 *.tar.gz
 *.rar
 *.7z
+shirika-rpc-*.tgz
 
-# Local documentation folder
 docs/
 
-# Keep important project files tracked even if broad patterns change later
 !pnpm-lock.yaml
 !package-lock.json
 !yarn.lock

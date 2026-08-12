@@ -1,4 +1,6 @@
 export class ShirikaError extends Error {
+    readonly code: string | number = 'SHIRIKA_ERROR';
+
     constructor(message: string, options?: ErrorOptions) {
         super(message, options);
         this.name = 'ShirikaError';
@@ -6,6 +8,8 @@ export class ShirikaError extends Error {
 }
 
 export class ShirikaTimeoutError extends ShirikaError {
+    override readonly code = 'SHIRIKA_TIMEOUT';
+
     constructor(message: string, options?: ErrorOptions) {
         super(message, options);
         this.name = 'ShirikaTimeoutError';
@@ -13,6 +17,8 @@ export class ShirikaTimeoutError extends ShirikaError {
 }
 
 export class ShirikaClosedError extends ShirikaError {
+    override readonly code = 'SHIRIKA_CLOSED';
+
     constructor(message: string, options?: ErrorOptions) {
         super(message, options);
         this.name = 'ShirikaClosedError';
@@ -20,6 +26,8 @@ export class ShirikaClosedError extends ShirikaError {
 }
 
 export class ShirikaOversizeError extends ShirikaError {
+    override readonly code = 'SHIRIKA_OVERSIZE';
+
     constructor(message: string, options?: ErrorOptions) {
         super(message, options);
         this.name = 'ShirikaOversizeError';
@@ -27,6 +35,8 @@ export class ShirikaOversizeError extends ShirikaError {
 }
 
 export class ShirikaProtocolError extends ShirikaError {
+    override readonly code = 'SHIRIKA_PROTOCOL';
+
     constructor(message: string, options?: ErrorOptions) {
         super(message, options);
         this.name = 'ShirikaProtocolError';
@@ -34,6 +44,8 @@ export class ShirikaProtocolError extends ShirikaError {
 }
 
 export class ShirikaEnvironmentError extends ShirikaError {
+    override readonly code = 'SHIRIKA_ENVIRONMENT';
+
     constructor(message: string, options?: ErrorOptions) {
         super(message, options);
         this.name = 'ShirikaEnvironmentError';
@@ -49,6 +61,7 @@ export interface ShirikaWorkerCrashedErrorInit {
 }
 
 export class ShirikaWorkerCrashedError extends ShirikaError {
+    override readonly code = 'SHIRIKA_WORKER_CRASHED';
     readonly workerId: number;
     readonly threadId: number | undefined;
     readonly phase: ShirikaWorkerCrashedErrorInit['phase'];
@@ -67,7 +80,7 @@ export class ShirikaWorkerCrashedError extends ShirikaError {
 }
 
 export class ShirikaOverloadError extends ShirikaError {
-    readonly code = 'SHIRIKA_RPC_OVERLOADED';
+    override readonly code = 'SHIRIKA_RPC_OVERLOADED';
     readonly statusCode = 503;
     readonly data: unknown;
 
@@ -79,18 +92,18 @@ export class ShirikaOverloadError extends ShirikaError {
 }
 
 export interface ShirikaRemoteErrorInit {
-    remoteName: string;
-    message: string;
-    remoteStack?: string;
-    code?: string | number;
-    data?: unknown;
-    statusCode?: number;
+    readonly remoteName: string;
+    readonly message: string;
+    readonly remoteStack?: string;
+    readonly code?: string | number;
+    readonly data?: unknown;
+    readonly statusCode?: number;
 }
 
 export class ShirikaRemoteError extends ShirikaError {
+    override readonly code: string | number;
     readonly remoteName: string;
     readonly remoteStack: string | undefined;
-    readonly code: string | number | undefined;
     readonly data: unknown;
     readonly statusCode: number | undefined;
 
@@ -99,7 +112,7 @@ export class ShirikaRemoteError extends ShirikaError {
         this.name = 'ShirikaRemoteError';
         this.remoteName = init.remoteName;
         this.remoteStack = init.remoteStack;
-        this.code = init.code;
+        this.code = init.code ?? 'SHIRIKA_REMOTE';
         this.data = init.data;
         this.statusCode = init.statusCode;
         if (this.remoteStack) {

@@ -1,4 +1,4 @@
-import { createErrorMessage, createReadyMessage, isBootstrapLike, isBootstrapMessage } from '../core/bootstrap.js';
+import { acceptBootstrapMessage, createErrorMessage, createReadyMessage, isBootstrapLike } from '../core/bootstrap.js';
 import { ShirikaEnvironmentError } from '../core/errors.js';
 import { DuplexEndpoint } from '../core/ring/endpoint.js';
 import { createRingLayout } from '../core/ring/layout.js';
@@ -8,11 +8,13 @@ import { createRpcServer } from '../core/rpc/server.js';
 import type { RpcHandlers, RpcServer, RpcTransportOptions } from '../core/rpc/types.js';
 import { describeError } from '../core/utils.js';
 import { createWaitStrategy } from '../core/wait.js';
+
 export interface BrowserWorkerRpcServerOptions<C extends ContractShape> extends RpcTransportOptions {
     readonly contract: ContractInput<C>;
     readonly handlers: RpcHandlers<C>;
     readonly selfRef?: DedicatedWorkerGlobalScope;
 }
+
 export function runBrowserWorkerRpcServer<C extends ContractShape>(options: BrowserWorkerRpcServerOptions<C>): Promise<RpcServer<C>> {
     // SAFETY: runtime shape validation below rejects non-worker globals before any worker-only method is used.
     const scope = options.selfRef ?? (globalThis as unknown as DedicatedWorkerGlobalScope);
@@ -28,31 +30,25 @@ export function runBrowserWorkerRpcServer<C extends ContractShape>(options: Brow
                 return;
             }
             scope.removeEventListener('message', onMessage);
-            if (!isBootstrapMessage(event.data)) {
-                const error = new ShirikaEnvironmentError('Invalid shirika-rpc bootstrap payload received in browser worker');
-                scope.postMessage(createErrorMessage(error.message));
-                reject(error);
-                return;
-            }
             if (bootstrapped) {
                 return;
             }
             bootstrapped = true;
-            if (event.data.contractHash !== contractHash) {
-                const error = new ShirikaEnvironmentError(`RPC contract hash mismatch (expected ${contractHash}, received ${event.data.contractHash})`);
-                scope.postMessage(createErrorMessage(error.message));
-                reject(error);
+            const accepted = acceptBootstrapMessage(event.data, contractHash, 'Invalid shirika-rpc bootstrap payload received in browser worker');
+            if (!accepted.ok) {
+                scope.postMessage(createErrorMessage(accepted.error.message));
+                reject(accepted.error);
                 return;
             }
             try {
                 const endpoint = new DuplexEndpoint({
                     inbound: new SharedRingBuffer(
-                        createRingLayout(event.data.clientToServerSab, event.data.capacityBytes),
+                        createRingLayout(accepted.message.clientToServerSab, accepted.message.capacityBytes),
                         createWaitStrategy(false),
                         'browser main -> worker',
                     ),
                     outbound: new SharedRingBuffer(
-                        createRingLayout(event.data.serverToClientSab, event.data.capacityBytes),
+                        createRingLayout(accepted.message.serverToClientSab, accepted.message.capacityBytes),
                         createWaitStrategy(false),
                         'browser worker -> main',
                     ),

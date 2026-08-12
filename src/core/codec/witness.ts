@@ -298,8 +298,9 @@ function assertStrategyCoveredByWitness(
     }
 }
 
+const COMPOSITE_CODEC_KINDS = new Set<CodecWitnessKind>(['optional', 'array', 'tuple', 'struct']);
 function isCompositeCodecKind(codecKind: CodecWitnessKind): boolean {
-    return codecKind === 'optional' || codecKind === 'array' || codecKind === 'tuple' || codecKind === 'struct';
+    return COMPOSITE_CODEC_KINDS.has(codecKind);
 }
 
 function cloneCodecWitnessComponent(component: CodecWitnessComponent): CodecWitnessComponent {

@@ -1,4 +1,4 @@
-import { createBootstrapMessage, isErrorMessage, isReadyMessage } from '../core/bootstrap.js';
+import { createBootstrapMessage, interpretReadyHandshake } from '../core/bootstrap.js';
 import { DEFAULT_CAPACITY_BYTES } from '../core/constants.js';
 import { ShirikaEnvironmentError } from '../core/errors.js';
 import { DuplexEndpoint } from '../core/ring/endpoint.js';
@@ -30,24 +30,16 @@ export async function createBrowserWorkerRpcClient<C extends ContractShape>(
             reject(new ShirikaEnvironmentError(`Timed out waiting for browser worker bootstrap after ${bootstrapTimeoutMs}ms`));
         }, bootstrapTimeoutMs);
         const onMessage = (event: MessageEvent<unknown>) => {
-            if (isReadyMessage(event.data)) {
-                if (event.data.contractHash !== contractHash) {
-                    cleanup();
-                    reject(
-                        new ShirikaEnvironmentError(
-                            `Browser worker bootstrap failed: RPC contract hash mismatch (expected ${contractHash}, received ${event.data.contractHash})`,
-                        ),
-                    );
-                    return;
-                }
-                cleanup();
-                resolve();
+            const handshake = interpretReadyHandshake(event.data, contractHash, { platform: 'Browser' });
+            if (handshake.kind === 'ignore') {
                 return;
             }
-            if (isErrorMessage(event.data)) {
-                cleanup();
-                reject(new ShirikaEnvironmentError(`Browser worker bootstrap failed: ${event.data.message}`));
+            cleanup();
+            if (handshake.kind === 'error') {
+                reject(handshake.error);
+                return;
             }
+            resolve();
         };
         const onError = (event: ErrorEvent) => {
             cleanup();
@@ -101,7 +93,7 @@ export async function createBrowserWorkerRpcClient<C extends ContractShape>(
     return client;
 }
 function createBrowserWorkerError(prefix: string, event: ErrorEvent): ShirikaEnvironmentError {
-    const location = event.filename ? `${event.filename}${event.lineno || event.colno ? `:${event.lineno}:${event.colno}` : ''}` : undefined;
+    const location = event.filename ? `${event.filename}${event.lineno !== 0 || event.colno !== 0 ? `:${event.lineno}:${event.colno}` : ''}` : undefined;
     const suffix = event.message ? `: ${event.message}` : '';
     const locationText = location ? ` (${location})` : '';
     return new ShirikaEnvironmentError(`${prefix}${locationText}${suffix}`, event.error instanceof Error ? { cause: event.error } : undefined);

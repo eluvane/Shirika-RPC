@@ -95,25 +95,19 @@ export class SharedRingBuffer {
         return u32(seq) & (this.capacityBytes - 1);
     }
     getContiguousReadableView(seq: number, length: number): Uint8Array | null {
-        const offset = this.toOffset(seq);
-        if (offset + length > this.capacityBytes) {
-            return null;
-        }
-        return this.data.subarray(offset, offset + length);
+        const offset = this.contiguousOffset(seq, length);
+        return offset === undefined ? null : this.data.subarray(offset, offset + length);
     }
     getContiguousWritableView(seq: number, length: number): Uint8Array | null {
-        const offset = this.toOffset(seq);
-        if (offset + length > this.capacityBytes) {
-            return null;
-        }
-        return this.data.subarray(offset, offset + length);
+        return this.getContiguousReadableView(seq, length);
     }
     getContiguousDataView(seq: number, length: number): DataView | null {
+        const offset = this.contiguousOffset(seq, length);
+        return offset === undefined ? null : new DataView(this.data.buffer, this.data.byteOffset + offset, length);
+    }
+    private contiguousOffset(seq: number, length: number): number | undefined {
         const offset = this.toOffset(seq);
-        if (offset + length > this.capacityBytes) {
-            return null;
-        }
-        return new DataView(this.data.buffer, this.data.byteOffset + offset, length);
+        return offset + length > this.capacityBytes ? undefined : offset;
     }
     writeByte(seq: number, value: number): void {
         this.data[this.toOffset(seq)] = value & 0xff;
@@ -187,45 +181,29 @@ export class SharedRingBuffer {
         this.writeBytes(seq, encodeUtf8(value));
     }
     sampleUsedBytes(): number {
-        const readSeq = u32(Atomics.load(this.control, ControlIndex.READ_SEQ));
-        const writeSeq = u32(Atomics.load(this.control, ControlIndex.WRITE_SEQ));
-        const usedBytes = u32(writeSeq - readSeq);
-        if (usedBytes > this.capacityBytes) {
-            if (Atomics.load(this.control, ControlIndex.RESERVED_0) !== 0) {
-                return 0;
-            }
-            this.markErrored(TransportErrorHint.PROTOCOL);
-            throw new ShirikaProtocolError(`Ring ${this.label} observed invalid usedBytes=${usedBytes}, capacity=${this.capacityBytes}`);
-        }
-        return usedBytes;
+        const usedBytes = this.computeUsedBytes(
+            u32(Atomics.load(this.control, ControlIndex.READ_SEQ)),
+            u32(Atomics.load(this.control, ControlIndex.WRITE_SEQ)),
+            true,
+        );
+        return usedBytes ?? 0;
     }
     snapshot(): RingSnapshot {
         while (true) {
-            if (Atomics.load(this.control, ControlIndex.RESERVED_0) !== 0) {
+            const seqs = this.loadSeqPairIfStable();
+            if (seqs === undefined) {
                 continue;
             }
-            const readSeq = u32(Atomics.load(this.control, ControlIndex.READ_SEQ));
-            const writeSeq = u32(Atomics.load(this.control, ControlIndex.WRITE_SEQ));
-            if (Atomics.load(this.control, ControlIndex.RESERVED_0) !== 0) {
-                continue;
-            }
-            const usedBytes = u32(writeSeq - readSeq);
-            if (usedBytes > this.capacityBytes) {
-                this.markErrored(TransportErrorHint.PROTOCOL);
-                throw new ShirikaProtocolError(`Ring ${this.label} observed invalid usedBytes=${usedBytes}, capacity=${this.capacityBytes}`);
-            }
-            const state = this.loadState();
-            const lastError = this.loadLastError();
-            const freeBytes = this.capacityBytes - usedBytes;
+            const usedBytes = this.computeUsedBytes(seqs.readSeq, seqs.writeSeq);
             return {
                 label: this.label,
                 capacityBytes: this.capacityBytes,
-                state,
-                lastError,
-                readSeq,
-                writeSeq,
+                state: this.loadState(),
+                lastError: this.loadLastError(),
+                readSeq: seqs.readSeq,
+                writeSeq: seqs.writeSeq,
                 usedBytes,
-                freeBytes,
+                freeBytes: this.capacityBytes - usedBytes,
                 saturation: this.capacityBytes === 0 ? 0 : usedBytes / this.capacityBytes,
             };
         }
@@ -258,88 +236,101 @@ export class SharedRingBuffer {
         if (bytes > this.capacityBytes) {
             throw new ShirikaOversizeError(`Ring ${this.label} cannot fit frame of ${bytes} bytes in capacity ${this.capacityBytes}`);
         }
-        const deadline = deadlineFromTimeout(timeoutMs);
-        while (true) {
-            throwIfAborted(signal);
-            this.assertWritable();
-            this.maybeNormalize();
-            const expected = Atomics.load(this.control, ControlIndex.SPACE_SEQ);
-            if (Atomics.load(this.control, ControlIndex.RESERVED_0) !== 0) {
-                continue;
-            }
-            const readSeq = u32(Atomics.load(this.control, ControlIndex.READ_SEQ));
-            const writeSeq = u32(Atomics.load(this.control, ControlIndex.WRITE_SEQ));
-            if (Atomics.load(this.control, ControlIndex.RESERVED_0) !== 0) {
-                continue;
-            }
-            const usedBytes = u32(writeSeq - readSeq);
-            if (usedBytes > this.capacityBytes) {
-                this.markErrored(TransportErrorHint.PROTOCOL);
-                throw new ShirikaProtocolError(`Ring ${this.label} observed invalid usedBytes=${usedBytes}, capacity=${this.capacityBytes}`);
-            }
-            if (this.capacityBytes - usedBytes >= bytes) {
-                return writeSeq;
-            }
-            this.assertWritable();
-            if (Atomics.load(this.control, ControlIndex.SPACE_SEQ) !== expected) {
-                continue;
-            }
-            const remaining = remainingTimeout(deadline);
-            if (remaining !== undefined && remaining <= 0) {
-                throw new ShirikaTimeoutError(`Timed out waiting for free space on ring ${this.label}`);
-            }
-            const result = await this.waitStrategy.wait(this.control, ControlIndex.SPACE_SEQ, expected, remaining, signal);
-            if (result === 'timed-out') {
-                throw new ShirikaTimeoutError(`Timed out waiting for free space on ring ${this.label}`);
-            }
-        }
+        return this.waitForSpace(
+            ControlIndex.SPACE_SEQ,
+            timeoutMs,
+            signal,
+            (seqs, usedBytes) => {
+                this.assertWritable();
+                return this.capacityBytes - usedBytes >= bytes ? seqs.writeSeq : undefined;
+            },
+            `Timed out waiting for free space on ring ${this.label}`,
+            true,
+        );
     }
     async waitForReadable(bytes: number, timeoutMs?: number, signal?: AbortSignal): Promise<number> {
         if (bytes > this.capacityBytes) {
             throw new ShirikaOversizeError(`Ring ${this.label} cannot read ${bytes} bytes from capacity ${this.capacityBytes}`);
         }
+        return this.waitForSpace(
+            ControlIndex.DATA_SEQ,
+            timeoutMs,
+            signal,
+            (seqs, usedBytes) => {
+                if (usedBytes >= bytes) {
+                    return seqs.readSeq;
+                }
+                this.assertReadable(usedBytes);
+                return undefined;
+            },
+            `Timed out waiting for data on ring ${this.label}`,
+            false,
+        );
+    }
+    readableBytesFrom(readSeq: number): number {
+        return this.computeUsedBytes(u32(readSeq), u32(Atomics.load(this.control, ControlIndex.WRITE_SEQ)));
+    }
+    private async waitForSpace(
+        waitIndex: number,
+        timeoutMs: number | undefined,
+        signal: AbortSignal | undefined,
+        tryAcquire: (seqs: { readSeq: number; writeSeq: number }, usedBytes: number) => number | undefined,
+        timeoutMessage: string,
+        assertWritableFirst: boolean,
+    ): Promise<number> {
         const deadline = deadlineFromTimeout(timeoutMs);
         while (true) {
             throwIfAborted(signal);
+            if (assertWritableFirst) {
+                this.assertWritable();
+            }
             this.maybeNormalize();
-            const expected = Atomics.load(this.control, ControlIndex.DATA_SEQ);
-            if (Atomics.load(this.control, ControlIndex.RESERVED_0) !== 0) {
+            const expected = Atomics.load(this.control, waitIndex);
+            const seqs = this.loadSeqPairIfStable();
+            if (seqs === undefined) {
                 continue;
             }
-            const readSeq = u32(Atomics.load(this.control, ControlIndex.READ_SEQ));
-            const writeSeq = u32(Atomics.load(this.control, ControlIndex.WRITE_SEQ));
-            if (Atomics.load(this.control, ControlIndex.RESERVED_0) !== 0) {
-                continue;
+            const usedBytes = this.computeUsedBytes(seqs.readSeq, seqs.writeSeq);
+            const acquired = tryAcquire(seqs, usedBytes);
+            if (acquired !== undefined) {
+                return acquired;
             }
-            const usedBytes = u32(writeSeq - readSeq);
-            if (usedBytes > this.capacityBytes) {
-                this.markErrored(TransportErrorHint.PROTOCOL);
-                throw new ShirikaProtocolError(`Ring ${this.label} observed invalid usedBytes=${usedBytes}, capacity=${this.capacityBytes}`);
-            }
-            if (usedBytes >= bytes) {
-                return readSeq;
-            }
-            this.assertReadable(usedBytes);
-            if (Atomics.load(this.control, ControlIndex.DATA_SEQ) !== expected) {
+            if (Atomics.load(this.control, waitIndex) !== expected) {
                 continue;
             }
             const remaining = remainingTimeout(deadline);
             if (remaining !== undefined && remaining <= 0) {
-                throw new ShirikaTimeoutError(`Timed out waiting for data on ring ${this.label}`);
+                throw new ShirikaTimeoutError(timeoutMessage);
             }
-            const result = await this.waitStrategy.wait(this.control, ControlIndex.DATA_SEQ, expected, remaining, signal);
+            const result = await this.waitStrategy.wait(this.control, waitIndex, expected, remaining, signal);
             if (result === 'timed-out') {
-                throw new ShirikaTimeoutError(`Timed out waiting for data on ring ${this.label}`);
+                throw new ShirikaTimeoutError(timeoutMessage);
             }
         }
     }
-    readableBytesFrom(readSeq: number): number {
-        const usedBytes = u32(u32(Atomics.load(this.control, ControlIndex.WRITE_SEQ)) - u32(readSeq));
-        if (usedBytes > this.capacityBytes) {
-            this.markErrored(TransportErrorHint.PROTOCOL);
-            throw new ShirikaProtocolError(`Ring ${this.label} observed invalid usedBytes=${usedBytes}, capacity=${this.capacityBytes}`);
+    private loadSeqPairIfStable(): { readSeq: number; writeSeq: number } | undefined {
+        if (Atomics.load(this.control, ControlIndex.RESERVED_0) !== 0) {
+            return undefined;
         }
-        return usedBytes;
+        const readSeq = u32(Atomics.load(this.control, ControlIndex.READ_SEQ));
+        const writeSeq = u32(Atomics.load(this.control, ControlIndex.WRITE_SEQ));
+        if (Atomics.load(this.control, ControlIndex.RESERVED_0) !== 0) {
+            return undefined;
+        }
+        return { readSeq, writeSeq };
+    }
+    private computeUsedBytes(readSeq: number, writeSeq: number): number;
+    private computeUsedBytes(readSeq: number, writeSeq: number, softOnNormalize: true): number | undefined;
+    private computeUsedBytes(readSeq: number, writeSeq: number, softOnNormalize = false): number | undefined {
+        const usedBytes = u32(writeSeq - readSeq);
+        if (usedBytes <= this.capacityBytes) {
+            return usedBytes;
+        }
+        if (softOnNormalize && Atomics.load(this.control, ControlIndex.RESERVED_0) !== 0) {
+            return undefined;
+        }
+        this.markErrored(TransportErrorHint.PROTOCOL);
+        throw new ShirikaProtocolError(`Ring ${this.label} observed invalid usedBytes=${usedBytes}, capacity=${this.capacityBytes}`);
     }
     commitWrite(nextWriteSeq: number): void {
         Atomics.store(this.control, ControlIndex.WRITE_SEQ, nextWriteSeq | 0);

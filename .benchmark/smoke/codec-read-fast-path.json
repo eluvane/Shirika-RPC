@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "suite": "codec-read-fast-path",
-  "generatedAt": "2026-06-25T18:00:11.791Z",
+  "generatedAt": "2026-08-12T15:36:54.406Z",
   "runtime": {
-    "node": "v26.4.0",
+    "node": "v26.0.0",
     "platform": "win32",
     "arch": "x64"
   },
@@ -19,11 +19,11 @@
       "group": "primitive fixed-width",
       "strategy": "safe-ring-binary-reader",
       "metrics": {
-        "totalMs": 1.9432000000000045,
-        "opsPerSec": 1543845.2037875634,
-        "avgMs": 0.0006477333333333348,
-        "p95Ms": 0.0009519999999999958,
-        "heapDeltaBytes": 769016
+        "totalMs": 2.045499999999997,
+        "opsPerSec": 1466634.07479834,
+        "avgMs": 0.0006818333333333324,
+        "p95Ms": 0.0009208333333333367,
+        "heapDeltaBytes": 730728
       }
     },
     {
@@ -32,11 +32,11 @@
       "group": "primitive fixed-width",
       "strategy": "read-side:u32",
       "metrics": {
-        "totalMs": 22.897199999999998,
-        "opsPerSec": 131020.38677218175,
-        "avgMs": 0.007632399999999999,
-        "p95Ms": 0.007882333333333342,
-        "heapDeltaBytes": 1161456
+        "totalMs": 23.296600000000005,
+        "opsPerSec": 128774.15588540815,
+        "avgMs": 0.007765533333333335,
+        "p95Ms": 0.008190999999999988,
+        "heapDeltaBytes": 1264984
       }
     },
     {
@@ -45,11 +45,11 @@
       "group": "tuple of primitives",
       "strategy": "safe-ring-binary-reader",
       "metrics": {
-        "totalMs": 1.8797999999999888,
-        "opsPerSec": 1595914.4589850078,
-        "avgMs": 0.0006265999999999963,
-        "p95Ms": 0.0009068333333333337,
-        "heapDeltaBytes": -1202248
+        "totalMs": 1.894999999999996,
+        "opsPerSec": 1583113.4564643833,
+        "avgMs": 0.0006316666666666654,
+        "p95Ms": 0.0008958333333333475,
+        "heapDeltaBytes": -1239080
       }
     },
     {
@@ -58,11 +58,11 @@
       "group": "tuple of primitives",
       "strategy": "read-side:tuple(bool,u16)",
       "metrics": {
-        "totalMs": 23.16680000000001,
-        "opsPerSec": 129495.65757894915,
-        "avgMs": 0.00772226666666667,
-        "p95Ms": 0.008125833333333337,
-        "heapDeltaBytes": -236784
+        "totalMs": 22.7081,
+        "opsPerSec": 132111.44921856077,
+        "avgMs": 0.007569366666666667,
+        "p95Ms": 0.007920666666666682,
+        "heapDeltaBytes": 28240
       }
     },
     {
@@ -71,11 +71,11 @@
       "group": "representative simple struct",
       "strategy": "safe-ring-binary-reader",
       "metrics": {
-        "totalMs": 1.8311999999999955,
-        "opsPerSec": 1638269.986893844,
-        "avgMs": 0.0006103999999999985,
-        "p95Ms": 0.0010903333333333383,
-        "heapDeltaBytes": 226976
+        "totalMs": 1.750099999999989,
+        "opsPerSec": 1714187.7606993993,
+        "avgMs": 0.000583366666666663,
+        "p95Ms": 0.0008226666666666678,
+        "heapDeltaBytes": -1834592
       }
     },
     {
@@ -84,11 +84,11 @@
       "group": "representative simple struct",
       "strategy": "read-side:struct(tag:u8,count:u16,ok:bool)",
       "metrics": {
-        "totalMs": 22.274399999999986,
-        "opsPerSec": 134683.76252559,
-        "avgMs": 0.007424799999999995,
-        "p95Ms": 0.007553500000000024,
-        "heapDeltaBytes": 1041344
+        "totalMs": 22.2967,
+        "opsPerSec": 134549.05882933346,
+        "avgMs": 0.007432233333333334,
+        "p95Ms": 0.007722333333333324,
+        "heapDeltaBytes": 1209016
       }
     },
     {
@@ -97,11 +97,11 @@
       "group": "frame read simple struct",
       "strategy": "safe-reader-fallback",
       "metrics": {
-        "totalMs": 45.6806,
-        "opsPerSec": 65673.39308152694,
-        "avgMs": 0.015226866666666667,
-        "p95Ms": 0.01662033333333331,
-        "heapDeltaBytes": 248448
+        "totalMs": 46.09269999999998,
+        "opsPerSec": 65086.228404931826,
+        "avgMs": 0.015364233333333326,
+        "p95Ms": 0.01682633333333333,
+        "heapDeltaBytes": 346624
       }
     },
     {
@@ -110,11 +110,11 @@
       "group": "frame read simple struct",
       "strategy": "read-side:struct(tag:u8,count:u16,ok:bool)",
       "metrics": {
-        "totalMs": 65.31629999999998,
-        "opsPerSec": 45930.34204325721,
-        "avgMs": 0.021772099999999996,
-        "p95Ms": 0.022133000000000038,
-        "heapDeltaBytes": -896424
+        "totalMs": 64.5969,
+        "opsPerSec": 46441.85711698239,
+        "avgMs": 0.0215323,
+        "p95Ms": 0.022411833333333343,
+        "heapDeltaBytes": -781600
       }
     }
   ],
@@ -124,32 +124,32 @@
       "label": "u32 direct validated read-side vs safe",
       "before": "direct-u32-safe-reader",
       "after": "direct-u32-validated-read-side",
-      "throughputImprovementPct": -91.5133728141432,
-      "latencyReductionPct": -1078.3244133388196
+      "throughputImprovementPct": -91.2197488045466,
+      "latencyReductionPct": -1038.9195795649005
     },
     {
       "id": "direct-tuple-validated-vs-safe",
       "label": "tuple direct validated read-side vs safe",
       "before": "direct-tuple-safe-reader",
       "after": "direct-tuple-validated-read-side",
-      "throughputImprovementPct": -91.88580209610309,
-      "latencyReductionPct": -1132.40770294713
+      "throughputImprovementPct": -91.65496012436093,
+      "latencyReductionPct": -1098.3166226912954
     },
     {
       "id": "direct-struct-validated-vs-safe",
       "label": "struct direct validated read-side vs safe",
       "before": "direct-struct-safe-reader",
       "after": "direct-struct-validated-read-side",
-      "throughputImprovementPct": -91.77890313543801,
-      "latencyReductionPct": -1116.3826998689408
+      "throughputImprovementPct": -92.15085640475951,
+      "latencyReductionPct": -1174.02434146621
     },
     {
       "id": "frame-struct-validated-vs-safe",
       "label": "frame struct validated read-side vs safe",
       "before": "frame-struct-safe-fallback",
       "after": "frame-struct-validated-read-side",
-      "throughputImprovementPct": -30.062480575292817,
-      "latencyReductionPct": -42.98476815103126
+      "throughputImprovementPct": -28.64564708213555,
+      "latencyReductionPct": -40.14561958835137
     }
   ]
 }

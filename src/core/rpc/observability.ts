@@ -178,10 +178,7 @@ const HANDLER_LATENCY_BUCKETS: readonly HistogramBucketDefinition[] = Object.fre
 const DEFAULT_SATURATION_THRESHOLDS = Object.freeze([0.5, 0.8, 0.95]);
 const DEFAULT_SATURATION_TIMELINE_LIMIT = 256;
 export function nowMs(): number {
-    if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
-        return performance.now();
-    }
-    return Date.now();
+    return typeof performance !== 'undefined' && typeof performance.now === 'function' ? performance.now() : Date.now();
 }
 export function createDurationStats(): MutableDurationStats {
     return {
@@ -221,9 +218,6 @@ export function snapshotDurationStats(stats: MutableDurationStats): RpcDurationS
 export function createFrameSizeHistogram(): MutableHistogram {
     return createHistogram('bytes', FRAME_SIZE_BUCKETS);
 }
-function createHandlerLatencyHistogram(): MutableHistogram {
-    return createHistogram('milliseconds', HANDLER_LATENCY_BUCKETS);
-}
 export function recordHistogramValue(histogram: MutableHistogram, value: number): void {
     if (!Number.isFinite(value) || value < 0) {
         return;
@@ -259,7 +253,7 @@ export function createRingSaturationTimeline(
 ): MutableRingSaturationTimeline {
     return {
         thresholds: [...thresholds].sort((left, right) => left - right),
-        limit: Math.max(1, Math.trunc(limit) || DEFAULT_SATURATION_TIMELINE_LIMIT),
+        limit: Math.max(1, Number.isFinite(limit) && limit > 0 ? Math.trunc(limit) : DEFAULT_SATURATION_TIMELINE_LIMIT),
         activeByThreshold: new Map<number, MutableRingSaturationEvent>(),
         events: [],
         droppedEvents: 0,
@@ -318,7 +312,7 @@ export function snapshotRingSaturationTimeline(timeline: MutableRingSaturationTi
 export function createMethodLatencyMetrics(): MutableMethodLatencyMetrics {
     return {
         stats: createDurationStats(),
-        histogram: createHandlerLatencyHistogram(),
+        histogram: createHistogram('milliseconds', HANDLER_LATENCY_BUCKETS),
         totalInvocations: 0,
         requestInvocations: 0,
         notifyInvocations: 0,
@@ -326,11 +320,7 @@ export function createMethodLatencyMetrics(): MutableMethodLatencyMetrics {
 }
 export function recordMethodLatency(metrics: MutableMethodLatencyMetrics, durationMs: number, kind: 'request' | 'notify'): void {
     metrics.totalInvocations += 1;
-    if (kind === 'request') {
-        metrics.requestInvocations += 1;
-    } else {
-        metrics.notifyInvocations += 1;
-    }
+    metrics[kind === 'request' ? 'requestInvocations' : 'notifyInvocations'] += 1;
     recordDuration(metrics.stats, durationMs);
     recordHistogramValue(metrics.histogram, durationMs);
 }
@@ -356,10 +346,7 @@ export function safeInvokeHook<T>(hook: ((event: T) => void) | undefined, event:
     }
 }
 export function ringSaturation(snapshot: RingSnapshot): number {
-    if (snapshot.capacityBytes <= 0) {
-        return 0;
-    }
-    return snapshot.usedBytes / snapshot.capacityBytes;
+    return snapshot.capacityBytes <= 0 ? 0 : snapshot.usedBytes / snapshot.capacityBytes;
 }
 function createHistogram(unit: 'bytes' | 'milliseconds', definitions: readonly HistogramBucketDefinition[]): MutableHistogram {
     return {

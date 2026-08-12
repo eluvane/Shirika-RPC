@@ -1,4 +1,1 @@
-# OSV Scanner project policy.
-#
-# There are intentionally no ignored vulnerabilities here. Add one
-# [[IgnoredVulns]] entry only with an owner, reason and expiry date.
+

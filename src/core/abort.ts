@@ -23,11 +23,8 @@ export function addAbortListener(signal: AbortSignal | undefined, listener: () =
         listener();
         return () => undefined;
     }
-    const onAbort = () => {
-        listener();
-    };
-    signal.addEventListener('abort', onAbort, { once: true });
+    signal.addEventListener('abort', listener, { once: true });
     return () => {
-        signal.removeEventListener('abort', onAbort);
+        signal.removeEventListener('abort', listener);
     };
 }

@@ -22,8 +22,6 @@ export function createCancelReason(payload: CancelPayload): unknown {
             return new ShirikaTimeoutError(payload.message ?? 'RPC request timed out');
         case CancelCode.CLIENT_CLOSE:
             return new ShirikaClosedError(payload.message ?? 'RPC client closed request');
-        case CancelCode.CLIENT_ABORT:
-            return createAbortError(payload.message ?? 'RPC request aborted');
         default:
             return createAbortError(payload.message ?? 'RPC request aborted');
     }

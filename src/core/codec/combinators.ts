@@ -3,6 +3,7 @@ import { getSpecializedReadSideStrategy } from './specialized-readers.js';
 import { getSpecializedCompositeMeasuredWriter } from './specialized-writers.js';
 import type { BinaryCodec } from './types.js';
 import {
+    type CodecWitnessKind,
     type CodecWitnessValueScope,
     codecWitnessComponent,
     defineInternalCodecWitness,
@@ -119,25 +120,17 @@ export function array<T>(itemCodec: BinaryCodec<T>): BinaryCodec<T[]> {
         signature,
     );
     const itemPrepared = prepareBinaryCodec(itemCodec);
-    const selected = selectedCompositeWitnesses.get(signature);
-    if (itemPrepared === undefined || selected === undefined) {
+    if (itemPrepared === undefined) {
         return codec;
     }
-    const specializedMeasuredWriter = getSpecializedCompositeMeasuredWriter(signature);
-    const readSideStrategy = getSpecializedReadSideStrategy(signature);
-    return defineInternalCodecWitness(codec, {
-        codecKind: 'array',
+    return attachSelectedCompositeWitness(
+        codec,
         signature,
-        leanCodec: selected.leanCodec,
-        leanTheorems: selected.leanTheorems,
-        conformanceVectors: selected.conformanceVectors,
-        measuredWriterFastPath: specializedMeasuredWriter !== undefined && (selected.measuredWriterFastPath ?? true),
-        specializedMeasuredWriter,
-        readSideStrategy,
-        valueScope: 'small-length-prefix-values',
-        components: [codecWitnessComponent(itemPrepared.witness)],
-        acceptsMeasuredWriterValue: (value) => value.length <= 0xff && value.every((item) => acceptsPreparedValue(itemPrepared, item)),
-    });
+        'array',
+        [itemPrepared],
+        'small-length-prefix-values',
+        (value) => value.length <= 0xff && value.every((item) => isMeasuredWriterValueInScope(itemPrepared, item)),
+    );
 }
 export function optional<T>(itemCodec: BinaryCodec<T>): BinaryCodec<T | undefined> {
     const signature = `optional(${describeCodec(itemCodec)})`;
@@ -160,25 +153,17 @@ export function optional<T>(itemCodec: BinaryCodec<T>): BinaryCodec<T | undefine
         signature,
     );
     const itemPrepared = prepareBinaryCodec(itemCodec);
-    const selected = selectedCompositeWitnesses.get(signature);
-    if (itemPrepared === undefined || selected === undefined) {
+    if (itemPrepared === undefined) {
         return codec;
     }
-    const specializedMeasuredWriter = getSpecializedCompositeMeasuredWriter(signature);
-    const readSideStrategy = getSpecializedReadSideStrategy(signature);
-    return defineInternalCodecWitness(codec, {
-        codecKind: 'optional',
+    return attachSelectedCompositeWitness(
+        codec,
         signature,
-        leanCodec: selected.leanCodec,
-        leanTheorems: selected.leanTheorems,
-        conformanceVectors: selected.conformanceVectors,
-        measuredWriterFastPath: specializedMeasuredWriter !== undefined && (selected.measuredWriterFastPath ?? true),
-        specializedMeasuredWriter,
-        readSideStrategy,
-        valueScope: compositeValueScope([itemPrepared]),
-        components: [codecWitnessComponent(itemPrepared.witness)],
-        acceptsMeasuredWriterValue: (value) => value === undefined || acceptsPreparedValue(itemPrepared, value),
-    });
+        'optional',
+        [itemPrepared],
+        compositeValueScope([itemPrepared]),
+        (value) => value === undefined || isMeasuredWriterValueInScope(itemPrepared, value),
+    );
 }
 export function tuple<const TCodecs extends readonly BinaryCodec<unknown>[]>(codecs: TCodecs): BinaryCodec<TupleValue<TCodecs>> {
     const signature = `tuple(${codecs.map((codec) => describeCodec(codec)).join(',')})`;
@@ -202,29 +187,21 @@ export function tuple<const TCodecs extends readonly BinaryCodec<unknown>[]>(cod
         signature,
     );
     const preparedCodecs = codecs.map((itemCodec) => prepareBinaryCodec(itemCodec));
-    const selected = selectedCompositeWitnesses.get(signature);
-    if (selected === undefined || preparedCodecs.includes(undefined)) {
+    if (preparedCodecs.includes(undefined)) {
         return codec;
     }
     const preparedTupleCodecs = preparedCodecs as PreparedBinaryCodec<unknown>[];
-    const specializedMeasuredWriter = getSpecializedCompositeMeasuredWriter(signature);
-    const readSideStrategy = getSpecializedReadSideStrategy(signature);
-    return defineInternalCodecWitness(codec, {
-        codecKind: 'tuple',
+    return attachSelectedCompositeWitness(
+        codec,
         signature,
-        leanCodec: selected.leanCodec,
-        leanTheorems: selected.leanTheorems,
-        conformanceVectors: selected.conformanceVectors,
-        measuredWriterFastPath: specializedMeasuredWriter !== undefined && (selected.measuredWriterFastPath ?? true),
-        specializedMeasuredWriter,
-        readSideStrategy,
-        valueScope: compositeValueScope(preparedTupleCodecs),
-        components: preparedTupleCodecs.map((prepared) => codecWitnessComponent(prepared.witness)),
-        acceptsMeasuredWriterValue: (value) =>
+        'tuple',
+        preparedTupleCodecs,
+        compositeValueScope(preparedTupleCodecs),
+        (value) =>
             Array.isArray(value) &&
             value.length === preparedTupleCodecs.length &&
-            preparedTupleCodecs.every((prepared, index) => acceptsPreparedValue(prepared, value[index])),
-    });
+            preparedTupleCodecs.every((prepared, index) => isMeasuredWriterValueInScope(prepared, value[index])),
+    );
 }
 export function struct<const TShape extends Record<string, BinaryCodec<unknown>>>(shape: TShape): BinaryCodec<StructValue<TShape>> {
     const entries = Object.entries(shape) as [keyof TShape, BinaryCodec<unknown>][];
@@ -255,31 +232,48 @@ export function struct<const TShape extends Record<string, BinaryCodec<unknown>>
         signature,
     );
     const preparedEntries = entries.map(([key, itemCodec]) => [key, prepareBinaryCodec(itemCodec)] as const);
-    const selected = selectedCompositeWitnesses.get(signature);
-    if (selected === undefined || preparedEntries.some(([, prepared]) => prepared === undefined)) {
+    if (preparedEntries.some(([, prepared]) => prepared === undefined)) {
         return codec;
     }
     const preparedStructEntries = preparedEntries as Array<readonly [keyof TShape, PreparedBinaryCodec<unknown>]>;
+    return attachSelectedCompositeWitness(
+        codec,
+        signature,
+        'struct',
+        preparedStructEntries.map(([, prepared]) => prepared),
+        compositeValueScope(preparedStructEntries.map(([, prepared]) => prepared)),
+        (value) => acceptsPreparedStructValue(value, preparedStructEntries),
+    );
+}
+
+function attachSelectedCompositeWitness<T>(
+    codec: BinaryCodec<T>,
+    signature: string,
+    codecKind: CodecWitnessKind,
+    preparedCodecs: readonly PreparedBinaryCodec<unknown>[],
+    valueScope: CodecWitnessValueScope,
+    acceptsMeasuredWriterValue: (value: T) => boolean,
+): BinaryCodec<T> {
+    const selected = selectedCompositeWitnesses.get(signature);
+    if (selected === undefined) {
+        return codec;
+    }
     const specializedMeasuredWriter = getSpecializedCompositeMeasuredWriter(signature);
-    const readSideStrategy = getSpecializedReadSideStrategy(signature);
     return defineInternalCodecWitness(codec, {
-        codecKind: 'struct',
+        codecKind,
         signature,
         leanCodec: selected.leanCodec,
         leanTheorems: selected.leanTheorems,
         conformanceVectors: selected.conformanceVectors,
         measuredWriterFastPath: specializedMeasuredWriter !== undefined && (selected.measuredWriterFastPath ?? true),
         specializedMeasuredWriter,
-        readSideStrategy,
-        valueScope: compositeValueScope(preparedStructEntries.map(([, prepared]) => prepared)),
-        components: preparedStructEntries.map(([, prepared]) => codecWitnessComponent(prepared.witness)),
-        acceptsMeasuredWriterValue: (value) => acceptsPreparedStructValue(value, preparedStructEntries),
+        readSideStrategy: getSpecializedReadSideStrategy(signature),
+        valueScope,
+        components: preparedCodecs.map((prepared) => codecWitnessComponent(prepared.witness)),
+        acceptsMeasuredWriterValue,
     });
 }
 
-function acceptsPreparedValue<T>(prepared: PreparedBinaryCodec<T>, value: T): boolean {
-    return isMeasuredWriterValueInScope(prepared, value);
-}
 function acceptsPreparedStructValue<TShape extends Record<string, BinaryCodec<unknown>>>(
     value: StructValue<TShape>,
     entries: Array<readonly [keyof TShape, PreparedBinaryCodec<unknown>]>,

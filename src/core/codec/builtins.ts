@@ -73,7 +73,7 @@ const u8Codec = defineInternalCodecWitness(
         conformanceVectors: ['primitive-u8'],
         readSideStrategy: getSpecializedReadSideStrategy('u8'),
         valueScope: 'bounded-primitive-values',
-        acceptsMeasuredWriterValue: isU8Value,
+        acceptsMeasuredWriterValue: (value) => isUintInRange(value, 0xff),
     },
 );
 const u16Codec = defineInternalCodecWitness(
@@ -98,7 +98,7 @@ const u16Codec = defineInternalCodecWitness(
         conformanceVectors: ['primitive-u16'],
         readSideStrategy: getSpecializedReadSideStrategy('u16'),
         valueScope: 'bounded-primitive-values',
-        acceptsMeasuredWriterValue: isU16Value,
+        acceptsMeasuredWriterValue: (value) => isUintInRange(value, 0xffff),
     },
 );
 const u32Codec = defineInternalCodecWitness(
@@ -123,7 +123,7 @@ const u32Codec = defineInternalCodecWitness(
         conformanceVectors: ['primitive-u32'],
         readSideStrategy: getSpecializedReadSideStrategy('u32'),
         valueScope: 'bounded-primitive-values',
-        acceptsMeasuredWriterValue: isU32Value,
+        acceptsMeasuredWriterValue: (value) => isUintInRange(value, 0xffffffff),
     },
 );
 const i32Codec = defineInternalCodecWitness(
@@ -148,7 +148,7 @@ const i32Codec = defineInternalCodecWitness(
         conformanceVectors: ['primitive-i32'],
         readSideStrategy: getSpecializedReadSideStrategy('i32'),
         valueScope: 'bounded-primitive-values',
-        acceptsMeasuredWriterValue: isI32Value,
+        acceptsMeasuredWriterValue: (value) => Number.isInteger(value) && value >= -0x80000000 && value <= 0x7fffffff,
     },
 );
 const f64Codec = defineCodecSignature<BinaryCodec<number>>(
@@ -206,17 +206,8 @@ const bytesCodec = defineInternalCodecWitness(
     },
 );
 
-function isU8Value(value: number): boolean {
-    return Number.isInteger(value) && value >= 0 && value <= 0xff;
-}
-function isU16Value(value: number): boolean {
-    return Number.isInteger(value) && value >= 0 && value <= 0xffff;
-}
-function isU32Value(value: number): boolean {
-    return Number.isInteger(value) && value >= 0 && value <= 0xffffffff;
-}
-function isI32Value(value: number): boolean {
-    return Number.isInteger(value) && value >= -0x80000000 && value <= 0x7fffffff;
+function isUintInRange(value: number, max: number): boolean {
+    return Number.isInteger(value) && value >= 0 && value <= max;
 }
 export function void_(): BinaryCodec<void> {
     return voidCodec;

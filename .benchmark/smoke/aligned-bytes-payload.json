@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "suite": "aligned-bytes-payload",
-  "generatedAt": "2026-06-25T18:00:11.214Z",
+  "generatedAt": "2026-08-12T15:36:53.828Z",
   "runtime": {
-    "node": "v26.4.0",
+    "node": "v26.0.0",
     "platform": "win32",
     "arch": "x64"
   },
@@ -22,13 +22,13 @@
       "label": "small/no-wrap",
       "group": "no-wrap",
       "metrics": {
-        "opsPerSec": 17311.021350259907,
-        "avgLatencyMs": 0.057766666666665856,
-        "p50LatencyMs": 0.057766666666665856,
-        "p95LatencyMs": 0.06360000000000099,
-        "p99LatencyMs": 0.06360000000000099,
+        "opsPerSec": 17761.989342805573,
+        "avgLatencyMs": 0.056300000000002605,
+        "p50LatencyMs": 0.056300000000002605,
+        "p95LatencyMs": 0.06200000000000472,
+        "p99LatencyMs": 0.06200000000000472,
         "rmePct": 0,
-        "totalMs": 0.17329999999999757,
+        "totalMs": 0.16890000000000782,
         "payloadBytes": 32
       }
     },
@@ -37,13 +37,13 @@
       "label": "small/prefix-wrap",
       "group": "prefix-wrap",
       "metrics": {
-        "opsPerSec": 20847.810979846807,
-        "avgLatencyMs": 0.04796666666666738,
-        "p50LatencyMs": 0.04796666666666738,
-        "p95LatencyMs": 0.05530000000000257,
-        "p99LatencyMs": 0.05530000000000257,
+        "opsPerSec": 20435.967302452464,
+        "avgLatencyMs": 0.048933333333332975,
+        "p50LatencyMs": 0.048933333333332975,
+        "p95LatencyMs": 0.052099999999995816,
+        "p99LatencyMs": 0.052099999999995816,
         "rmePct": 0,
-        "totalMs": 0.14390000000000214,
+        "totalMs": 0.14679999999999893,
         "payloadBytes": 32
       }
     },
@@ -52,13 +52,13 @@
       "label": "small/body-wrap",
       "group": "body-wrap",
       "metrics": {
-        "opsPerSec": 18529.95676343308,
-        "avgLatencyMs": 0.05396666666666997,
-        "p50LatencyMs": 0.05396666666666997,
-        "p95LatencyMs": 0.08300000000000551,
-        "p99LatencyMs": 0.08300000000000551,
+        "opsPerSec": 16268.98047722373,
+        "avgLatencyMs": 0.061466666666665525,
+        "p50LatencyMs": 0.061466666666665525,
+        "p95LatencyMs": 0.09669999999999845,
+        "p99LatencyMs": 0.09669999999999845,
         "rmePct": 0,
-        "totalMs": 0.16190000000000992,
+        "totalMs": 0.18439999999999657,
         "payloadBytes": 32
       }
     },
@@ -67,13 +67,13 @@
       "label": "1MiB/no-wrap",
       "group": "no-wrap",
       "metrics": {
-        "opsPerSec": 4797.697105389446,
-        "avgLatencyMs": 0.20843333333333192,
-        "p50LatencyMs": 0.20843333333333192,
-        "p95LatencyMs": 0.2335999999999956,
-        "p99LatencyMs": 0.2335999999999956,
+        "opsPerSec": 5118.580447022677,
+        "avgLatencyMs": 0.19536666666666727,
+        "p50LatencyMs": 0.19536666666666727,
+        "p95LatencyMs": 0.21040000000000703,
+        "p99LatencyMs": 0.21040000000000703,
         "rmePct": 0,
-        "totalMs": 0.6252999999999957,
+        "totalMs": 0.5861000000000018,
         "payloadBytes": 1048576
       }
     },
@@ -82,13 +82,13 @@
       "label": "1MiB/prefix-wrap",
       "group": "prefix-wrap",
       "metrics": {
-        "opsPerSec": 3362.8516982401106,
-        "avgLatencyMs": 0.2973666666666664,
-        "p50LatencyMs": 0.2973666666666664,
-        "p95LatencyMs": 0.31680000000000064,
-        "p99LatencyMs": 0.31680000000000064,
+        "opsPerSec": 3344.4816053510967,
+        "avgLatencyMs": 0.2990000000000066,
+        "p50LatencyMs": 0.2990000000000066,
+        "p95LatencyMs": 0.31390000000000384,
+        "p99LatencyMs": 0.31390000000000384,
         "rmePct": 0,
-        "totalMs": 0.8920999999999992,
+        "totalMs": 0.8970000000000198,
         "payloadBytes": 1048576
       }
     },
@@ -97,13 +97,13 @@
       "label": "1MiB/body-wrap",
       "group": "body-wrap",
       "metrics": {
-        "opsPerSec": 3115.9119235564276,
-        "avgLatencyMs": 0.3209333333333196,
-        "p50LatencyMs": 0.3209333333333196,
-        "p95LatencyMs": 0.35069999999998913,
-        "p99LatencyMs": 0.35069999999998913,
+        "opsPerSec": 3382.949932341025,
+        "avgLatencyMs": 0.2955999999999979,
+        "p50LatencyMs": 0.2955999999999979,
+        "p95LatencyMs": 0.3488000000000113,
+        "p99LatencyMs": 0.3488000000000113,
         "rmePct": 0,
-        "totalMs": 0.9627999999999588,
+        "totalMs": 0.8867999999999938,
         "payloadBytes": 1048576
       }
     }

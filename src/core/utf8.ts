@@ -7,7 +7,7 @@ export function encodeUtf8(value: string): Uint8Array {
     return encoder.encode(value);
 }
 export function encodeUtf8Into(value: string, target: Uint8Array): TextEncoderEncodeIntoResult {
-    if (typeof SharedArrayBuffer === 'function' && target.buffer instanceof SharedArrayBuffer) {
+    if (isSharedArrayBufferView(target)) {
         const bytes = encoder.encode(value);
         target.set(bytes);
         return { read: value.length, written: bytes.byteLength };
@@ -15,6 +15,8 @@ export function encodeUtf8Into(value: string, target: Uint8Array): TextEncoderEn
     return encoder.encodeInto(value, target);
 }
 export function decodeUtf8(value: Uint8Array): string {
-    const bytes = typeof SharedArrayBuffer === 'function' && value.buffer instanceof SharedArrayBuffer ? new Uint8Array(value) : value;
-    return decoder.decode(bytes);
+    return decoder.decode(isSharedArrayBufferView(value) ? new Uint8Array(value) : value);
+}
+function isSharedArrayBufferView(value: Uint8Array): boolean {
+    return typeof SharedArrayBuffer === 'function' && value.buffer instanceof SharedArrayBuffer;
 }

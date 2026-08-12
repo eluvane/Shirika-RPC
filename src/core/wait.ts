@@ -26,7 +26,7 @@ class AsyncWaitAsyncStrategy implements WaitStrategy {
     readonly canBlock = false;
     async wait(control: Int32Array, index: number, expected: number, timeoutMs?: number, signal?: AbortSignal): Promise<WaitResult> {
         throwIfAborted(signal);
-        const waitAsync = atomicsWithWaitAsync.waitAsync;
+        const waitAsync = atomicsWithWaitAsync.waitAsync?.bind(atomicsWithWaitAsync);
         if (!waitAsync) {
             return new AsyncPollingWaitStrategy().wait(control, index, expected, timeoutMs, signal);
         }
@@ -77,29 +77,29 @@ function raceWaitWithAbort(waitPromise: PromiseLike<WaitResult>, signal: AbortSi
     }
     return new Promise<WaitResult>((resolve, reject) => {
         let settled = false;
-        const cleanup = addAbortListener(signal, () => {
+        const settle = (action: () => void) => {
             if (settled) {
                 return;
             }
             settled = true;
-            reject(normalizeAbortReason(signal.reason));
+            cleanup();
+            action();
+        };
+        const cleanup = addAbortListener(signal, () => {
+            settle(() => {
+                reject(normalizeAbortReason(signal.reason));
+            });
         });
         Promise.resolve(waitPromise).then(
             (result) => {
-                if (settled) {
-                    return;
-                }
-                settled = true;
-                cleanup();
-                resolve(result);
+                settle(() => {
+                    resolve(result);
+                });
             },
             (error: unknown) => {
-                if (settled) {
-                    return;
-                }
-                settled = true;
-                cleanup();
-                reject(error);
+                settle(() => {
+                    reject(error);
+                });
             },
         );
     });

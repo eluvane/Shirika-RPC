@@ -42,14 +42,9 @@ export class PendingRequestStore<Entry extends object> {
 
     allocateRequestId(): number {
         for (let attempts = 0; attempts < UINT32_MAX; attempts += 1) {
-            let requestId = this.#nextRequestId >>> 0;
-            if (requestId === 0) {
-                requestId = 1;
-            }
-            this.#nextRequestId = (requestId + 1) >>> 0;
-            if (this.#nextRequestId === 0) {
-                this.#nextRequestId = 1;
-            }
+            const requestId = this.#nextRequestId === 0 ? 1 : this.#nextRequestId;
+            const next = (requestId + 1) >>> 0;
+            this.#nextRequestId = next === 0 ? 1 : next;
             if (!this.#pending.has(requestId)) {
                 return requestId;
             }

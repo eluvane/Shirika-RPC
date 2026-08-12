@@ -1,4 +1,5 @@
 import { ShirikaProtocolError } from '../errors.js';
+import { isRecord } from '../utils.js';
 import type { BinaryWriter } from './types.js';
 import type { InternalMeasuredWriterStrategy } from './witness.js';
 
@@ -111,9 +112,9 @@ const simpleStructStrategy = defineStrategy({
     write(writer, value, expectedPayloadLength) {
         assertExactPayloadLength(simpleStructStrategy.id, expectedPayloadLength, 4);
         const record = requireRecord(value);
-        const tag = requireU8(record.tag);
-        const count = requireU16(record.count);
-        const ok = requireBool(record.ok);
+        const tag = requireU8(record['tag']);
+        const count = requireU16(record['count']);
+        const ok = requireBool(record['ok']);
         writer.writeU8(tag);
         writer.writeU16(count);
         writer.writeBool(ok);
@@ -126,16 +127,16 @@ const nestedStructStrategy = defineStrategy({
     measure: measureNestedStruct,
     write(writer, value, expectedPayloadLength) {
         const record = requireRecord(value);
-        const tag = requireU8(record.tag);
-        const optionalBytesLength = measureOptionalBytes(record.maybePayload);
-        const pairsLength = measureArrayTupleBoolU8(record.pairs);
+        const tag = requireU8(record['tag']);
+        const optionalBytesLength = measureOptionalBytes(record['maybePayload']);
+        const pairsLength = measureArrayTupleBoolU8(record['pairs']);
         if (optionalBytesLength === undefined || pairsLength === undefined) {
             throw new ShirikaProtocolError(`Specialized writer strategy ${nestedStructStrategy.id} rejected an out-of-scope value before writing`);
         }
         assertExactPayloadLength(nestedStructStrategy.id, expectedPayloadLength, 1 + optionalBytesLength + pairsLength);
         writer.writeU8(tag);
-        writeOptionalBytes(writer, record.maybePayload);
-        writeArrayTupleBoolU8(writer, record.pairs);
+        writeOptionalBytes(writer, record['maybePayload']);
+        writeArrayTupleBoolU8(writer, record['pairs']);
     },
 });
 
@@ -222,18 +223,18 @@ function measureArrayTupleBoolU8(value: unknown): number | undefined {
 }
 
 function measureSimpleStruct(value: unknown): number | undefined {
-    if (!isRecord(value) || !isU8Value(value.tag) || !isU16Value(value.count) || typeof value.ok !== 'boolean') {
+    if (!isRecord(value) || !isU8Value(value['tag']) || !isU16Value(value['count']) || typeof value['ok'] !== 'boolean') {
         return undefined;
     }
     return 4;
 }
 
 function measureNestedStruct(value: unknown): number | undefined {
-    if (!isRecord(value) || !isU8Value(value.tag)) {
+    if (!isRecord(value) || !isU8Value(value['tag'])) {
         return undefined;
     }
-    const optionalBytesLength = measureOptionalBytes(value.maybePayload);
-    const pairsLength = measureArrayTupleBoolU8(value.pairs);
+    const optionalBytesLength = measureOptionalBytes(value['maybePayload']);
+    const pairsLength = measureArrayTupleBoolU8(value['pairs']);
     if (optionalBytesLength === undefined || pairsLength === undefined) {
         return undefined;
     }
@@ -289,10 +290,6 @@ function requireArray(value: unknown): unknown[] {
     return value;
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-    return typeof value === 'object' && value !== null;
-}
-
 function requireRecord(value: unknown): Record<string, unknown> {
     if (!isRecord(value)) {
         throw new ShirikaProtocolError('Specialized writer expected a struct object');
@@ -319,23 +316,28 @@ function requireBool(value: unknown): boolean {
 }
 
 function requireU8(value: unknown): number {
-    if (!isU8Value(value)) {
-        throw new ShirikaProtocolError('Specialized writer expected a u8 value');
-    }
-    return value;
+    return requireBoundedInteger(value, 0xff, 'u8');
 }
 
 function requireU16(value: unknown): number {
-    if (!isU16Value(value)) {
-        throw new ShirikaProtocolError('Specialized writer expected a u16 value');
+    return requireBoundedInteger(value, 0xffff, 'u16');
+}
+
+function requireBoundedInteger(value: unknown, max: number, label: string): number {
+    if (!isBoundedInteger(value, max)) {
+        throw new ShirikaProtocolError(`Specialized writer expected a ${label} value`);
     }
     return value;
 }
 
 function isU8Value(value: unknown): value is number {
-    return typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 0xff;
+    return isBoundedInteger(value, 0xff);
 }
 
 function isU16Value(value: unknown): value is number {
-    return typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 0xffff;
+    return isBoundedInteger(value, 0xffff);
+}
+
+function isBoundedInteger(value: unknown, max: number): value is number {
+    return typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= max;
 }

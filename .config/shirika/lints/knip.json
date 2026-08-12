@@ -27,7 +27,7 @@
   ],
   "ignore": ["shared/*.d.ts", "shared/*.d.mts"],
   "ignoreDependencies": ["dependency-cruiser", "syncpack"],
-  "ignoreBinaries": ["gitleaks", "lake", "osv-scanner", "python"],
+  "ignoreBinaries": ["gitleaks", "lake", "osv-scanner", "py", "python"],
   "ignoreIssues": {
     "src/core/constants.ts": ["duplicates", "enumMembers"],
     "src/core/codec/combinators.ts": ["types"],

@@ -1,19 +1,19 @@
 # aligned-bytes payload benchmark
 
-Generated at: 2026-06-25T17:59:23.736Z
-Node: v26.4.0
+Generated at: 2026-08-12T15:36:17.251Z
+Node: v26.0.0
 
 | Case | ops/sec | avg ms | p95 ms | payload bytes |
 | --- | --- | --- | --- | --- |
-| small/no-wrap | 46,220.55 | 0.02 | 0.03 | 32 |
-| small/prefix-wrap | 45,354.25 | 0.02 | 0.03 | 32 |
-| small/body-wrap | 50,425.72 | 0.02 | 0.02 | 32 |
-| 1MiB/no-wrap | 5,120.12 | 0.2 | 0.22 | 1048576 |
-| 1MiB/prefix-wrap | 3,795.01 | 0.26 | 0.28 | 1048576 |
-| 1MiB/body-wrap | 3,621.04 | 0.28 | 0.31 | 1048576 |
-| 8MiB/no-wrap | 569.68 | 1.76 | 3.16 | 8388608 |
-| 8MiB/prefix-wrap | 388.87 | 2.57 | 3.08 | 8388608 |
-| 8MiB/body-wrap | 497.91 | 2.01 | 2.18 | 8388608 |
-| 32MiB/no-wrap | 149.35 | 6.7 | 8.44 | 33554432 |
-| 32MiB/prefix-wrap | 120.49 | 8.3 | 9.22 | 33554432 |
-| 32MiB/body-wrap | 104.36 | 9.58 | 10.5 | 33554432 |
+| small/no-wrap | 44,461.44 | 0.02 | 0.03 | 32 |
+| small/prefix-wrap | 47,016.01 | 0.02 | 0.02 | 32 |
+| small/body-wrap | 45,218.18 | 0.02 | 0.04 | 32 |
+| 1MiB/no-wrap | 5,371.61 | 0.19 | 0.23 | 1048576 |
+| 1MiB/prefix-wrap | 3,771.99 | 0.27 | 0.3 | 1048576 |
+| 1MiB/body-wrap | 3,791.1 | 0.26 | 0.31 | 1048576 |
+| 8MiB/no-wrap | 612.47 | 1.63 | 3.26 | 8388608 |
+| 8MiB/prefix-wrap | 422.87 | 2.36 | 3.33 | 8388608 |
+| 8MiB/body-wrap | 486.89 | 2.05 | 3.15 | 8388608 |
+| 32MiB/no-wrap | 167.2 | 5.98 | 6.73 | 33554432 |
+| 32MiB/prefix-wrap | 122.1 | 8.19 | 8.53 | 33554432 |
+| 32MiB/body-wrap | 132.68 | 7.54 | 8.15 | 33554432 |

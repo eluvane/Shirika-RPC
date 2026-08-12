@@ -149,6 +149,8 @@ export default tseslint.config(
             '.benchmark/comparison/**',
             '.benchmark/smoke/**',
             '.tsbuildinfo/**',
+            '.tools/**',
+            '.pi-glla/**',
             'coverage/**',
             'shared/**/*.d.ts',
             'shared/**/*.d.mts',

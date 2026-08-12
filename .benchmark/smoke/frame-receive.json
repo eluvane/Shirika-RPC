@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "suite": "frame-receive",
-  "generatedAt": "2026-06-25T18:00:10.971Z",
+  "generatedAt": "2026-08-12T15:36:53.587Z",
   "runtime": {
-    "node": "v26.4.0",
+    "node": "v26.0.0",
     "platform": "win32",
     "arch": "x64"
   },
@@ -18,13 +18,13 @@
       "label": "empty request frame receive/read",
       "group": "receive",
       "metrics": {
-        "opsPerSec": 38013.129735010465,
-        "avgLatencyMs": 0.026306700000000006,
-        "p50LatencyMs": 0.026306700000000006,
-        "p95LatencyMs": 0.026306700000000006,
-        "p99LatencyMs": 0.026306700000000006,
+        "opsPerSec": 37307.30775544313,
+        "avgLatencyMs": 0.026804400000000003,
+        "p50LatencyMs": 0.026804400000000003,
+        "p95LatencyMs": 0.026804400000000003,
+        "p99LatencyMs": 0.026804400000000003,
         "rmePct": 0,
-        "totalMs": 26.306700000000006
+        "totalMs": 26.8044
       }
     },
     {
@@ -32,13 +32,13 @@
       "label": "small request frame receive/read",
       "group": "receive",
       "metrics": {
-        "opsPerSec": 41532.89613038008,
-        "avgLatencyMs": 0.024077299999999992,
-        "p50LatencyMs": 0.024077299999999992,
-        "p95LatencyMs": 0.024077299999999992,
-        "p99LatencyMs": 0.024077299999999992,
+        "opsPerSec": 40263.646356341305,
+        "avgLatencyMs": 0.02483630000000001,
+        "p50LatencyMs": 0.02483630000000001,
+        "p95LatencyMs": 0.02483630000000001,
+        "p99LatencyMs": 0.02483630000000001,
         "rmePct": 0,
-        "totalMs": 24.077299999999994
+        "totalMs": 24.83630000000001
       }
     },
     {
@@ -46,13 +46,13 @@
       "label": "mixed request/response/cancel receive/read",
       "group": "receive",
       "metrics": {
-        "opsPerSec": 44294.63016198544,
-        "avgLatencyMs": 0.022576100000000012,
-        "p50LatencyMs": 0.022576100000000012,
-        "p95LatencyMs": 0.022576100000000012,
-        "p99LatencyMs": 0.022576100000000012,
+        "opsPerSec": 43763.10157853504,
+        "avgLatencyMs": 0.022850300000000018,
+        "p50LatencyMs": 0.022850300000000018,
+        "p95LatencyMs": 0.022850300000000018,
+        "p99LatencyMs": 0.022850300000000018,
         "rmePct": 0,
-        "totalMs": 22.57610000000001
+        "totalMs": 22.85030000000002
       }
     }
   ]

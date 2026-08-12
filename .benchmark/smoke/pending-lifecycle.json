@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "suite": "pending-lifecycle",
-  "generatedAt": "2026-06-25T18:00:12.046Z",
+  "generatedAt": "2026-08-12T15:36:54.657Z",
   "runtime": {
-    "node": "v26.4.0",
+    "node": "v26.0.0",
     "platform": "win32",
     "arch": "x64"
   },
@@ -18,11 +18,11 @@
       "label": "single request release raw map",
       "group": "raw",
       "metrics": {
-        "opsPerSec": 28123066.53917545,
-        "avgLatencyMs": 0.00003555799999999998,
-        "p50LatencyMs": 0.00003581000000000003,
-        "p95LatencyMs": 0.00004238,
-        "p99LatencyMs": 0.00004238,
+        "opsPerSec": 26037598.29193354,
+        "avgLatencyMs": 0.00003840600000000002,
+        "p50LatencyMs": 0.00003536999999999999,
+        "p95LatencyMs": 0.0000468,
+        "p99LatencyMs": 0.0000468,
         "rmePct": 0
       }
     },
@@ -31,11 +31,11 @@
       "label": "single request release witness",
       "group": "witness",
       "metrics": {
-        "opsPerSec": 15374208.228276253,
-        "avgLatencyMs": 0.00006504399999999997,
-        "p50LatencyMs": 0.0000638300000000001,
-        "p95LatencyMs": 0.00008322999999999965,
-        "p99LatencyMs": 0.00008322999999999965,
+        "opsPerSec": 16831616.508449465,
+        "avgLatencyMs": 0.00005941200000000002,
+        "p50LatencyMs": 0.00006343999999999993,
+        "p95LatencyMs": 0.00006900000000000013,
+        "p99LatencyMs": 0.00006900000000000013,
         "rmePct": 0
       }
     },
@@ -44,11 +44,11 @@
       "label": "late stale witness release raw map",
       "group": "raw",
       "metrics": {
-        "opsPerSec": 13810247.203424968,
-        "avgLatencyMs": 0.00007240999999999986,
-        "p50LatencyMs": 0.00007337999999999952,
-        "p95LatencyMs": 0.00007753999999999976,
-        "p99LatencyMs": 0.00007753999999999976,
+        "opsPerSec": 14026032.315978434,
+        "avgLatencyMs": 0.0000712960000000001,
+        "p50LatencyMs": 0.00006914999999999978,
+        "p95LatencyMs": 0.00007926000000000002,
+        "p99LatencyMs": 0.00007926000000000002,
         "rmePct": 0
       }
     },
@@ -57,11 +57,11 @@
       "label": "late stale witness release witness",
       "group": "witness",
       "metrics": {
-        "opsPerSec": 9321401.938851595,
-        "avgLatencyMs": 0.00010728000000000008,
-        "p50LatencyMs": 0.00011156000000000006,
-        "p95LatencyMs": 0.00011750000000000043,
-        "p99LatencyMs": 0.00011750000000000043,
+        "opsPerSec": 9540710.210468072,
+        "avgLatencyMs": 0.00010481399999999994,
+        "p50LatencyMs": 0.00010413999999999958,
+        "p95LatencyMs": 0.00011648999999999958,
+        "p99LatencyMs": 0.00011648999999999958,
         "rmePct": 0
       }
     },
@@ -70,11 +70,11 @@
       "label": "close many pending raw map",
       "group": "raw",
       "metrics": {
-        "opsPerSec": 10730534.809854897,
-        "avgLatencyMs": 0.00009319200000000023,
-        "p50LatencyMs": 0.00009603000000000037,
-        "p95LatencyMs": 0.00014247000000000015,
-        "p99LatencyMs": 0.00014247000000000015,
+        "opsPerSec": 13121981.944152815,
+        "avgLatencyMs": 0.00007620800000000016,
+        "p50LatencyMs": 0.00006507000000000005,
+        "p95LatencyMs": 0.00011871000000000009,
+        "p99LatencyMs": 0.00011871000000000009,
         "rmePct": 0
       }
     },
@@ -83,11 +83,11 @@
       "label": "close many pending witness",
       "group": "witness",
       "metrics": {
-        "opsPerSec": 5836008.170411447,
-        "avgLatencyMs": 0.00017134999999999975,
-        "p50LatencyMs": 0.0001681299999999993,
-        "p95LatencyMs": 0.00023239000000000018,
-        "p99LatencyMs": 0.00023239000000000018,
+        "opsPerSec": 5730133.62671617,
+        "avgLatencyMs": 0.00017451600000000013,
+        "p50LatencyMs": 0.00015374000000000052,
+        "p95LatencyMs": 0.00025844000000000024,
+        "p99LatencyMs": 0.00025844000000000024,
         "rmePct": 0
       }
     }
@@ -99,8 +99,8 @@
       "baselineCaseId": "single-request-release:raw",
       "candidateCaseId": "single-request-release:witness",
       "delta": {
-        "throughputPct": -45.33239038189534,
-        "latencyPct": 82.92367399741269
+        "throughputPct": -35.35649363764895,
+        "latencyPct": 54.6945789720356
       }
     },
     {
@@ -109,8 +109,8 @@
       "baselineCaseId": "late-stale-witness-release:raw",
       "candidateCaseId": "late-stale-witness-release:witness",
       "delta": {
-        "throughputPct": -32.50372856077573,
-        "latencyPct": 48.15633199834318
+        "throughputPct": -31.978552483446727,
+        "latencyPct": 47.012455116696295
       }
     },
     {
@@ -119,8 +119,8 @@
       "baselineCaseId": "close-many-pending:raw",
       "candidateCaseId": "close-many-pending:witness",
       "delta": {
-        "throughputPct": -45.613072658301505,
-        "latencyPct": 83.86771396686339
+        "throughputPct": -56.33179765752131,
+        "latencyPct": 128.99958009657746
       }
     }
   ]

@@ -1,9 +1,9 @@
-import type { BinaryReader, Codec } from '../codec/types.js';
+import { ByteArrayBinaryReader } from '../codec/byte-array-reader.js';
+import type { Codec } from '../codec/types.js';
 import { FrameFlag, Opcode, TransportErrorHint } from '../constants.js';
 import { ShirikaClosedError, ShirikaOverloadError, ShirikaOversizeError, ShirikaProtocolError, ShirikaTimeoutError } from '../errors.js';
 import type { DuplexEndpoint, FrameHeader, FrameReadView, SendFrameOptions } from '../ring/endpoint.js';
-import { decodeUtf8 } from '../utf8.js';
-import { deadlineFromTimeout, describeError, remainingTimeout } from '../utils.js';
+import { classifyTerminalReason, deadlineFromTimeout, describeError, remainingTimeout } from '../utils.js';
 import { cancelPayloadCodec, createCancelReason } from './cancel.js';
 import { type ContractInput, type ContractShape, type MethodNames, type PreparedContract, prepareContract, type RequestOf } from './contract.js';
 import {
@@ -21,77 +21,6 @@ import {
 import { remoteErrorCodec, toRemoteErrorPayload } from './remote-error.js';
 import type { RpcHandlerContext, RpcHandlers, RpcOverloadPolicy, RpcServer, RpcTransportOptions } from './types.js';
 
-class ByteArrayBinaryReader implements BinaryReader {
-    readonly #bytes: Uint8Array;
-    readonly #view: DataView;
-    #offset = 0;
-    constructor(bytes: Uint8Array) {
-        this.#bytes = bytes;
-        this.#view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-    }
-    get remainingBytes(): number {
-        return this.#bytes.byteLength - this.#offset;
-    }
-    readU8(): number {
-        this.ensureCapacity(1);
-        const value = this.#bytes[this.#offset] ?? 0;
-        this.#offset += 1;
-        return value;
-    }
-    readU16(): number {
-        this.ensureCapacity(2);
-        const value = this.#view.getUint16(this.#offset, true);
-        this.#offset += 2;
-        return value;
-    }
-    readU32(): number {
-        this.ensureCapacity(4);
-        const value = this.#view.getUint32(this.#offset, true);
-        this.#offset += 4;
-        return value;
-    }
-    readI32(): number {
-        this.ensureCapacity(4);
-        const value = this.#view.getInt32(this.#offset, true);
-        this.#offset += 4;
-        return value;
-    }
-    readF64(): number {
-        this.ensureCapacity(8);
-        const value = this.#view.getFloat64(this.#offset, true);
-        this.#offset += 8;
-        return value;
-    }
-    readBool(): boolean {
-        return this.readU8() !== 0;
-    }
-    readBytes(length: number): Uint8Array {
-        this.ensureCapacity(length);
-        const value = this.#bytes.slice(this.#offset, this.#offset + length);
-        this.#offset += length;
-        return value;
-    }
-    readStringUtf8(): string {
-        const byteLength = this.readU32();
-        return byteLength === 0 ? '' : decodeUtf8(this.readBytes(byteLength));
-    }
-    readVarBytes(): Uint8Array {
-        return this.readBytes(this.readU32());
-    }
-    readArrayHeader(): number {
-        return this.readU32();
-    }
-    assertFullyRead(): void {
-        if (this.#offset !== this.#bytes.byteLength) {
-            throw new ShirikaProtocolError(`Binary reader did not consume payload exactly: expected ${this.#bytes.byteLength}, read ${this.#offset}`);
-        }
-    }
-    private ensureCapacity(requiredBytes: number): void {
-        if (requiredBytes > this.remainingBytes) {
-            throw new ShirikaProtocolError(`Binary reader underflow: need ${requiredBytes} bytes with only ${this.remainingBytes} bytes remaining`);
-        }
-    }
-}
 class BufferedFrameView {
     readonly header: FrameHeader;
     readonly payloadLength: number;
@@ -169,8 +98,8 @@ export class RpcServerImpl<C extends ContractShape> implements RpcServer<C> {
         this.#endpoint = endpoint;
         this.#defaultResponseTimeoutMs = options.defaultResponseTimeoutMs ?? options.defaultTimeoutMs;
         this.#closeTimeoutMs = options.closeTimeoutMs ?? 50;
-        this.#maxInFlight = normalizePositiveInteger(options.maxInFlight, Number.POSITIVE_INFINITY, 'maxInFlight');
-        this.#maxQueuedRequests = normalizeNonNegativeInteger(options.maxQueuedRequests, Number.POSITIVE_INFINITY, 'maxQueuedRequests');
+        this.#maxInFlight = normalizeInteger(options.maxInFlight, Number.POSITIVE_INFINITY, 'maxInFlight', 1, 'positive');
+        this.#maxQueuedRequests = normalizeInteger(options.maxQueuedRequests, Number.POSITIVE_INFINITY, 'maxQueuedRequests', 0, 'non-negative');
         this.#overloadPolicy = options.overloadPolicy ?? 'queue';
         this.#onFatalError = options.onFatalError;
         this.#onNotifyError = options.onNotifyError;
@@ -202,7 +131,9 @@ export class RpcServerImpl<C extends ContractShape> implements RpcServer<C> {
                 responseSendTimeMs: snapshotDurationStats(this.#responseSendTimeStats),
             },
             metrics: {
-                handlerLatencyByMethod: snapshotHandlerLatencyByMethod(this.#handlerLatencyByMethod),
+                handlerLatencyByMethod: Object.fromEntries(
+                    [...this.#handlerLatencyByMethod].map(([methodName, metrics]) => [methodName, snapshotMethodLatencyMetrics(metrics)]),
+                ),
             },
         };
     }
@@ -304,7 +235,7 @@ export class RpcServerImpl<C extends ContractShape> implements RpcServer<C> {
             frame.discard();
             return;
         }
-        const deadline = deriveDeadline(frame);
+        const deadline = (frame.header.flags & FrameFlag.HAS_DEADLINE) === 0 ? undefined : Date.now() + frame.header.reserved;
         if (this.#inFlight.size < this.#maxInFlight) {
             this.startInvocation(frame, kind, deadline);
             return;
@@ -398,23 +329,15 @@ export class RpcServerImpl<C extends ContractShape> implements RpcServer<C> {
                 statusCode: 404,
                 data: { methodId: frame.header.methodId },
             });
-            if (kind === 'request') {
-                if (shouldReply(invocation)) {
-                    this.recordRequestOutcome(await this.sendErrorResponse(frame.header.requestId, frame.header.methodId, error, invocation.deadline));
-                } else {
-                    this.recordRequestOutcome(classifySuppressedRequest(invocation));
-                }
-            } else {
-                this.handleNotifyFailure(undefined, frame.header.methodId, frame.header.requestId, error);
-            }
+            await this.failInvocation(kind, invocation, frame.header.requestId, frame.header.methodId, undefined, error);
             return;
         }
         const methodName = entry.method;
         const def = entry.def;
         const handler = this.#handlers[methodName] as (request: RequestOf<C, MethodNames<C>>, ctx: RpcHandlerContext<C, MethodNames<C>>) => unknown;
         const request = frame.readWithCodec(def.request) as RequestOf<C, MethodNames<C>>;
-        let response: unknown;
         const handlerStartedAt = nowMs();
+        let response: unknown;
         try {
             response = await handler(request, {
                 requestId: frame.header.requestId,
@@ -425,26 +348,34 @@ export class RpcServerImpl<C extends ContractShape> implements RpcServer<C> {
             });
         } catch (error) {
             this.recordHandlerLatency(String(methodName), kind, nowMs() - handlerStartedAt);
-            if (kind === 'request') {
-                if (shouldReply(invocation)) {
-                    this.recordRequestOutcome(await this.sendErrorResponse(frame.header.requestId, def.id, error, invocation.deadline));
-                } else {
-                    this.recordRequestOutcome(classifySuppressedRequest(invocation));
-                }
-            } else {
-                this.handleNotifyFailure(String(methodName), def.id, frame.header.requestId, error);
-            }
+            await this.failInvocation(kind, invocation, frame.header.requestId, def.id, String(methodName), error);
             return;
         }
         this.recordHandlerLatency(String(methodName), kind, nowMs() - handlerStartedAt);
         if (kind !== 'request') {
             return;
         }
-        if (!shouldReply(invocation)) {
-            this.recordRequestOutcome(classifySuppressedRequest(invocation));
+        this.recordRequestOutcome(
+            shouldReply(invocation)
+                ? await this.sendOkResponse(frame.header.requestId, def.id, def.response, response, invocation.deadline)
+                : classifySuppressedRequest(invocation),
+        );
+    }
+    private async failInvocation(
+        kind: 'request' | 'notify',
+        invocation: ActiveInvocation,
+        requestId: number,
+        methodId: number,
+        methodName: string | undefined,
+        error: unknown,
+    ): Promise<void> {
+        if (kind !== 'request') {
+            this.handleNotifyFailure(methodName, methodId, requestId, error);
             return;
         }
-        this.recordRequestOutcome(await this.sendOkResponse(frame.header.requestId, def.id, def.response, response, invocation.deadline));
+        this.recordRequestOutcome(
+            shouldReply(invocation) ? await this.sendErrorResponse(requestId, methodId, error, invocation.deadline) : classifySuppressedRequest(invocation),
+        );
     }
     private recordHandlerLatency(methodName: string, kind: 'request' | 'notify', durationMs: number): void {
         recordDuration(this.#handlerTimeStats, durationMs);
@@ -463,17 +394,13 @@ export class RpcServerImpl<C extends ContractShape> implements RpcServer<C> {
             snapshot: this.snapshot(),
         };
         safeInvokeHook(this.#onNotifyError, event, 'onNotifyError');
-        switch (this.#notifyErrorPolicy) {
-            case 'callback':
-                return;
-            case 'throw':
-                throw error instanceof Error ? error : new Error(describeError(error));
-            case 'log':
-                console.error(`[shirika-rpc] notify handler failed for ${methodName ?? `method#${methodId}`}`, error);
-                return;
-            default:
-                console.error(`[shirika-rpc] notify handler failed for ${methodName ?? `method#${methodId}`}`, error);
+        if (this.#notifyErrorPolicy === 'callback') {
+            return;
         }
+        if (this.#notifyErrorPolicy === 'throw') {
+            throw error instanceof Error ? error : new Error(describeError(error));
+        }
+        console.error(`[shirika-rpc] notify handler failed for ${methodName ?? `method#${methodId}`}`, error);
     }
     private async sendOkResponse<T>(
         requestId: number,
@@ -552,20 +479,8 @@ export class RpcServerImpl<C extends ContractShape> implements RpcServer<C> {
         }
     }
 }
-function deriveDeadline(frame: FrameReadView): number | undefined {
-    if ((frame.header.flags & FrameFlag.HAS_DEADLINE) === 0) {
-        return undefined;
-    }
-    return Date.now() + frame.header.reserved;
-}
 function shouldReply(invocation: ActiveInvocation): boolean {
-    if (invocation.controller.signal.aborted) {
-        return false;
-    }
-    if (invocation.deadline === undefined) {
-        return true;
-    }
-    return invocation.deadline > Date.now();
+    return !invocation.controller.signal.aborted && (invocation.deadline === undefined || invocation.deadline > Date.now());
 }
 function classifySuppressedRequest(invocation: ActiveInvocation): TerminalOutcome {
     const reason: unknown = invocation.controller.signal.reason;
@@ -616,92 +531,41 @@ function resolveErrorStatusCode(error: unknown, fallbackCode: string | number | 
     }
     return undefined;
 }
-function classifyTerminalReason(reason: unknown): TerminalOutcome {
-    if (reason instanceof ShirikaTimeoutError) {
-        return 'timed-out';
-    }
-    if (reason instanceof ShirikaClosedError || isAbortLike(reason)) {
-        return 'cancelled';
-    }
-    return 'failed';
-}
-function isAbortLike(reason: unknown): boolean {
-    return reason instanceof DOMException ? reason.name === 'AbortError' : reason instanceof Error ? reason.name === 'AbortError' : false;
-}
-function normalizePositiveInteger(value: number | undefined, fallback: number, label: string): number {
+function normalizeInteger(value: number | undefined, fallback: number, label: string, minimum: number, kind: 'positive' | 'non-negative'): number {
     if (value === undefined) {
         return fallback;
     }
-    if (!Number.isInteger(value) || value <= 0) {
-        throw new TypeError(`${label} must be a positive integer, received ${value}`);
+    if (!Number.isInteger(value) || value < minimum) {
+        throw new TypeError(`${label} must be a ${kind} integer, received ${value}`);
     }
     return value;
-}
-function normalizeNonNegativeInteger(value: number | undefined, fallback: number, label: string): number {
-    if (value === undefined) {
-        return fallback;
-    }
-    if (!Number.isInteger(value) || value < 0) {
-        throw new TypeError(`${label} must be a non-negative integer, received ${value}`);
-    }
-    return value;
-}
-function snapshotHandlerLatencyByMethod(
-    metricsByMethod: Map<string, ReturnType<typeof createMethodLatencyMetrics>>,
-): Record<string, ReturnType<typeof snapshotMethodLatencyMetrics>> {
-    const snapshot: Record<string, ReturnType<typeof snapshotMethodLatencyMetrics>> = {};
-    for (const [methodName, metrics] of metricsByMethod) {
-        snapshot[methodName] = snapshotMethodLatencyMetrics(metrics);
-    }
-    return snapshot;
 }
 function createRemoteErrorPayloadAttempts(payload: ReturnType<typeof toRemoteErrorPayload>): ReturnType<typeof toRemoteErrorPayload>[] {
+    const withCode = payload.code !== undefined ? ({ code: payload.code } as const) : {};
+    const base = { name: payload.name, message: payload.message, ...withCode };
+    const candidates: Array<ReturnType<typeof toRemoteErrorPayload> | undefined> = [
+        payload,
+        payload.stack !== undefined ? { ...base, ...(payload.data !== undefined ? { data: payload.data } : {}) } : undefined,
+        payload.data !== undefined || payload.stack !== undefined ? base : undefined,
+        { ...base, message: truncateRemoteErrorMessage(payload.message, 256) },
+        { ...base, message: truncateRemoteErrorMessage(payload.message, 128) },
+        { name: 'Error', message: truncateRemoteErrorMessage(payload.message, 64), ...withCode },
+    ];
     const attempts: ReturnType<typeof toRemoteErrorPayload>[] = [];
-    const push = (candidate: ReturnType<typeof toRemoteErrorPayload>) => {
+    for (const candidate of candidates) {
+        if (candidate === undefined) {
+            continue;
+        }
         const previous = attempts.at(-1);
         if (previous && JSON.stringify(previous) === JSON.stringify(candidate)) {
-            return;
+            continue;
         }
         attempts.push(candidate);
-    };
-    push(payload);
-    if (payload.stack !== undefined) {
-        push({
-            name: payload.name,
-            message: payload.message,
-            ...(payload.code !== undefined ? { code: payload.code } : {}),
-            ...(payload.data !== undefined ? { data: payload.data } : {}),
-        });
     }
-    if (payload.data !== undefined || payload.stack !== undefined) {
-        push({
-            name: payload.name,
-            message: payload.message,
-            ...(payload.code !== undefined ? { code: payload.code } : {}),
-        });
-    }
-    push({
-        name: payload.name,
-        message: truncateRemoteErrorMessage(payload.message, 256),
-        ...(payload.code !== undefined ? { code: payload.code } : {}),
-    });
-    push({
-        name: payload.name,
-        message: truncateRemoteErrorMessage(payload.message, 128),
-        ...(payload.code !== undefined ? { code: payload.code } : {}),
-    });
-    push({
-        name: 'Error',
-        message: truncateRemoteErrorMessage(payload.message, 64),
-        ...(payload.code !== undefined ? { code: payload.code } : {}),
-    });
     return attempts;
 }
 function truncateRemoteErrorMessage(message: string, maxLength: number): string {
-    if (message.length <= maxLength) {
-        return message;
-    }
-    return `${message.slice(0, Math.max(0, maxLength - 1))}…`;
+    return message.length <= maxLength ? message : `${message.slice(0, Math.max(0, maxLength - 1))}…`;
 }
 export function createRpcServer<C extends ContractShape>(
     contract: ContractInput<C>,

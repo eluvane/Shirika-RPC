@@ -99,7 +99,6 @@ function checkDependencies() {
             for (const pattern of forbiddenSpecPatterns) {
                 assert(!pattern.test(spec), `${section}.${name} must use a registry semver range, not ${JSON.stringify(spec)}`);
             }
-            // npm: aliases are allowed only for the TypeScript 6/7 dual-stack (native CLI + JS API).
             if (spec.startsWith('npm:') && name !== '@typescript/native' && name !== 'typescript') {
                 fail(`${section}.${name} must not use npm: aliases outside the TypeScript dual-stack`);
             }
