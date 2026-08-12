@@ -151,6 +151,7 @@ export default tseslint.config(
             '.tsbuildinfo/**',
             '.tools/**',
             '.pi-glla/**',
+            'scripts/quality/collapse-candidates.mjs',
             'coverage/**',
             'shared/**/*.d.ts',
             'shared/**/*.d.mts',

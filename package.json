@@ -73,7 +73,7 @@
     "lint:workflows": "node scripts/quality/check-workflows.mjs",
     "lint:ci-consistency": "node scripts/quality/check-ci-consistency.mjs",
     "lint:markdown:external": "pnpm dlx markdownlint-cli2@0.22.1 --config .config/shirika/lints/markdownlint-cli2.jsonc \"**/*.md\"",
-    "lint:yaml:external": "py -3 -m yamllint -c .config/shirika/lints/yamllint.yml .",
+    "lint:yaml:external": "node scripts/quality/run-yamllint.mjs",
     "lint:actions:external": "node scripts/quality/run-actionlint.mjs",
     "lint:zizmor": "node scripts/quality/run-zizmor.mjs",
     "lint:secrets": "gitleaks detect --no-git --source . --config .config/shirika/security/gitleaks.toml --redact --no-banner",

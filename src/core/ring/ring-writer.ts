@@ -123,5 +123,7 @@ export function unsafeCreateTrustedMeasuredRingBinaryWriter(ring: SharedRingBuff
 }
 
 class UncheckedMeasuredRingBinaryWriter extends RingBinaryWriter implements TrustedMeasuredRingBinaryWriter {
-    protected override ensureCapacity(_requiredBytes: number): void {}
+    protected override ensureCapacity(_requiredBytes: number): void {
+        void _requiredBytes;
+    }
 }
