@@ -254,8 +254,8 @@ export class DuplexEndpoint {
     snapshot(): DuplexEndpointSnapshot {
         const inbound = this.inbound.snapshot();
         const outbound = this.outbound.snapshot();
-        this.observeInboundSaturation(inbound);
-        this.observeOutboundSaturation(outbound);
+        this.observeSnapshotSaturation(this.#inboundSaturationTimeline, inbound);
+        this.observeSnapshotSaturation(this.#outboundSaturationTimeline, outbound);
         const inboundSaturation = ringSaturation(inbound);
         const outboundSaturation = ringSaturation(outbound);
         return {
@@ -336,7 +336,7 @@ export class DuplexEndpoint {
             let frame: FrameReadView;
             try {
                 frame = new FrameReadView(this.inbound, readSeq, readFrameHeader(this.inbound, readSeq), undefined, () => {
-                    this.observeCurrentInboundSaturation();
+                    this.observeSaturation(this.inbound, this.#inboundSaturationTimeline);
                 });
             } catch (error) {
                 this.markErrored(TransportErrorHint.PROTOCOL);
@@ -344,7 +344,7 @@ export class DuplexEndpoint {
             }
             this.#framesReceived += 1;
             recordHistogramValue(this.#receivedFrameSizeHistogram, frame.frameSize);
-            this.observeCurrentInboundSaturation();
+            this.observeSaturation(this.inbound, this.#inboundSaturationTimeline);
             return frame;
         } catch (error) {
             this.#receiveErrors += 1;
@@ -417,7 +417,7 @@ export class DuplexEndpoint {
             throw new ShirikaTimeoutError('Timed out before frame could be queued for sending');
         }
         const sendStartedAt = nowMs();
-        this.observeCurrentOutboundSaturation();
+        this.observeSaturation(this.outbound, this.#outboundSaturationTimeline);
         const writeSeq = await this.outbound.waitForWritable(frameSize, options.timeoutMs, options.signal);
         const header: FrameHeader = {
             magic: FRAME_MAGIC,
@@ -435,21 +435,23 @@ export class DuplexEndpoint {
         if (payloadLength > 0) {
             if (useAlignedBytesPayload) {
                 writeAlignedBytesPayload(this.outbound, payloadSeq, payload as Uint8Array);
-            } else if (codec.kind === 'binary') {
-                if ((usePrimitiveMeasuredWriterFastPath || measuredWriterSelection !== undefined) && preparedBinaryCodec !== undefined) {
-                    const writer = unsafeCreateTrustedMeasuredRingBinaryWriter(this.outbound, payloadSeq, payloadLength);
-                    if (measuredWriterSelection?.strategy === undefined) {
-                        preparedBinaryCodec.write(writer, payload);
-                    } else {
-                        measuredWriterSelection.strategy.write(writer, payload, measuredWriterSelection.payloadLength);
-                    }
-                    writer.finish();
+            } else if (
+                codec.kind === 'binary' &&
+                (usePrimitiveMeasuredWriterFastPath || measuredWriterSelection !== undefined) &&
+                preparedBinaryCodec !== undefined
+            ) {
+                const writer = unsafeCreateTrustedMeasuredRingBinaryWriter(this.outbound, payloadSeq, payloadLength);
+                if (measuredWriterSelection?.strategy === undefined) {
+                    preparedBinaryCodec.write(writer, payload);
                 } else {
-                    const writer = new RingBinaryWriter(this.outbound, payloadSeq, payloadLength);
-                    const fallbackCodec = preparedBinaryCodec?.codec ?? (isPreparedBinaryCodec(codec) ? codec.codec : codec);
-                    fallbackCodec.write(writer, payload);
-                    writer.finish();
+                    measuredWriterSelection.strategy.write(writer, payload, measuredWriterSelection.payloadLength);
                 }
+                writer.finish();
+            } else if (codec.kind === 'binary') {
+                const writer = new RingBinaryWriter(this.outbound, payloadSeq, payloadLength);
+                const fallbackCodec = preparedBinaryCodec?.codec ?? (isPreparedBinaryCodec(codec) ? codec.codec : codec);
+                fallbackCodec.write(writer, payload);
+                writer.finish();
             } else if (codec.write) {
                 const writer = new RingBinaryWriter(this.outbound, payloadSeq, payloadLength);
                 codec.write(writer, payload);
@@ -465,20 +467,8 @@ export class DuplexEndpoint {
         this.outbound.commitWrite(u32(writeSeq + frameSize));
         this.#framesSent += 1;
         recordHistogramValue(this.#sentFrameSizeHistogram, frameSize);
-        this.observeCurrentOutboundSaturation();
-        recordDuration(this.#sendTimeStats, nowMs() - sendStartedAt);
-    }
-    private observeCurrentInboundSaturation(): void {
-        this.observeSaturation(this.inbound, this.#inboundSaturationTimeline);
-    }
-    private observeCurrentOutboundSaturation(): void {
         this.observeSaturation(this.outbound, this.#outboundSaturationTimeline);
-    }
-    private observeInboundSaturation(snapshot: RingSnapshot): void {
-        this.observeSnapshotSaturation(this.#inboundSaturationTimeline, snapshot);
-    }
-    private observeOutboundSaturation(snapshot: RingSnapshot): void {
-        this.observeSnapshotSaturation(this.#outboundSaturationTimeline, snapshot);
+        recordDuration(this.#sendTimeStats, nowMs() - sendStartedAt);
     }
     private observeSnapshotSaturation(timeline: ReturnType<typeof createRingSaturationTimeline>, snapshot: RingSnapshot): void {
         try {

@@ -133,7 +133,7 @@ function writeMsgpackValue(writer: BinaryWriter, value: unknown): void {
         return;
     }
     if (Array.isArray(value)) {
-        writeArrayHeader(writer, value.length);
+        writeContainerHeader(writer, value.length, 0x90, Marker.ARRAY16, Marker.ARRAY32);
         for (const item of value) {
             writeMsgpackValue(writer, item);
         }
@@ -234,7 +234,7 @@ function measureObject(value: Record<string, unknown>): number {
 
 function writeObject(writer: BinaryWriter, value: Record<string, unknown>): void {
     const keys = Object.keys(value).filter((key) => value[key] !== undefined);
-    writeMapHeader(writer, keys.length);
+    writeContainerHeader(writer, keys.length, 0x80, Marker.MAP16, Marker.MAP32);
     for (const key of keys) {
         writeString(writer, key);
         writeMsgpackValue(writer, value[key]);
@@ -416,18 +416,6 @@ function measureContainerHeader(length: number): number {
     return 5;
 }
 
-function writeArrayHeader(writer: BinaryWriter, length: number): void {
-    if (length <= 15) {
-        writer.writeU8(0x90 | length);
-    } else if (length <= 0xffff) {
-        writer.writeU8(Marker.ARRAY16);
-        writeU16BE(writer, length);
-    } else {
-        writer.writeU8(Marker.ARRAY32);
-        writeU32BE(writer, length);
-    }
-}
-
 function readArray(reader: BinaryReader, length: number): unknown[] {
     assertContainerLength(reader, 'array', length, 1);
     const result: unknown[] = Array.from({ length });
@@ -446,16 +434,18 @@ function assertContainerLength(reader: BinaryReader, kind: 'array' | 'map', leng
     }
 }
 
-function writeMapHeader(writer: BinaryWriter, length: number): void {
+function writeContainerHeader(writer: BinaryWriter, length: number, fixPrefix: number, marker16: number, marker32: number): void {
     if (length <= 15) {
-        writer.writeU8(0x80 | length);
-    } else if (length <= 0xffff) {
-        writer.writeU8(Marker.MAP16);
-        writeU16BE(writer, length);
-    } else {
-        writer.writeU8(Marker.MAP32);
-        writeU32BE(writer, length);
+        writer.writeU8(fixPrefix | length);
+        return;
     }
+    if (length <= 0xffff) {
+        writer.writeU8(marker16);
+        writeU16BE(writer, length);
+        return;
+    }
+    writer.writeU8(marker32);
+    writeU32BE(writer, length);
 }
 
 function readMap(reader: BinaryReader, length: number): Record<string, unknown> {

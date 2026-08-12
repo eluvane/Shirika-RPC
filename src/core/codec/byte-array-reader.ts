@@ -24,31 +24,19 @@ export class ByteArrayBinaryReader implements BinaryReader {
     }
 
     readU16(): number {
-        this.ensureCapacity(2);
-        const value = this.#view.getUint16(this.#offset, true);
-        this.#offset += 2;
-        return value;
+        return this.#view.getUint16(this.take(2), true);
     }
 
     readU32(): number {
-        this.ensureCapacity(4);
-        const value = this.#view.getUint32(this.#offset, true);
-        this.#offset += 4;
-        return value;
+        return this.#view.getUint32(this.take(4), true);
     }
 
     readI32(): number {
-        this.ensureCapacity(4);
-        const value = this.#view.getInt32(this.#offset, true);
-        this.#offset += 4;
-        return value;
+        return this.#view.getInt32(this.take(4), true);
     }
 
     readF64(): number {
-        this.ensureCapacity(8);
-        const value = this.#view.getFloat64(this.#offset, true);
-        this.#offset += 8;
-        return value;
+        return this.#view.getFloat64(this.take(8), true);
     }
 
     readBool(): boolean {
@@ -79,6 +67,13 @@ export class ByteArrayBinaryReader implements BinaryReader {
         if (this.#offset !== this.#bytes.byteLength) {
             throw new ShirikaProtocolError(`Binary reader did not consume payload exactly: expected ${this.#bytes.byteLength}, read ${this.#offset}`);
         }
+    }
+
+    private take(size: number): number {
+        this.ensureCapacity(size);
+        const offset = this.#offset;
+        this.#offset += size;
+        return offset;
     }
 
     private ensureCapacity(requiredBytes: number): void {

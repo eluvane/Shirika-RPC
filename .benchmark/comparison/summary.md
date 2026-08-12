@@ -1,113 +1,113 @@
 # Benchmark comparison
 
-Current baseline: 2026-08-12T15:36:45.162Z
-Previous baseline: 2026-06-25T17:59:53.639Z
+Current baseline: 2026-08-12T16:16:29.510Z
+Previous baseline: 2026-08-12T15:36:45.162Z
 Thresholds: throughput -5%, avg/p95 +5%, p99 +8%
 
-Detected 22 benchmark governance regression(s).
+Detected 25 benchmark governance regression(s).
 
 ## contract-preparation
 
 | Case | prev ops/sec | curr ops/sec | Δ ops | Δ avg | Δ p95 | Δ p99 | status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| describeContract(raw contract) | 31578.88 | 32848.94 | +4.02% | n/a | n/a | n/a | ok |
-| describeContract(prepared) | 142165.39 | 135592.36 | -4.62% | n/a | n/a | n/a | ok |
-| getContractHash(raw contract) | 32930.15 | 33693.08 | +2.32% | n/a | n/a | n/a | ok |
-| getContractHash(prepared) | 164661.61 | 162785.72 | -1.14% | n/a | n/a | n/a | ok |
-| buildMethodIndex(raw contract) | 29541.52 | 32251.51 | +9.17% | n/a | n/a | n/a | ok |
-| prepared.methodIndex lookup | 42780748.66 | 41898856.16 | -2.06% | n/a | n/a | n/a | ok |
+| describeContract(raw contract) | 32848.94 | 30981.80 | -5.68% | n/a | n/a | n/a | throughput -5.68% |
+| describeContract(prepared) | 135592.36 | 133390.02 | -1.62% | n/a | n/a | n/a | ok |
+| getContractHash(raw contract) | 33693.08 | 32128.82 | -4.64% | n/a | n/a | n/a | ok |
+| getContractHash(prepared) | 162785.72 | 153133.85 | -5.93% | n/a | n/a | n/a | throughput -5.93% |
+| buildMethodIndex(raw contract) | 32251.51 | 30342.90 | -5.92% | n/a | n/a | n/a | throughput -5.92% |
+| prepared.methodIndex lookup | 41898856.16 | 38844002.49 | -7.29% | n/a | n/a | n/a | throughput -7.29% |
 
 ## frame-receive
 
 | Case | prev ops/sec | curr ops/sec | Δ ops | Δ avg | Δ p95 | Δ p99 | status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| empty request frame receive/read | 43953.80 | 44650.49 | +1.59% | -1.56% | -1.56% | -1.56% | ok |
-| small request frame receive/read | 45060.78 | 44801.03 | -0.58% | +0.58% | +0.58% | +0.58% | ok |
-| mixed request/response/cancel receive/read | 45694.94 | 46070.08 | +0.82% | -0.81% | -0.81% | -0.81% | ok |
+| empty request frame receive/read | 44650.49 | 42141.24 | -5.62% | +5.95% | +5.95% | +5.95% | throughput -5.62%; avg latency +5.95%; p95 latency +5.95% |
+| small request frame receive/read | 44801.03 | 42601.91 | -4.91% | +5.16% | +5.16% | +5.16% | avg latency +5.16%; p95 latency +5.16% |
+| mixed request/response/cancel receive/read | 46070.08 | 43423.22 | -5.75% | +6.10% | +6.10% | +6.10% | throughput -5.75%; avg latency +6.10%; p95 latency +6.10% |
 
 ## aligned-bytes-payload
 
 | Case | prev ops/sec | curr ops/sec | Δ ops | Δ avg | Δ p95 | Δ p99 | status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| small/no-wrap | 46220.55 | 44461.44 | -3.81% | +3.96% | +23.08% | +23.08% | p95 latency +23.08%; p99 latency +23.08% |
-| small/prefix-wrap | 45354.25 | 47016.01 | +3.66% | -3.53% | -17.19% | -17.19% | ok |
-| small/body-wrap | 50425.72 | 45218.18 | -10.33% | +11.52% | +76.44% | +76.44% | throughput -10.33%; avg latency +11.52%; p95 latency +76.44%; p99 latency +76.44% |
-| 1MiB/no-wrap | 5120.12 | 5371.61 | +4.91% | -4.68% | +4.74% | +4.74% | ok |
-| 1MiB/prefix-wrap | 3795.01 | 3771.99 | -0.61% | +0.61% | +6.35% | +6.35% | p95 latency +6.35% |
-| 1MiB/body-wrap | 3621.04 | 3791.10 | +4.70% | -4.49% | +0.33% | +0.33% | ok |
-| 8MiB/no-wrap | 569.68 | 612.47 | +7.51% | -6.99% | +2.96% | +2.96% | ok |
-| 8MiB/prefix-wrap | 388.87 | 422.87 | +8.74% | -8.04% | +8.31% | +8.31% | p95 latency +8.31%; p99 latency +8.31% |
-| 8MiB/body-wrap | 497.91 | 486.89 | -2.21% | +2.26% | +44.42% | +44.42% | p95 latency +44.42%; p99 latency +44.42% |
-| 32MiB/no-wrap | 149.35 | 167.20 | +11.95% | -10.67% | -20.29% | -20.29% | ok |
-| 32MiB/prefix-wrap | 120.49 | 122.10 | +1.34% | -1.32% | -7.55% | -7.55% | ok |
-| 32MiB/body-wrap | 104.36 | 132.68 | +27.13% | -21.34% | -22.45% | -22.45% | ok |
+| small/no-wrap | 44461.44 | 42655.47 | -4.06% | +4.23% | -10.62% | -10.62% | ok |
+| small/prefix-wrap | 47016.01 | 43404.66 | -7.68% | +8.32% | +31.78% | +31.78% | throughput -7.68%; avg latency +8.32%; p95 latency +31.78%; p99 latency +31.78% |
+| small/body-wrap | 45218.18 | 44138.91 | -2.39% | +2.45% | -18.80% | -18.80% | ok |
+| 1MiB/no-wrap | 5371.61 | 3568.78 | -33.56% | +50.52% | +246.91% | +246.91% | throughput -33.56%; avg latency +50.52%; p95 latency +246.91%; p99 latency +246.91% |
+| 1MiB/prefix-wrap | 3771.99 | 3871.77 | +2.65% | -2.58% | -8.11% | -8.11% | ok |
+| 1MiB/body-wrap | 3791.10 | 3757.25 | -0.89% | +0.90% | -3.16% | -3.16% | ok |
+| 8MiB/no-wrap | 612.47 | 557.48 | -8.98% | +9.86% | -6.09% | -6.09% | throughput -8.98%; avg latency +9.86% |
+| 8MiB/prefix-wrap | 422.87 | 482.61 | +14.13% | -12.38% | -22.39% | -22.39% | ok |
+| 8MiB/body-wrap | 486.89 | 498.54 | +2.39% | -2.34% | -25.01% | -25.01% | ok |
+| 32MiB/no-wrap | 167.20 | 175.45 | +4.94% | -4.71% | -6.08% | -6.08% | ok |
+| 32MiB/prefix-wrap | 122.10 | 131.62 | +7.80% | -7.23% | -6.87% | -6.87% | ok |
+| 32MiB/body-wrap | 132.68 | 121.99 | -8.05% | +8.76% | +8.21% | +8.21% | throughput -8.05%; avg latency +8.76%; p95 latency +8.21%; p99 latency +8.21% |
 
 ## codec-writer-fast-path
 
 | Case | prev ops/sec | curr ops/sec | Δ ops | Δ avg | Δ p95 | Δ p99 | status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| u32 direct safe writer | 2943756.59 | 3003291.61 | +2.02% | n/a | n/a | n/a | ok |
-| u32 direct trusted measured writer | 3069235.82 | 2877764.09 | -6.24% | n/a | n/a | n/a | throughput -6.24% |
-| struct direct safe writer | 2521381.31 | 2591250.90 | +2.77% | n/a | n/a | n/a | ok |
-| struct direct generic trusted writer | 2532261.01 | 2426795.71 | -4.16% | n/a | n/a | n/a | ok |
-| struct direct specialized writer | 2925892.98 | 2698720.27 | -7.76% | n/a | n/a | n/a | throughput -7.76% |
-| nested direct safe writer | 686818.85 | 681035.61 | -0.84% | n/a | n/a | n/a | ok |
-| nested direct generic trusted writer | 706434.20 | 701515.13 | -0.70% | n/a | n/a | n/a | ok |
-| nested direct specialized writer | 1028349.54 | 933103.91 | -9.26% | n/a | n/a | n/a | throughput -9.26% |
-| frame struct safe fallback | 58772.79 | 61361.47 | +4.40% | n/a | n/a | n/a | ok |
-| frame struct prepared specialized writer | 27479.97 | 28316.86 | +3.05% | n/a | n/a | n/a | ok |
-| frame nested safe fallback | 40980.97 | 50802.67 | +23.97% | n/a | n/a | n/a | ok |
-| frame nested prepared specialized writer | 28082.32 | 31596.01 | +12.51% | n/a | n/a | n/a | ok |
+| u32 direct safe writer | 3003291.61 | 2534276.08 | -15.62% | n/a | n/a | n/a | throughput -15.62% |
+| u32 direct trusted measured writer | 2877764.09 | 2549706.53 | -11.40% | n/a | n/a | n/a | throughput -11.40% |
+| struct direct safe writer | 2591250.90 | 2434345.70 | -6.06% | n/a | n/a | n/a | throughput -6.06% |
+| struct direct generic trusted writer | 2426795.71 | 2445382.38 | +0.77% | n/a | n/a | n/a | ok |
+| struct direct specialized writer | 2698720.27 | 2642706.13 | -2.08% | n/a | n/a | n/a | ok |
+| nested direct safe writer | 681035.61 | 727339.38 | +6.80% | n/a | n/a | n/a | ok |
+| nested direct generic trusted writer | 701515.13 | 721146.91 | +2.80% | n/a | n/a | n/a | ok |
+| nested direct specialized writer | 933103.91 | 950912.02 | +1.91% | n/a | n/a | n/a | ok |
+| frame struct safe fallback | 61361.47 | 60012.82 | -2.20% | n/a | n/a | n/a | ok |
+| frame struct prepared specialized writer | 28316.86 | 27656.06 | -2.33% | n/a | n/a | n/a | ok |
+| frame nested safe fallback | 50802.67 | 51272.87 | +0.93% | n/a | n/a | n/a | ok |
+| frame nested prepared specialized writer | 31596.01 | 30611.27 | -3.12% | n/a | n/a | n/a | ok |
 
 ## codec-read-fast-path
 
 | Case | prev ops/sec | curr ops/sec | Δ ops | Δ avg | Δ p95 | Δ p99 | status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| u32 direct safe reader | 2972793.00 | 3168507.57 | +6.58% | n/a | n/a | n/a | ok |
-| u32 direct validated read-side | 129878.87 | 149381.20 | +15.02% | n/a | n/a | n/a | ok |
-| tuple(bool,u16) direct safe reader | 2813263.98 | 2953991.58 | +5.00% | n/a | n/a | n/a | ok |
-| tuple(bool,u16) direct validated read-side | 129248.85 | 148739.38 | +15.08% | n/a | n/a | n/a | ok |
-| struct direct safe reader | 2787782.82 | 2809036.11 | +0.76% | n/a | n/a | n/a | ok |
-| struct direct validated read-side | 128202.50 | 150405.00 | +17.32% | n/a | n/a | n/a | ok |
-| frame struct safe reader fallback | 50568.77 | 69626.90 | +37.69% | n/a | n/a | n/a | ok |
-| frame struct validated read-side | 40314.73 | 48783.74 | +21.01% | n/a | n/a | n/a | ok |
+| u32 direct safe reader | 3168507.57 | 2944779.49 | -7.06% | n/a | n/a | n/a | throughput -7.06% |
+| u32 direct validated read-side | 149381.20 | 148079.40 | -0.87% | n/a | n/a | n/a | ok |
+| tuple(bool,u16) direct safe reader | 2953991.58 | 2970523.50 | +0.56% | n/a | n/a | n/a | ok |
+| tuple(bool,u16) direct validated read-side | 148739.38 | 142443.32 | -4.23% | n/a | n/a | n/a | ok |
+| struct direct safe reader | 2809036.11 | 2830223.39 | +0.75% | n/a | n/a | n/a | ok |
+| struct direct validated read-side | 150405.00 | 146467.98 | -2.62% | n/a | n/a | n/a | ok |
+| frame struct safe reader fallback | 69626.90 | 67742.06 | -2.71% | n/a | n/a | n/a | ok |
+| frame struct validated read-side | 48783.74 | 46903.15 | -3.85% | n/a | n/a | n/a | ok |
 
 ## pending-lifecycle
 
 | Case | prev ops/sec | curr ops/sec | Δ ops | Δ avg | Δ p95 | Δ p99 | status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| single request release raw map | 28650208.46 | 27981389.02 | -2.33% | +2.39% | +0.23% | +7.49% | ok |
-| single request release witness | 22619439.69 | 21696699.24 | -4.08% | +4.25% | +0.31% | +0.43% | ok |
-| late stale witness release raw map | 15575314.75 | 15277643.67 | -1.91% | +1.95% | +7.92% | +2.98% | p95 latency +7.92% |
-| late stale witness release witness | 12954213.59 | 13155035.25 | +1.55% | -1.53% | -3.48% | -4.05% | ok |
-| close many pending raw map | 14151725.75 | 14996640.75 | +5.97% | -5.63% | -3.41% | -13.97% | ok |
-| close many pending witness | 8585182.52 | 8512666.85 | -0.84% | +0.85% | +9.31% | +13.46% | p95 latency +9.31%; p99 latency +13.46% |
+| single request release raw map | 27981389.02 | 29058549.49 | +3.85% | -3.71% | +2.42% | -8.34% | ok |
+| single request release witness | 21696699.24 | 22499151.78 | +3.70% | -3.57% | +1.77% | -4.92% | ok |
+| late stale witness release raw map | 15277643.67 | 16096620.93 | +5.36% | -5.09% | -12.28% | -13.16% | ok |
+| late stale witness release witness | 13155035.25 | 13376630.81 | +1.68% | -1.66% | +11.54% | +27.44% | p95 latency +11.54%; p99 latency +27.44% |
+| close many pending raw map | 14996640.75 | 13079733.01 | -12.78% | +14.66% | +21.84% | +17.74% | throughput -12.78%; avg latency +14.66%; p95 latency +21.84%; p99 latency +17.74% |
+| close many pending witness | 8512666.85 | 8193296.25 | -3.75% | +3.90% | +16.57% | +22.61% | p95 latency +16.57%; p99 latency +22.61% |
 
 ## node-postmessage-vs-sab
 
 | Case | prev ops/sec | curr ops/sec | Δ ops | Δ avg | Δ p95 | Δ p99 | status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| postMessage 32B | 54033.97 | 56603.94 | +4.76% | -3.00% | -3.07% | +21.75% | p99 latency +21.75% |
-| sab-binary 32B | 12980.69 | 12727.25 | -1.95% | -0.93% | -5.16% | -1.46% | ok |
-| sab-msgpack 32B | 15888.46 | 15887.06 | -0.01% | +0.31% | +3.49% | +6.86% | ok |
-| postMessage 4KiB | 49675.13 | 51261.75 | +3.19% | -3.53% | -10.53% | -13.65% | ok |
-| sab-binary 4KiB | 12526.31 | 10390.20 | -17.05% | +32.47% | +63.53% | +69.08% | throughput -17.05%; avg latency +32.47%; p95 latency +63.53%; p99 latency +69.08% |
-| sab-msgpack 4KiB | 14812.54 | 12343.19 | -16.67% | +39.54% | +75.88% | +63.57% | throughput -16.67%; avg latency +39.54%; p95 latency +75.88%; p99 latency +63.57% |
-| postMessage 64KiB | 21139.12 | 19754.50 | -6.55% | +0.84% | -0.69% | +19.42% | throughput -6.55%; p99 latency +19.42% |
-| sab-binary 64KiB | 8865.06 | 9398.19 | +6.01% | +3.28% | +5.44% | +6.29% | p95 latency +5.44% |
-| sab-msgpack 64KiB | 11098.37 | 10004.73 | -9.85% | +16.42% | +17.72% | +24.84% | throughput -9.85%; avg latency +16.42%; p95 latency +17.72%; p99 latency +24.84% |
+| postMessage 32B | 56603.94 | 55869.24 | -1.30% | +0.56% | -0.90% | +1.53% | ok |
+| sab-binary 32B | 12727.25 | 11422.93 | -10.25% | +11.37% | +19.45% | +15.89% | throughput -10.25%; avg latency +11.37%; p95 latency +19.45%; p99 latency +15.89% |
+| sab-msgpack 32B | 15887.06 | 15608.51 | -1.75% | +1.49% | -0.48% | -1.73% | ok |
+| postMessage 4KiB | 51261.75 | 51195.37 | -0.13% | -3.48% | -9.12% | -5.32% | ok |
+| sab-binary 4KiB | 10390.20 | 10882.02 | +4.73% | -11.91% | -7.94% | -19.71% | ok |
+| sab-msgpack 4KiB | 12343.19 | 13809.26 | +11.88% | -22.42% | -28.38% | -31.20% | ok |
+| postMessage 64KiB | 19754.50 | 20754.98 | +5.06% | -2.80% | +8.15% | +23.14% | p95 latency +8.15%; p99 latency +23.14% |
+| sab-binary 64KiB | 9398.19 | 8733.66 | -7.07% | +13.56% | +31.45% | +38.36% | throughput -7.07%; avg latency +13.56%; p95 latency +31.45%; p99 latency +38.36% |
+| sab-msgpack 64KiB | 10004.73 | 10394.65 | +3.90% | -3.21% | -1.92% | +2.05% | ok |
 
 ## node-pool-contention
 
 | Case | prev ops/sec | curr ops/sec | Δ ops | Δ avg | Δ p95 | Δ p99 | status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 workers @ c=1 | 16853.59 | 16228.32 | -3.71% | +8.09% | +24.10% | +43.91% | avg latency +8.09%; p95 latency +24.10%; p99 latency +43.91% |
-| 1 workers @ c=8 | 4372.03 | 4267.94 | -2.38% | +4.58% | +15.41% | +9.33% | p95 latency +15.41%; p99 latency +9.33% |
-| 1 workers @ c=32 | 1244.94 | 1263.46 | +1.49% | -1.03% | +4.57% | -2.70% | ok |
-| 2 workers @ c=1 | 16410.66 | 16736.03 | +1.98% | -4.19% | -12.34% | -6.70% | ok |
-| 2 workers @ c=8 | 4629.99 | 4600.26 | -0.64% | -3.49% | -12.77% | -7.41% | ok |
-| 2 workers @ c=32 | 1368.80 | 1336.07 | -2.39% | +1.36% | +5.86% | -0.32% | p95 latency +5.86% |
-| 4 workers @ c=1 | 16279.36 | 14459.93 | -11.18% | +16.11% | +42.79% | +28.94% | throughput -11.18%; avg latency +16.11%; p95 latency +42.79%; p99 latency +28.94% |
-| 4 workers @ c=8 | 4164.61 | 4281.40 | +2.80% | +14.49% | +50.28% | +26.80% | avg latency +14.49%; p95 latency +50.28%; p99 latency +26.80% |
-| 4 workers @ c=32 | 1169.37 | 1238.23 | +5.89% | -3.30% | +17.77% | -2.18% | p95 latency +17.77% |
+| 1 workers @ c=1 | 16228.32 | 15105.79 | -6.92% | +7.69% | +10.01% | +10.75% | throughput -6.92%; avg latency +7.69%; p95 latency +10.01%; p99 latency +10.75% |
+| 1 workers @ c=8 | 4267.94 | 3975.00 | -6.86% | +6.26% | +13.59% | +15.19% | throughput -6.86%; avg latency +6.26%; p95 latency +13.59%; p99 latency +15.19% |
+| 1 workers @ c=32 | 1263.46 | 1216.95 | -3.68% | +4.05% | -0.39% | +7.93% | ok |
+| 2 workers @ c=1 | 16736.03 | 16483.06 | -1.51% | +2.67% | +1.75% | +0.89% | ok |
+| 2 workers @ c=8 | 4600.26 | 4004.25 | -12.96% | +13.01% | +0.63% | +0.46% | throughput -12.96%; avg latency +13.01% |
+| 2 workers @ c=32 | 1336.07 | 1110.92 | -16.85% | +19.69% | +13.41% | +24.79% | throughput -16.85%; avg latency +19.69%; p95 latency +13.41%; p99 latency +24.79% |
+| 4 workers @ c=1 | 14459.93 | 16641.71 | +15.09% | -18.21% | -40.87% | -32.87% | ok |
+| 4 workers @ c=8 | 4281.40 | 4480.61 | +4.65% | -17.74% | -36.84% | -19.64% | ok |
+| 4 workers @ c=32 | 1238.23 | 1276.83 | +3.12% | -5.65% | -31.80% | -9.05% | ok |
 

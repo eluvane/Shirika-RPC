@@ -42,9 +42,8 @@ export class PendingRequestStore<Entry extends object> {
 
     allocateRequestId(): number {
         for (let attempts = 0; attempts < UINT32_MAX; attempts += 1) {
-            const requestId = this.#nextRequestId === 0 ? 1 : this.#nextRequestId;
-            const next = (requestId + 1) >>> 0;
-            this.#nextRequestId = next === 0 ? 1 : next;
+            const requestId = nonzeroRequestId(this.#nextRequestId);
+            this.#nextRequestId = nonzeroRequestId((requestId + 1) >>> 0);
             if (!this.#pending.has(requestId)) {
                 return requestId;
             }
@@ -74,9 +73,7 @@ export class PendingRequestStore<Entry extends object> {
             mutableWitness.released = true;
             return undefined;
         }
-        this.#pending.delete(requestId);
-        mutableWitness.released = true;
-        return { requestId, entry: slot.entry };
+        return this.detachSlot(requestId, slot);
     }
 
     lookupUntrusted(requestId: number): PendingRequestRelease<Entry> | undefined {
@@ -89,26 +86,12 @@ export class PendingRequestStore<Entry extends object> {
 
     releaseKnownEntry(requestId: number, entry: Entry): PendingRequestRelease<Entry> | undefined {
         const slot = this.#pending.get(requestId);
-        if (slot?.entry !== entry) {
-            return undefined;
-        }
-        this.#pending.delete(requestId);
-        if (slot.witness !== undefined) {
-            slot.witness.released = true;
-        }
-        return { requestId, entry: slot.entry };
+        return slot?.entry === entry ? this.detachSlot(requestId, slot) : undefined;
     }
 
     releaseUntrusted(requestId: number): PendingRequestRelease<Entry> | undefined {
         const slot = this.#pending.get(requestId);
-        if (slot === undefined) {
-            return undefined;
-        }
-        this.#pending.delete(requestId);
-        if (slot.witness !== undefined) {
-            slot.witness.released = true;
-        }
-        return { requestId, entry: slot.entry };
+        return slot === undefined ? undefined : this.detachSlot(requestId, slot);
     }
 
     entriesSnapshot(): Array<PendingRequestRelease<Entry>> {
@@ -134,13 +117,25 @@ export class PendingRequestStore<Entry extends object> {
         this.#pending.set(requestId, slot);
         return slot;
     }
+
+    private detachSlot(requestId: number, slot: PendingRequestSlot<Entry>): PendingRequestRelease<Entry> {
+        this.#pending.delete(requestId);
+        if (slot.witness !== undefined) {
+            slot.witness.released = true;
+        }
+        return { requestId, entry: slot.entry };
+    }
+}
+
+function nonzeroRequestId(requestId: number): number {
+    return requestId === 0 ? 1 : requestId;
 }
 
 function normalizeInitialRequestId(nextRequestId: number): number {
     if (!Number.isInteger(nextRequestId) || nextRequestId < 0 || nextRequestId > UINT32_MAX) {
         throw new ShirikaProtocolError(`Initial request id must be a UInt32 value, got ${nextRequestId}`);
     }
-    return nextRequestId === 0 ? 1 : nextRequestId >>> 0;
+    return nonzeroRequestId(nextRequestId >>> 0);
 }
 
 function assertAllocatedRequestId(requestId: number): void {

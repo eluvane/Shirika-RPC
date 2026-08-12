@@ -3,7 +3,7 @@ import type { Codec } from '../codec/types.js';
 import { CancelCode, FrameFlag, Opcode, TransportErrorHint } from '../constants.js';
 import { ShirikaClosedError, ShirikaProtocolError, ShirikaTimeoutError } from '../errors.js';
 import { isFastPathEnabled } from '../fast-path-strategy.js';
-import type { DuplexEndpoint, SendFrameOptions } from '../ring/endpoint.js';
+import type { DuplexEndpoint, FrameReadView, SendFrameOptions } from '../ring/endpoint.js';
 import { classifyTerminalReason, deadlineFromTimeout, describeError } from '../utils.js';
 import { cancelPayloadCodec, createCancelPayload } from './cancel.js';
 import {
@@ -15,8 +15,8 @@ import {
     type RequestOf,
     type ResponseOf,
 } from './contract.js';
-import { createDurationStats, type RpcTransportSnapshot, safeInvokeHook, snapshotDurationStats } from './observability.js';
-import { PendingRequestStore, type PendingRequestWitness } from './pending.js';
+import { createDurationStats, invokeFatalErrorHook, snapshotRpcTransport } from './observability.js';
+import { type PendingRequestRelease, PendingRequestStore, type PendingRequestWitness } from './pending.js';
 import { createRemoteError, decodeRemoteErrorPayload } from './remote-error.js';
 import type { RpcCallOptions, RpcClientControl, RpcTransportOptions } from './types.js';
 
@@ -37,11 +37,6 @@ interface PendingRegistration {
     readonly pending: PendingRequest;
     readonly witness: PendingRequestWitness<PendingRequest> | undefined;
     readonly registered: boolean;
-}
-
-interface ReleasedPendingRequest {
-    readonly requestId: number;
-    readonly pending: PendingRequest;
 }
 
 interface CallTiming {
@@ -94,13 +89,11 @@ export class RpcClientImpl<C extends ContractShape> implements RpcClientControl<
         return this.#closed;
     }
 
-    snapshot(): RpcTransportSnapshot {
-        const endpoint = this.#endpoint.snapshot();
-        return {
-            at: Date.now(),
+    snapshot() {
+        return snapshotRpcTransport({
             role: 'client',
             closed: this.#closed,
-            endpoint,
+            endpoint: this.#endpoint.snapshot(),
             counters: {
                 callsInFlight: this.#pending.size,
                 queuedRequests: 0,
@@ -110,16 +103,12 @@ export class RpcClientImpl<C extends ContractShape> implements RpcClientControl<
                 cancelled: this.#cancelled,
                 notifyErrors: 0,
             },
-            timings: {
-                encodeTimeMs: endpoint.timings.encodeTimeMs,
-                queueWaitMs: endpoint.timings.queueWaitMs,
-                handlerTimeMs: snapshotDurationStats(this.#handlerTimeStats),
-                responseSendTimeMs: snapshotDurationStats(this.#responseSendTimeStats),
-            },
+            handlerTimeStats: this.#handlerTimeStats,
+            responseSendTimeStats: this.#responseSendTimeStats,
             metrics: {
                 handlerLatencyByMethod: {},
             },
-        };
+        });
     }
 
     call<K extends MethodNames<C>>(method: K, request: RequestOf<C, K>, options: RpcCallOptions = {}): Promise<ResponseOf<C, K>> {
@@ -134,7 +123,7 @@ export class RpcClientImpl<C extends ContractShape> implements RpcClientControl<
             return Promise.reject(reason);
         }
         const timing = resolveCallTiming(options.timeoutMs, this.#defaultCallTimeoutMs);
-        const requestId = this.allocateRequestId();
+        const requestId = this.#pending.allocateRequestId();
         const sendController = new AbortController();
         const def = entry.def;
         const registration = this.createPendingRequest(
@@ -206,11 +195,11 @@ export class RpcClientImpl<C extends ContractShape> implements RpcClientControl<
             }
             if (isFastPathEnabled('pendingRequestWitness')) {
                 for (const witness of this.#pending.witnessesSnapshot()) {
-                    this.rejectPendingByWitness(witness, reason);
+                    this.rejectReleasedPending(this.releaseFromStore(this.#pending.releaseByWitness(witness)), reason);
                 }
             } else {
                 for (const release of this.#pending.entriesSnapshot()) {
-                    this.rejectPendingKnownEntry(release.requestId, release.entry, reason);
+                    this.rejectReleasedPending(this.releaseFromStore(this.#pending.releaseKnownEntry(release.requestId, release.entry)), reason);
                 }
             }
         })();
@@ -219,10 +208,6 @@ export class RpcClientImpl<C extends ContractShape> implements RpcClientControl<
 
     private getClosedError(): ShirikaClosedError | undefined {
         return this.#closed ? new ShirikaClosedError('RPC client is closed') : undefined;
-    }
-
-    private allocateRequestId(): number {
-        return this.#pending.allocateRequestId();
     }
 
     private createPendingRequest(
@@ -293,62 +278,38 @@ export class RpcClientImpl<C extends ContractShape> implements RpcClientControl<
         pending.detachAbort();
     }
 
-    private lookupPendingFromInbound(requestId: number): ReleasedPendingRequest | undefined {
-        const release = this.#pending.lookupUntrusted(requestId);
-        if (release === undefined) {
-            return undefined;
-        }
-        return { requestId: release.requestId, pending: release.entry };
-    }
-
-    private releasePendingFromInbound(requestId: number): ReleasedPendingRequest | undefined {
-        const release = this.#pending.releaseUntrusted(requestId);
+    private releaseFromStore(release: PendingRequestRelease<PendingRequest> | undefined): PendingRequestRelease<PendingRequest> | undefined {
         if (release === undefined) {
             return undefined;
         }
         this.cleanupPending(release.entry);
-        return { requestId: release.requestId, pending: release.entry };
+        return release;
     }
 
-    private releasePendingByWitness(witness: PendingRequestWitness<PendingRequest>): ReleasedPendingRequest | undefined {
-        const release = this.#pending.releaseByWitness(witness);
-        if (release === undefined) {
+    private finishInbound<T>(frame: FrameReadView, decode: (pending: PendingRequest) => T): { pending: PendingRequest; value: T } | undefined {
+        const match = this.#pending.lookupUntrusted(frame.header.requestId);
+        if (match === undefined) {
+            frame.discard();
             return undefined;
         }
-        this.cleanupPending(release.entry);
-        return { requestId: release.requestId, pending: release.entry };
-    }
-
-    private releasePendingKnownEntry(requestId: number, pending: PendingRequest): ReleasedPendingRequest | undefined {
-        const release = this.#pending.releaseKnownEntry(requestId, pending);
-        if (release === undefined) {
-            return undefined;
-        }
-        this.cleanupPending(release.entry);
-        return { requestId: release.requestId, pending: release.entry };
-    }
-
-    private rejectPendingByWitness(witness: PendingRequestWitness<PendingRequest>, reason: unknown, cancelCode?: CancelCode): void {
-        this.rejectReleasedPending(this.releasePendingByWitness(witness), reason, cancelCode);
-    }
-
-    private rejectPendingKnownEntry(requestId: number, pending: PendingRequest, reason: unknown, cancelCode?: CancelCode): void {
-        this.rejectReleasedPending(this.releasePendingKnownEntry(requestId, pending), reason, cancelCode);
+        const value = decode(match.entry);
+        const release = this.releaseFromStore(this.#pending.releaseUntrusted(frame.header.requestId));
+        return release === undefined ? undefined : { pending: release.entry, value };
     }
 
     private rejectPendingRegistration(registration: PendingRegistration, reason: unknown, cancelCode?: CancelCode): void {
-        if (registration.witness !== undefined && isFastPathEnabled('pendingRequestWitness')) {
-            this.rejectPendingByWitness(registration.witness, reason, cancelCode);
-            return;
-        }
-        this.rejectPendingKnownEntry(registration.requestId, registration.pending, reason, cancelCode);
+        const release =
+            registration.witness !== undefined && isFastPathEnabled('pendingRequestWitness')
+                ? this.#pending.releaseByWitness(registration.witness)
+                : this.#pending.releaseKnownEntry(registration.requestId, registration.pending);
+        this.rejectReleasedPending(this.releaseFromStore(release), reason, cancelCode);
     }
 
-    private rejectReleasedPending(release: ReleasedPendingRequest | undefined, reason: unknown, cancelCode: CancelCode | undefined): void {
+    private rejectReleasedPending(release: PendingRequestRelease<PendingRequest> | undefined, reason: unknown, cancelCode?: CancelCode): void {
         if (release === undefined) {
             return;
         }
-        const pending = release.pending;
+        const pending = release.entry;
         pending.abortSend(reason);
         this.recordTerminalReason(reason);
         pending.reject(reason);
@@ -380,60 +341,28 @@ export class RpcClientImpl<C extends ContractShape> implements RpcClientControl<
             .catch(() => undefined);
     }
 
-    private reportFatalError(error: unknown, phase: 'receive-loop' | 'shutdown' | 'adapter' = 'receive-loop'): void {
-        let snapshot: RpcTransportSnapshot;
-        try {
-            snapshot = this.snapshot();
-        } catch {
-            return;
-        }
-        safeInvokeHook(
-            this.#onFatalError,
-            {
-                at: Date.now(),
-                role: 'client',
-                phase,
-                error,
-                snapshot,
-            },
-            'onFatalError',
-        );
-    }
-
     private async runReceiveLoop(): Promise<void> {
         while (!this.#closed) {
             try {
                 const frame = await this.#endpoint.receive();
                 switch (frame.header.opcode) {
                     case Opcode.RESPONSE_OK: {
-                        const match = this.lookupPendingFromInbound(frame.header.requestId);
-                        if (match === undefined) {
-                            frame.discard();
-                            break;
-                        }
-                        const value = frame.readWithCodec(match.pending.responseCodec);
-                        const release = this.releasePendingFromInbound(frame.header.requestId);
-                        if (release === undefined) {
+                        const settled = this.finishInbound(frame, (pending) => frame.readWithCodec(pending.responseCodec));
+                        if (settled === undefined) {
                             break;
                         }
                         this.#completed += 1;
-                        release.pending.resolve(value);
+                        settled.pending.resolve(settled.value);
                         break;
                     }
                     case Opcode.RESPONSE_ERR: {
-                        const match = this.lookupPendingFromInbound(frame.header.requestId);
-                        if (match === undefined) {
-                            frame.discard();
+                        const settled = this.finishInbound(frame, () => decodeRemoteErrorPayload(frame.readPayloadBytes()));
+                        if (settled === undefined) {
                             break;
                         }
-                        const errorPayload = decodeRemoteErrorPayload(frame.readPayloadBytes());
-                        const release = this.releasePendingFromInbound(frame.header.requestId);
-                        if (release === undefined) {
-                            break;
-                        }
-                        const error = createRemoteError(errorPayload, frame.header.statusCode);
+                        const error = createRemoteError(settled.value, frame.header.statusCode);
                         this.recordTerminalReason(error);
-                        release.pending.reject(error);
+                        settled.pending.reject(error);
                         break;
                     }
                     case Opcode.CLOSE:
@@ -448,7 +377,7 @@ export class RpcClientImpl<C extends ContractShape> implements RpcClientControl<
                 if (this.#closed) {
                     return;
                 }
-                this.reportFatalError(error, 'receive-loop');
+                invokeFatalErrorHook(this.#onFatalError, 'client', 'receive-loop', error, () => this.snapshot());
                 await this.abort(error instanceof Error ? error : new Error(describeError(error)));
                 return;
             }

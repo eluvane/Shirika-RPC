@@ -29,28 +29,16 @@ export class RingBinaryReader implements BinaryReader {
         return value;
     }
     readU16(): number {
-        this.ensureCapacity(2);
-        this.#ring.readInto(this.#cursorSeq, this.#scratch, 0, 2);
-        this.advance(2);
-        return this.#scratchView.getUint16(0, true);
+        return this.readScratch(2).getUint16(0, true);
     }
     readU32(): number {
-        this.ensureCapacity(4);
-        this.#ring.readInto(this.#cursorSeq, this.#scratch, 0, 4);
-        this.advance(4);
-        return this.#scratchView.getUint32(0, true);
+        return this.readScratch(4).getUint32(0, true);
     }
     readI32(): number {
-        this.ensureCapacity(4);
-        this.#ring.readInto(this.#cursorSeq, this.#scratch, 0, 4);
-        this.advance(4);
-        return this.#scratchView.getInt32(0, true);
+        return this.readScratch(4).getInt32(0, true);
     }
     readF64(): number {
-        this.ensureCapacity(8);
-        this.#ring.readInto(this.#cursorSeq, this.#scratch, 0, 8);
-        this.advance(8);
-        return this.#scratchView.getFloat64(0, true);
+        return this.readScratch(8).getFloat64(0, true);
     }
     readBool(): boolean {
         return this.readU8() !== 0;
@@ -90,6 +78,12 @@ export class RingBinaryReader implements BinaryReader {
         if (this.#readBytes !== this.#limitBytes) {
             throw new ShirikaProtocolError(`Binary reader did not consume payload exactly: expected ${this.#limitBytes}, read ${this.#readBytes}`);
         }
+    }
+    private readScratch(size: number): DataView {
+        this.ensureCapacity(size);
+        this.#ring.readInto(this.#cursorSeq, this.#scratch, 0, size);
+        this.advance(size);
+        return this.#scratchView;
     }
     private ensureCapacity(requiredBytes: number): void {
         if (requiredBytes > this.remainingBytes) {

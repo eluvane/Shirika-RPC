@@ -198,21 +198,36 @@ export function recordDuration(stats: MutableDurationStats, durationMs: number):
     stats.maxMs = Math.max(stats.maxMs, durationMs);
 }
 export function snapshotDurationStats(stats: MutableDurationStats): RpcDurationStats {
-    if (stats.count === 0) {
-        return {
-            count: 0,
-            totalMs: 0,
-            minMs: 0,
-            maxMs: 0,
-            avgMs: 0,
-        };
-    }
     return {
         count: stats.count,
         totalMs: stats.totalMs,
-        minMs: stats.minMs,
+        minMs: stats.count === 0 ? 0 : stats.minMs,
         maxMs: stats.maxMs,
-        avgMs: stats.totalMs / stats.count,
+        avgMs: stats.count === 0 ? 0 : stats.totalMs / stats.count,
+    };
+}
+export function snapshotRpcTransport(input: {
+    readonly role: 'client' | 'server';
+    readonly closed: boolean;
+    readonly endpoint: DuplexEndpointSnapshot;
+    readonly counters: RpcTransportCounters;
+    readonly handlerTimeStats: MutableDurationStats;
+    readonly responseSendTimeStats: MutableDurationStats;
+    readonly metrics: RpcTransportMetricsSnapshot;
+}): RpcTransportSnapshot {
+    return {
+        at: Date.now(),
+        role: input.role,
+        closed: input.closed,
+        endpoint: input.endpoint,
+        counters: input.counters,
+        timings: {
+            encodeTimeMs: input.endpoint.timings.encodeTimeMs,
+            queueWaitMs: input.endpoint.timings.queueWaitMs,
+            handlerTimeMs: snapshotDurationStats(input.handlerTimeStats),
+            responseSendTimeMs: snapshotDurationStats(input.responseSendTimeStats),
+        },
+        metrics: input.metrics,
     };
 }
 export function createFrameSizeHistogram(): MutableHistogram {
@@ -344,6 +359,21 @@ export function safeInvokeHook<T>(hook: ((event: T) => void) | undefined, event:
     } catch (error) {
         console.error(`[shirika-rpc] ${hookName} hook failed`, error);
     }
+}
+export function invokeFatalErrorHook(
+    hook: RpcTransportObserver['onFatalError'],
+    role: RpcFatalErrorEvent['role'],
+    phase: RpcFatalErrorEvent['phase'],
+    error: unknown,
+    snapshot: () => RpcTransportSnapshot,
+): void {
+    let captured: RpcTransportSnapshot;
+    try {
+        captured = snapshot();
+    } catch {
+        return;
+    }
+    safeInvokeHook(hook, { at: Date.now(), role, phase, error, snapshot: captured }, 'onFatalError');
 }
 export function ringSaturation(snapshot: RingSnapshot): number {
     return snapshot.capacityBytes <= 0 ? 0 : snapshot.usedBytes / snapshot.capacityBytes;

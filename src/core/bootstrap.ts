@@ -59,10 +59,13 @@ export function createErrorMessage(message: string): ShirikaErrorMessage {
     };
 }
 
+function isTypedRecord(value: unknown, type: string): value is Record<string, unknown> {
+    return isRecord(value) && value['type'] === type;
+}
+
 export function isBootstrapMessage(value: unknown): value is ShirikaBootstrapMessage {
     return (
-        isRecord(value) &&
-        value['type'] === BOOTSTRAP_TYPE &&
+        isTypedRecord(value, BOOTSTRAP_TYPE) &&
         value['version'] === FRAME_VERSION &&
         typeof value['capacityBytes'] === 'number' &&
         typeof value['contractHash'] === 'string' &&
@@ -72,15 +75,15 @@ export function isBootstrapMessage(value: unknown): value is ShirikaBootstrapMes
 }
 
 export function isReadyMessage(value: unknown): value is ShirikaReadyMessage {
-    return isRecord(value) && value['type'] === READY_TYPE && value['version'] === FRAME_VERSION && typeof value['contractHash'] === 'string';
+    return isTypedRecord(value, READY_TYPE) && value['version'] === FRAME_VERSION && typeof value['contractHash'] === 'string';
 }
 
 export function isErrorMessage(value: unknown): value is ShirikaErrorMessage {
-    return isRecord(value) && value['type'] === ERROR_TYPE && typeof value['message'] === 'string';
+    return isTypedRecord(value, ERROR_TYPE) && typeof value['message'] === 'string';
 }
 
 export function isBootstrapLike(value: unknown): value is { type: typeof BOOTSTRAP_TYPE } {
-    return isRecord(value) && value['type'] === BOOTSTRAP_TYPE;
+    return isTypedRecord(value, BOOTSTRAP_TYPE);
 }
 
 export type BootstrapAcceptResult =

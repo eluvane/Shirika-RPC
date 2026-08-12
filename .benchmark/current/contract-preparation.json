@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "suite": "contract-preparation",
-  "generatedAt": "2026-08-12T15:36:00.757Z",
+  "generatedAt": "2026-08-12T16:15:43.990Z",
   "runtime": {
-    "node": "v26.0.0",
+    "node": "v24.11.0",
     "platform": "win32",
     "arch": "x64"
   },
@@ -18,8 +18,8 @@
       "label": "describeContract(raw contract)",
       "group": "description",
       "metrics": {
-        "totalMs": 3044.2385000000004,
-        "opsPerSec": 32848.9374272088
+        "totalMs": 3227.7011,
+        "opsPerSec": 30981.803116775587
       }
     },
     {
@@ -27,8 +27,8 @@
       "label": "describeContract(prepared)",
       "group": "description",
       "metrics": {
-        "totalMs": 737.5047,
-        "opsPerSec": 135592.35622498408
+        "totalMs": 749.6813000000002,
+        "opsPerSec": 133390.0151971244
       }
     },
     {
@@ -36,8 +36,8 @@
       "label": "getContractHash(raw contract)",
       "group": "hash",
       "metrics": {
-        "totalMs": 2967.9683999999997,
-        "opsPerSec": 33693.08109884189
+        "totalMs": 3112.4701999999997,
+        "opsPerSec": 32128.821667111868
       }
     },
     {
@@ -45,8 +45,8 @@
       "label": "getContractHash(prepared)",
       "group": "hash",
       "metrics": {
-        "totalMs": 614.3045000000002,
-        "opsPerSec": 162785.7194599746
+        "totalMs": 653.0235000000002,
+        "opsPerSec": 153133.84587231543
       }
     },
     {
@@ -54,8 +54,8 @@
       "label": "buildMethodIndex(raw contract)",
       "group": "method-index",
       "metrics": {
-        "totalMs": 3100.6301999999996,
-        "opsPerSec": 32251.50809664436
+        "totalMs": 3295.6638000000003,
+        "opsPerSec": 30342.90087477976
       }
     },
     {
@@ -63,8 +63,8 @@
       "label": "prepared.methodIndex lookup",
       "group": "method-index",
       "metrics": {
-        "totalMs": 2.3867000000009284,
-        "opsPerSec": 41898856.1612105
+        "totalMs": 2.574400000001333,
+        "opsPerSec": 38844002.485996045
       }
     }
   ],
@@ -74,24 +74,24 @@
       "label": "describe prepared vs raw",
       "before": "describe-raw-contract",
       "after": "describe-prepared-contract",
-      "timeReductionPct": 75.77375425742761,
-      "throughputImprovementPct": 312.77547112581124
+      "timeReductionPct": 76.77352156307163,
+      "throughputImprovementPct": 330.54309878077515
     },
     {
       "id": "hash-prepared-vs-raw",
       "label": "hash prepared vs raw",
       "before": "hash-raw-contract",
       "after": "hash-prepared-contract",
-      "timeReductionPct": 79.30218866211648,
-      "throughputImprovementPct": 383.1428713284697
+      "timeReductionPct": 79.01912442406676,
+      "throughputImprovementPct": 376.62453188897473
     },
     {
       "id": "method-index-prepared-vs-raw",
       "label": "prepared index lookup vs raw build",
       "before": "build-index-raw-contract",
       "after": "reuse-prepared-method-index",
-      "timeReductionPct": 99.92302532562572,
-      "throughputImprovementPct": 129812.85875890532
+      "timeReductionPct": 99.92188523598793,
+      "throughputImprovementPct": 127916.77284020721
     }
   ]
 }

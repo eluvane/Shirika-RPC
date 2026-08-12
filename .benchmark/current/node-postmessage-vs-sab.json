@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "suite": "node-postmessage-vs-sab",
-  "generatedAt": "2026-08-12T15:36:30.988Z",
+  "generatedAt": "2026-08-12T16:16:15.299Z",
   "runtime": {
-    "node": "v26.0.0",
+    "node": "v24.11.0",
     "platform": "win32",
     "arch": "x64"
   },
@@ -21,12 +21,12 @@
       "payloadBytes": 32,
       "capacityBytes": 1048576,
       "metrics": {
-        "opsPerSec": 56603.9356637784,
-        "avgLatencyMs": 0.018318666566484024,
-        "p50LatencyMs": 0.01700000000005275,
-        "p95LatencyMs": 0.0221000000000231,
-        "p99LatencyMs": 0.045900000000074215,
-        "rmePct": 0.19525906691398584
+        "opsPerSec": 55869.23760054556,
+        "avgLatencyMs": 0.01842081139514171,
+        "p50LatencyMs": 0.016999999999995907,
+        "p95LatencyMs": 0.02189999999998804,
+        "p99LatencyMs": 0.046599999999983766,
+        "rmePct": 0.13363458633207553
       }
     },
     {
@@ -36,12 +36,12 @@
       "payloadBytes": 32,
       "capacityBytes": 1048576,
       "metrics": {
-        "opsPerSec": 12727.252094800033,
-        "avgLatencyMs": 0.08204350656515445,
-        "p50LatencyMs": 0.07439999999996871,
-        "p95LatencyMs": 0.11569999999994707,
-        "p99LatencyMs": 0.17499999999995453,
-        "rmePct": 0.3100164716202467
+        "opsPerSec": 11422.92722693486,
+        "avgLatencyMs": 0.09137324620885195,
+        "p50LatencyMs": 0.0807999999999538,
+        "p95LatencyMs": 0.13820000000009713,
+        "p99LatencyMs": 0.20280000000002474,
+        "rmePct": 0.4671957636713237
       }
     },
     {
@@ -51,12 +51,12 @@
       "payloadBytes": 32,
       "capacityBytes": 1048576,
       "metrics": {
-        "opsPerSec": 15887.05684900289,
-        "avgLatencyMs": 0.06678560517566526,
-        "p50LatencyMs": 0.059399999999982356,
-        "p95LatencyMs": 0.10380000000031941,
-        "p99LatencyMs": 0.16210000000000946,
-        "rmePct": 0.3654442260295617
+        "opsPerSec": 15608.514073638347,
+        "avgLatencyMs": 0.06778108405054026,
+        "p50LatencyMs": 0.061100000000124055,
+        "p95LatencyMs": 0.10329999999999018,
+        "p99LatencyMs": 0.1592999999999165,
+        "rmePct": 0.35090431505190306
       }
     },
     {
@@ -66,12 +66,12 @@
       "payloadBytes": 4096,
       "capacityBytes": 1048576,
       "metrics": {
-        "opsPerSec": 51261.746648006374,
-        "avgLatencyMs": 0.021115138764807105,
-        "p50LatencyMs": 0.01830000000018117,
-        "p95LatencyMs": 0.0340000000001055,
-        "p99LatencyMs": 0.0658000000003085,
-        "rmePct": 0.26750042516247463
+        "opsPerSec": 51195.368042012,
+        "avgLatencyMs": 0.020379675481442,
+        "p50LatencyMs": 0.017800000000079308,
+        "p95LatencyMs": 0.030899999999746797,
+        "p99LatencyMs": 0.062300000000050204,
+        "rmePct": 0.2165830009335896
       }
     },
     {
@@ -81,12 +81,12 @@
       "payloadBytes": 4096,
       "capacityBytes": 1048576,
       "metrics": {
-        "opsPerSec": 10390.200068963137,
-        "avgLatencyMs": 0.10940547622552302,
-        "p50LatencyMs": 0.09209999999984575,
-        "p95LatencyMs": 0.19279999999980646,
-        "p99LatencyMs": 0.27340000000003783,
-        "rmePct": 0.5806957145466702
+        "opsPerSec": 10882.016417089126,
+        "avgLatencyMs": 0.09637688611868657,
+        "p50LatencyMs": 0.08109999999987849,
+        "p95LatencyMs": 0.17750000000023647,
+        "p99LatencyMs": 0.2195000000001528,
+        "rmePct": 0.6580949573060688
       }
     },
     {
@@ -96,12 +96,12 @@
       "payloadBytes": 4096,
       "capacityBytes": 1048576,
       "metrics": {
-        "opsPerSec": 12343.187059362403,
-        "avgLatencyMs": 0.09765376428852963,
-        "p50LatencyMs": 0.07240000000001601,
-        "p95LatencyMs": 0.19029999999929714,
-        "p99LatencyMs": 0.25320000000010623,
-        "rmePct": 0.7609872456332529
+        "opsPerSec": 13809.263978671392,
+        "avgLatencyMs": 0.07575631196974388,
+        "p50LatencyMs": 0.06400000000030559,
+        "p95LatencyMs": 0.13630000000011933,
+        "p99LatencyMs": 0.17420000000038272,
+        "rmePct": 0.606837349572643
       }
     },
     {
@@ -111,12 +111,12 @@
       "payloadBytes": 65536,
       "capacityBytes": 1048576,
       "metrics": {
-        "opsPerSec": 19754.497281561857,
-        "avgLatencyMs": 0.07187080433101155,
-        "p50LatencyMs": 0.06329999999979918,
-        "p95LatencyMs": 0.11540000000059081,
-        "p99LatencyMs": 0.22080000000005384,
-        "rmePct": 0.9606387924695206
+        "opsPerSec": 20754.983310736952,
+        "avgLatencyMs": 0.06985681624941119,
+        "p50LatencyMs": 0.061300000000301225,
+        "p95LatencyMs": 0.12480000000050495,
+        "p99LatencyMs": 0.27189999999973224,
+        "rmePct": 0.8584126801681249
       }
     },
     {
@@ -126,12 +126,12 @@
       "payloadBytes": 65536,
       "capacityBytes": 1048576,
       "metrics": {
-        "opsPerSec": 9398.188809181518,
-        "avgLatencyMs": 0.1245032414369244,
-        "p50LatencyMs": 0.10069999999996071,
-        "p95LatencyMs": 0.2092000000002372,
-        "p99LatencyMs": 0.29069999999956053,
-        "rmePct": 0.5894931845543865
+        "opsPerSec": 8733.659551304754,
+        "avgLatencyMs": 0.14138390345876467,
+        "p50LatencyMs": 0.11299999999937427,
+        "p95LatencyMs": 0.2749999999996362,
+        "p99LatencyMs": 0.4021999999995387,
+        "rmePct": 0.7417879377349531
       }
     },
     {
@@ -141,12 +141,12 @@
       "payloadBytes": 65536,
       "capacityBytes": 1048576,
       "metrics": {
-        "opsPerSec": 10004.727617693337,
-        "avgLatencyMs": 0.11968689921235297,
-        "p50LatencyMs": 0.10319999999956053,
-        "p95LatencyMs": 0.21919999999954598,
-        "p99LatencyMs": 0.3216000000002168,
-        "rmePct": 0.8884984995270991
+        "opsPerSec": 10394.653447424196,
+        "avgLatencyMs": 0.1158423855496733,
+        "p50LatencyMs": 0.09290000000055443,
+        "p95LatencyMs": 0.21500000000014552,
+        "p99LatencyMs": 0.32819999999992433,
+        "rmePct": 0.7213780224124288
       }
     }
   ]

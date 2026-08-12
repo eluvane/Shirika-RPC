@@ -1,13 +1,13 @@
 # pending lifecycle benchmark
 
-Generated at: 2026-08-12T15:36:29.631Z
-Node: v26.0.0
+Generated at: 2026-08-12T16:16:13.917Z
+Node: v24.11.0
 
 | Case | ops/sec | avg ms/op | p95 ms/op | p99 ms/op |
 | --- | --- | --- | --- | --- |
-| single request release raw map | 27981389.02 | 0.000036 | 0.000038 | 0.000042 |
-| single request release witness | 21696699.24 | 0.000046 | 0.000048 | 0.000051 |
-| late stale witness release raw map | 15277643.67 | 0.000065 | 0.000072 | 0.000073 |
-| late stale witness release witness | 13155035.25 | 0.000076 | 0.000077 | 0.000078 |
-| close many pending raw map | 14996640.75 | 0.000067 | 0.000092 | 0.000129 |
-| close many pending witness | 8512666.85 | 0.000117 | 0.000169 | 0.000194 |
+| single request release raw map | 29058549.49 | 0.000034 | 0.000039 | 0.000039 |
+| single request release witness | 22499151.78 | 0.000044 | 0.000049 | 0.000049 |
+| late stale witness release raw map | 16096620.93 | 0.000062 | 0.000064 | 0.000064 |
+| late stale witness release witness | 13376630.81 | 0.000075 | 0.000086 | 0.000099 |
+| close many pending raw map | 13079733.01 | 0.000076 | 0.000112 | 0.000152 |
+| close many pending witness | 8193296.25 | 0.000122 | 0.000197 | 0.000238 |

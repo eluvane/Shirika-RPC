@@ -33,31 +33,23 @@ export class RingBinaryWriter implements BinaryWriter {
     }
 
     writeU16(value: number): void {
-        this.ensureCapacity(2);
         this.#scratchView.setUint16(0, value, true);
-        this.#ring.writeBytes(this.#cursorSeq, this.#scratch, 0, 2);
-        this.advance(2);
+        this.commitScratch(2);
     }
 
     writeU32(value: number): void {
-        this.ensureCapacity(4);
         this.#scratchView.setUint32(0, u32(value), true);
-        this.#ring.writeBytes(this.#cursorSeq, this.#scratch, 0, 4);
-        this.advance(4);
+        this.commitScratch(4);
     }
 
     writeI32(value: number): void {
-        this.ensureCapacity(4);
         this.#scratchView.setInt32(0, value, true);
-        this.#ring.writeBytes(this.#cursorSeq, this.#scratch, 0, 4);
-        this.advance(4);
+        this.commitScratch(4);
     }
 
     writeF64(value: number): void {
-        this.ensureCapacity(8);
         this.#scratchView.setFloat64(0, value, true);
-        this.#ring.writeBytes(this.#cursorSeq, this.#scratch, 0, 8);
-        this.advance(8);
+        this.commitScratch(8);
     }
 
     writeBool(value: boolean): void {
@@ -97,6 +89,12 @@ export class RingBinaryWriter implements BinaryWriter {
         if (requiredBytes > this.remainingBytes) {
             throw new ShirikaProtocolError(`Binary writer overflow: need ${requiredBytes} bytes with only ${this.remainingBytes} bytes remaining`);
         }
+    }
+
+    private commitScratch(size: number): void {
+        this.ensureCapacity(size);
+        this.#ring.writeBytes(this.#cursorSeq, this.#scratch, 0, size);
+        this.advance(size);
     }
 
     private advance(delta: number): void {

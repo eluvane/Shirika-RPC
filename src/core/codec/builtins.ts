@@ -4,20 +4,47 @@ import { getSpecializedReadSideStrategy } from './specialized-readers.js';
 import type { BinaryCodec } from './types.js';
 import { defineInternalCodecWitness } from './witness.js';
 
-const voidCodec = defineInternalCodecWitness(
-    defineCodecSignature<BinaryCodec<void>>(
+function defineFixedBinaryCodec<T>(signature: string, size: number, write: BinaryCodec<T>['write'], read: BinaryCodec<T>['read']): BinaryCodec<T> {
+    return defineCodecSignature<BinaryCodec<T>>(
         {
             kind: 'binary',
-            measure: () => 0,
-            write() {
-                return undefined;
-            },
-            read() {
-                return undefined;
-            },
+            measure: () => size,
+            write,
+            read,
         },
+        signature,
+    );
+}
+
+function definePrimitiveWitnessCodec<T>(
+    signature: string,
+    size: number,
+    write: BinaryCodec<T>['write'],
+    read: BinaryCodec<T>['read'],
+    extra: {
+        readonly valueScope?: 'bounded-primitive-values';
+        readonly acceptsMeasuredWriterValue?: (value: T) => boolean;
+    } = {},
+): BinaryCodec<T> {
+    return defineInternalCodecWitness(defineFixedBinaryCodec(signature, size, write, read), {
+        codecKind: 'primitive',
+        signature,
+        leanCodec: `Shirika.Codec.Builtins.${signature}Codec`,
+        leanTheorems: [`Shirika.Codec.Builtins.${signature}_lawful`],
+        conformanceVectors: [`primitive-${signature}`],
+        readSideStrategy: getSpecializedReadSideStrategy(signature),
+        ...(extra.valueScope !== undefined ? { valueScope: extra.valueScope } : {}),
+        ...(extra.acceptsMeasuredWriterValue !== undefined ? { acceptsMeasuredWriterValue: extra.acceptsMeasuredWriterValue } : {}),
+    });
+}
+
+const voidCodec = defineInternalCodecWitness(
+    defineFixedBinaryCodec(
         'void',
-    ),
+        0,
+        () => undefined,
+        () => undefined,
+    ) as BinaryCodec<void>,
     {
         codecKind: 'primitive',
         signature: 'void',
@@ -28,141 +55,57 @@ const voidCodec = defineInternalCodecWitness(
         acceptsMeasuredWriterValue: (value) => value === undefined,
     },
 );
-const boolCodec = defineInternalCodecWitness(
-    defineCodecSignature<BinaryCodec<boolean>>(
-        {
-            kind: 'binary',
-            measure: () => 1,
-            write(writer, value) {
-                writer.writeBool(value);
-            },
-            read(reader) {
-                return reader.readBool();
-            },
-        },
-        'bool',
-    ),
-    {
-        codecKind: 'primitive',
-        signature: 'bool',
-        leanCodec: 'Shirika.Codec.Builtins.boolCodec',
-        leanTheorems: ['Shirika.Codec.Builtins.bool_lawful'],
-        conformanceVectors: ['primitive-bool'],
-        readSideStrategy: getSpecializedReadSideStrategy('bool'),
-    },
+const boolCodec = definePrimitiveWitnessCodec<boolean>(
+    'bool',
+    1,
+    (writer, value) => writer.writeBool(value),
+    (reader) => reader.readBool(),
 );
-const u8Codec = defineInternalCodecWitness(
-    defineCodecSignature<BinaryCodec<number>>(
-        {
-            kind: 'binary',
-            measure: () => 1,
-            write(writer, value) {
-                writer.writeU8(value);
-            },
-            read(reader) {
-                return reader.readU8();
-            },
-        },
-        'u8',
-    ),
+const u8Codec = definePrimitiveWitnessCodec<number>(
+    'u8',
+    1,
+    (writer, value) => writer.writeU8(value),
+    (reader) => reader.readU8(),
     {
-        codecKind: 'primitive',
-        signature: 'u8',
-        leanCodec: 'Shirika.Codec.Builtins.u8Codec',
-        leanTheorems: ['Shirika.Codec.Builtins.u8_lawful'],
-        conformanceVectors: ['primitive-u8'],
-        readSideStrategy: getSpecializedReadSideStrategy('u8'),
         valueScope: 'bounded-primitive-values',
         acceptsMeasuredWriterValue: (value) => isUintInRange(value, 0xff),
     },
 );
-const u16Codec = defineInternalCodecWitness(
-    defineCodecSignature<BinaryCodec<number>>(
-        {
-            kind: 'binary',
-            measure: () => 2,
-            write(writer, value) {
-                writer.writeU16(value);
-            },
-            read(reader) {
-                return reader.readU16();
-            },
-        },
-        'u16',
-    ),
+const u16Codec = definePrimitiveWitnessCodec<number>(
+    'u16',
+    2,
+    (writer, value) => writer.writeU16(value),
+    (reader) => reader.readU16(),
     {
-        codecKind: 'primitive',
-        signature: 'u16',
-        leanCodec: 'Shirika.Codec.Builtins.u16Codec',
-        leanTheorems: ['Shirika.Codec.Builtins.u16_lawful'],
-        conformanceVectors: ['primitive-u16'],
-        readSideStrategy: getSpecializedReadSideStrategy('u16'),
         valueScope: 'bounded-primitive-values',
         acceptsMeasuredWriterValue: (value) => isUintInRange(value, 0xffff),
     },
 );
-const u32Codec = defineInternalCodecWitness(
-    defineCodecSignature<BinaryCodec<number>>(
-        {
-            kind: 'binary',
-            measure: () => 4,
-            write(writer, value) {
-                writer.writeU32(value);
-            },
-            read(reader) {
-                return reader.readU32();
-            },
-        },
-        'u32',
-    ),
+const u32Codec = definePrimitiveWitnessCodec<number>(
+    'u32',
+    4,
+    (writer, value) => writer.writeU32(value),
+    (reader) => reader.readU32(),
     {
-        codecKind: 'primitive',
-        signature: 'u32',
-        leanCodec: 'Shirika.Codec.Builtins.u32Codec',
-        leanTheorems: ['Shirika.Codec.Builtins.u32_lawful'],
-        conformanceVectors: ['primitive-u32'],
-        readSideStrategy: getSpecializedReadSideStrategy('u32'),
         valueScope: 'bounded-primitive-values',
         acceptsMeasuredWriterValue: (value) => isUintInRange(value, 0xffffffff),
     },
 );
-const i32Codec = defineInternalCodecWitness(
-    defineCodecSignature<BinaryCodec<number>>(
-        {
-            kind: 'binary',
-            measure: () => 4,
-            write(writer, value) {
-                writer.writeI32(value);
-            },
-            read(reader) {
-                return reader.readI32();
-            },
-        },
-        'i32',
-    ),
+const i32Codec = definePrimitiveWitnessCodec<number>(
+    'i32',
+    4,
+    (writer, value) => writer.writeI32(value),
+    (reader) => reader.readI32(),
     {
-        codecKind: 'primitive',
-        signature: 'i32',
-        leanCodec: 'Shirika.Codec.Builtins.i32Codec',
-        leanTheorems: ['Shirika.Codec.Builtins.i32_lawful'],
-        conformanceVectors: ['primitive-i32'],
-        readSideStrategy: getSpecializedReadSideStrategy('i32'),
         valueScope: 'bounded-primitive-values',
         acceptsMeasuredWriterValue: (value) => Number.isInteger(value) && value >= -0x80000000 && value <= 0x7fffffff,
     },
 );
-const f64Codec = defineCodecSignature<BinaryCodec<number>>(
-    {
-        kind: 'binary',
-        measure: () => 8,
-        write(writer, value) {
-            writer.writeF64(value);
-        },
-        read(reader) {
-            return reader.readF64();
-        },
-    },
+const f64Codec = defineFixedBinaryCodec<number>(
     'f64',
+    8,
+    (writer, value) => writer.writeF64(value),
+    (reader) => reader.readF64(),
 );
 const stringCodec = defineCodecSignature<BinaryCodec<string>>(
     {

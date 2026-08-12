@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-12T15:36:45.162Z",
+  "generatedAt": "2026-08-12T16:16:29.510Z",
   "mode": "full",
   "runtime": {
-    "node": "v26.0.0",
+    "node": "v24.11.0",
     "platform": "win32",
     "arch": "x64"
   },
@@ -36,9 +36,9 @@
     {
       "schemaVersion": 1,
       "suite": "contract-preparation",
-      "generatedAt": "2026-08-12T15:36:00.757Z",
+      "generatedAt": "2026-08-12T16:15:43.990Z",
       "runtime": {
-        "node": "v26.0.0",
+        "node": "v24.11.0",
         "platform": "win32",
         "arch": "x64"
       },
@@ -53,8 +53,8 @@
           "label": "describeContract(raw contract)",
           "group": "description",
           "metrics": {
-            "totalMs": 3044.2385000000004,
-            "opsPerSec": 32848.9374272088
+            "totalMs": 3227.7011,
+            "opsPerSec": 30981.803116775587
           }
         },
         {
@@ -62,8 +62,8 @@
           "label": "describeContract(prepared)",
           "group": "description",
           "metrics": {
-            "totalMs": 737.5047,
-            "opsPerSec": 135592.35622498408
+            "totalMs": 749.6813000000002,
+            "opsPerSec": 133390.0151971244
           }
         },
         {
@@ -71,8 +71,8 @@
           "label": "getContractHash(raw contract)",
           "group": "hash",
           "metrics": {
-            "totalMs": 2967.9683999999997,
-            "opsPerSec": 33693.08109884189
+            "totalMs": 3112.4701999999997,
+            "opsPerSec": 32128.821667111868
           }
         },
         {
@@ -80,8 +80,8 @@
           "label": "getContractHash(prepared)",
           "group": "hash",
           "metrics": {
-            "totalMs": 614.3045000000002,
-            "opsPerSec": 162785.7194599746
+            "totalMs": 653.0235000000002,
+            "opsPerSec": 153133.84587231543
           }
         },
         {
@@ -89,8 +89,8 @@
           "label": "buildMethodIndex(raw contract)",
           "group": "method-index",
           "metrics": {
-            "totalMs": 3100.6301999999996,
-            "opsPerSec": 32251.50809664436
+            "totalMs": 3295.6638000000003,
+            "opsPerSec": 30342.90087477976
           }
         },
         {
@@ -98,8 +98,8 @@
           "label": "prepared.methodIndex lookup",
           "group": "method-index",
           "metrics": {
-            "totalMs": 2.3867000000009284,
-            "opsPerSec": 41898856.1612105
+            "totalMs": 2.574400000001333,
+            "opsPerSec": 38844002.485996045
           }
         }
       ],
@@ -109,33 +109,33 @@
           "label": "describe prepared vs raw",
           "before": "describe-raw-contract",
           "after": "describe-prepared-contract",
-          "timeReductionPct": 75.77375425742761,
-          "throughputImprovementPct": 312.77547112581124
+          "timeReductionPct": 76.77352156307163,
+          "throughputImprovementPct": 330.54309878077515
         },
         {
           "id": "hash-prepared-vs-raw",
           "label": "hash prepared vs raw",
           "before": "hash-raw-contract",
           "after": "hash-prepared-contract",
-          "timeReductionPct": 79.30218866211648,
-          "throughputImprovementPct": 383.1428713284697
+          "timeReductionPct": 79.01912442406676,
+          "throughputImprovementPct": 376.62453188897473
         },
         {
           "id": "method-index-prepared-vs-raw",
           "label": "prepared index lookup vs raw build",
           "before": "build-index-raw-contract",
           "after": "reuse-prepared-method-index",
-          "timeReductionPct": 99.92302532562572,
-          "throughputImprovementPct": 129812.85875890532
+          "timeReductionPct": 99.92188523598793,
+          "throughputImprovementPct": 127916.77284020721
         }
       ]
     },
     {
       "schemaVersion": 1,
       "suite": "frame-receive",
-      "generatedAt": "2026-08-12T15:36:12.354Z",
+      "generatedAt": "2026-08-12T16:15:56.206Z",
       "runtime": {
-        "node": "v26.0.0",
+        "node": "v24.11.0",
         "platform": "win32",
         "arch": "x64"
       },
@@ -150,13 +150,13 @@
           "label": "empty request frame receive/read",
           "group": "receive",
           "metrics": {
-            "opsPerSec": 44650.49157958704,
-            "avgLatencyMs": 0.02239617,
-            "p50LatencyMs": 0.02239617,
-            "p95LatencyMs": 0.02239617,
-            "p99LatencyMs": 0.02239617,
+            "opsPerSec": 42141.23846778671,
+            "avgLatencyMs": 0.023729725000000004,
+            "p50LatencyMs": 0.023729725000000004,
+            "p95LatencyMs": 0.023729725000000004,
+            "p99LatencyMs": 0.023729725000000004,
             "rmePct": 0,
-            "totalMs": 447.9234
+            "totalMs": 474.59450000000004
           }
         },
         {
@@ -164,13 +164,13 @@
           "label": "small request frame receive/read",
           "group": "receive",
           "metrics": {
-            "opsPerSec": 44801.03078211624,
-            "avgLatencyMs": 0.022320914999999997,
-            "p50LatencyMs": 0.022320914999999997,
-            "p95LatencyMs": 0.022320914999999997,
-            "p99LatencyMs": 0.022320914999999997,
+            "opsPerSec": 42601.91176079025,
+            "avgLatencyMs": 0.023473125000000004,
+            "p50LatencyMs": 0.023473125000000004,
+            "p95LatencyMs": 0.023473125000000004,
+            "p99LatencyMs": 0.023473125000000004,
             "rmePct": 0,
-            "totalMs": 446.41829999999993
+            "totalMs": 469.4625000000001
           }
         },
         {
@@ -178,13 +178,13 @@
           "label": "mixed request/response/cancel receive/read",
           "group": "receive",
           "metrics": {
-            "opsPerSec": 46070.0836540579,
-            "avgLatencyMs": 0.021706060000000003,
-            "p50LatencyMs": 0.021706060000000003,
-            "p95LatencyMs": 0.021706060000000003,
-            "p99LatencyMs": 0.021706060000000003,
+            "opsPerSec": 43423.21722182164,
+            "avgLatencyMs": 0.023029155000000003,
+            "p50LatencyMs": 0.023029155000000003,
+            "p95LatencyMs": 0.023029155000000003,
+            "p99LatencyMs": 0.023029155000000003,
             "rmePct": 0,
-            "totalMs": 434.12120000000004
+            "totalMs": 460.58310000000006
           }
         }
       ]
@@ -192,9 +192,9 @@
     {
       "schemaVersion": 1,
       "suite": "aligned-bytes-payload",
-      "generatedAt": "2026-08-12T15:36:17.246Z",
+      "generatedAt": "2026-08-12T16:16:01.211Z",
       "runtime": {
-        "node": "v26.0.0",
+        "node": "v24.11.0",
         "platform": "win32",
         "arch": "x64"
       },
@@ -213,13 +213,13 @@
           "label": "small/no-wrap",
           "group": "no-wrap",
           "metrics": {
-            "opsPerSec": 44461.43859430722,
-            "avgLatencyMs": 0.02249139999999997,
-            "p50LatencyMs": 0.02249139999999997,
-            "p95LatencyMs": 0.031999999999996476,
-            "p99LatencyMs": 0.031999999999996476,
+            "opsPerSec": 42655.47387032315,
+            "avgLatencyMs": 0.02344364999999997,
+            "p50LatencyMs": 0.02344364999999997,
+            "p95LatencyMs": 0.028599999999997294,
+            "p99LatencyMs": 0.028599999999997294,
             "rmePct": 0,
-            "totalMs": 44.98279999999994,
+            "totalMs": 46.88729999999994,
             "payloadBytes": 32
           }
         },
@@ -228,13 +228,13 @@
           "label": "small/prefix-wrap",
           "group": "prefix-wrap",
           "metrics": {
-            "opsPerSec": 47016.01130264867,
-            "avgLatencyMs": 0.0212693500000002,
-            "p50LatencyMs": 0.0212693500000002,
-            "p95LatencyMs": 0.02360000000000184,
-            "p99LatencyMs": 0.02360000000000184,
+            "opsPerSec": 43404.66166066179,
+            "avgLatencyMs": 0.0230390000000003,
+            "p50LatencyMs": 0.0230390000000003,
+            "p95LatencyMs": 0.03110000000000923,
+            "p99LatencyMs": 0.03110000000000923,
             "rmePct": 0,
-            "totalMs": 42.538700000000404,
+            "totalMs": 46.0780000000006,
             "payloadBytes": 32
           }
         },
@@ -243,13 +243,13 @@
           "label": "small/body-wrap",
           "group": "body-wrap",
           "metrics": {
-            "opsPerSec": 45218.17770743802,
-            "avgLatencyMs": 0.02211500000000018,
-            "p50LatencyMs": 0.02211500000000018,
-            "p95LatencyMs": 0.03669999999999618,
-            "p99LatencyMs": 0.03669999999999618,
+            "opsPerSec": 44138.90513445937,
+            "avgLatencyMs": 0.02265574999999937,
+            "p50LatencyMs": 0.02265574999999937,
+            "p95LatencyMs": 0.029799999999994498,
+            "p99LatencyMs": 0.029799999999994498,
             "rmePct": 0,
-            "totalMs": 44.23000000000036,
+            "totalMs": 45.311499999998745,
             "payloadBytes": 32
           }
         },
@@ -258,13 +258,13 @@
           "label": "1MiB/no-wrap",
           "group": "no-wrap",
           "metrics": {
-            "opsPerSec": 5371.607829655638,
-            "avgLatencyMs": 0.18616399999999772,
-            "p50LatencyMs": 0.18616399999999772,
-            "p95LatencyMs": 0.2296000000000049,
-            "p99LatencyMs": 0.2296000000000049,
+            "opsPerSec": 3568.777479586563,
+            "avgLatencyMs": 0.28020800000000234,
+            "p50LatencyMs": 0.28020800000000234,
+            "p95LatencyMs": 0.7964999999999804,
+            "p99LatencyMs": 0.7964999999999804,
             "rmePct": 0,
-            "totalMs": 4.654099999999943,
+            "totalMs": 7.005200000000059,
             "payloadBytes": 1048576
           }
         },
@@ -273,13 +273,13 @@
           "label": "1MiB/prefix-wrap",
           "group": "prefix-wrap",
           "metrics": {
-            "opsPerSec": 3771.9907058150097,
-            "avgLatencyMs": 0.26511199999999235,
-            "p50LatencyMs": 0.26511199999999235,
-            "p95LatencyMs": 0.2997000000000014,
-            "p99LatencyMs": 0.2997000000000014,
+            "opsPerSec": 3871.767074492768,
+            "avgLatencyMs": 0.258280000000002,
+            "p50LatencyMs": 0.258280000000002,
+            "p95LatencyMs": 0.27539999999999054,
+            "p99LatencyMs": 0.27539999999999054,
             "rmePct": 0,
-            "totalMs": 6.627799999999809,
+            "totalMs": 6.4570000000000505,
             "payloadBytes": 1048576
           }
         },
@@ -288,13 +288,13 @@
           "label": "1MiB/body-wrap",
           "group": "body-wrap",
           "metrics": {
-            "opsPerSec": 3791.0954749485345,
-            "avgLatencyMs": 0.26377599999999346,
-            "p50LatencyMs": 0.26377599999999346,
-            "p95LatencyMs": 0.30740000000002965,
-            "p99LatencyMs": 0.30740000000002965,
+            "opsPerSec": 3757.251495386101,
+            "avgLatencyMs": 0.2661519999999996,
+            "p50LatencyMs": 0.2661519999999996,
+            "p95LatencyMs": 0.2977000000000203,
+            "p99LatencyMs": 0.2977000000000203,
             "rmePct": 0,
-            "totalMs": 6.594399999999837,
+            "totalMs": 6.65379999999999,
             "payloadBytes": 1048576
           }
         },
@@ -303,13 +303,13 @@
           "label": "8MiB/no-wrap",
           "group": "no-wrap",
           "metrics": {
-            "opsPerSec": 612.4683239038794,
-            "avgLatencyMs": 1.6327374999999833,
-            "p50LatencyMs": 1.6327374999999833,
-            "p95LatencyMs": 3.255999999999972,
-            "p99LatencyMs": 3.255999999999972,
+            "opsPerSec": 557.4796345721015,
+            "avgLatencyMs": 1.7937874999999934,
+            "p50LatencyMs": 1.7937874999999934,
+            "p95LatencyMs": 3.0577999999999292,
+            "p99LatencyMs": 3.0577999999999292,
             "rmePct": 0,
-            "totalMs": 13.061899999999866,
+            "totalMs": 14.350299999999947,
             "payloadBytes": 8388608
           }
         },
@@ -318,13 +318,13 @@
           "label": "8MiB/prefix-wrap",
           "group": "prefix-wrap",
           "metrics": {
-            "opsPerSec": 422.8665063297806,
-            "avgLatencyMs": 2.3648125000000135,
-            "p50LatencyMs": 2.3648125000000135,
-            "p95LatencyMs": 3.332400000000007,
-            "p99LatencyMs": 3.332400000000007,
+            "opsPerSec": 482.61383653869586,
+            "avgLatencyMs": 2.07204999999999,
+            "p50LatencyMs": 2.07204999999999,
+            "p95LatencyMs": 2.5863999999999123,
+            "p99LatencyMs": 2.5863999999999123,
             "rmePct": 0,
-            "totalMs": 18.91850000000011,
+            "totalMs": 16.57639999999992,
             "payloadBytes": 8388608
           }
         },
@@ -333,13 +333,13 @@
           "label": "8MiB/body-wrap",
           "group": "body-wrap",
           "metrics": {
-            "opsPerSec": 486.8904739878771,
-            "avgLatencyMs": 2.053849999999997,
-            "p50LatencyMs": 2.053849999999997,
-            "p95LatencyMs": 3.14549999999997,
-            "p99LatencyMs": 3.14549999999997,
+            "opsPerSec": 498.54176533639924,
+            "avgLatencyMs": 2.005849999999967,
+            "p50LatencyMs": 2.005849999999967,
+            "p95LatencyMs": 2.358799999999974,
+            "p99LatencyMs": 2.358799999999974,
             "rmePct": 0,
-            "totalMs": 16.430799999999977,
+            "totalMs": 16.046799999999735,
             "payloadBytes": 8388608
           }
         },
@@ -348,13 +348,13 @@
           "label": "32MiB/no-wrap",
           "group": "no-wrap",
           "metrics": {
-            "opsPerSec": 167.19518923709083,
-            "avgLatencyMs": 5.981033333333244,
-            "p50LatencyMs": 5.981033333333244,
-            "p95LatencyMs": 6.730499999999893,
-            "p99LatencyMs": 6.730499999999893,
+            "opsPerSec": 175.45296106113918,
+            "avgLatencyMs": 5.699533333333345,
+            "p50LatencyMs": 5.699533333333345,
+            "p95LatencyMs": 6.3215999999999894,
+            "p99LatencyMs": 6.3215999999999894,
             "rmePct": 0,
-            "totalMs": 17.94309999999973,
+            "totalMs": 17.098600000000033,
             "payloadBytes": 33554432
           }
         },
@@ -363,13 +363,13 @@
           "label": "32MiB/prefix-wrap",
           "group": "prefix-wrap",
           "metrics": {
-            "opsPerSec": 122.0986312743441,
-            "avgLatencyMs": 8.190099999999953,
-            "p50LatencyMs": 8.190099999999953,
-            "p95LatencyMs": 8.525500000000193,
-            "p99LatencyMs": 8.525500000000193,
+            "opsPerSec": 131.62051174055392,
+            "avgLatencyMs": 7.597599999999754,
+            "p50LatencyMs": 7.597599999999754,
+            "p95LatencyMs": 7.93939999999975,
+            "p99LatencyMs": 7.93939999999975,
             "rmePct": 0,
-            "totalMs": 24.57029999999986,
+            "totalMs": 22.79279999999926,
             "payloadBytes": 33554432
           }
         },
@@ -378,13 +378,13 @@
           "label": "32MiB/body-wrap",
           "group": "body-wrap",
           "metrics": {
-            "opsPerSec": 132.67995825003757,
-            "avgLatencyMs": 7.536933333333461,
-            "p50LatencyMs": 7.536933333333461,
-            "p95LatencyMs": 8.146799999999985,
-            "p99LatencyMs": 8.146799999999985,
+            "opsPerSec": 121.9933716934736,
+            "avgLatencyMs": 8.197166666666513,
+            "p50LatencyMs": 8.197166666666513,
+            "p95LatencyMs": 8.815599999999904,
+            "p99LatencyMs": 8.815599999999904,
             "rmePct": 0,
-            "totalMs": 22.61080000000038,
+            "totalMs": 24.59149999999954,
             "payloadBytes": 33554432
           }
         }
@@ -393,9 +393,9 @@
     {
       "schemaVersion": 2,
       "suite": "codec-writer-fast-path",
-      "generatedAt": "2026-08-12T15:36:17.317Z",
+      "generatedAt": "2026-08-12T16:16:01.286Z",
       "runtime": {
-        "node": "v26.0.0",
+        "node": "v24.11.0",
         "platform": "win32",
         "arch": "x64"
       },
@@ -411,11 +411,11 @@
           "group": "primitive fixed-width",
           "strategy": "safe-writer",
           "metrics": {
-            "totalMs": 16.648400000000002,
-            "opsPerSec": 3003291.607601932,
-            "avgMs": 0.00033296800000000006,
-            "p95Ms": 0.0003784500000000008,
-            "heapDeltaBytes": -402968
+            "totalMs": 19.7295,
+            "opsPerSec": 2534276.0840365947,
+            "avgMs": 0.00039459000000000006,
+            "p95Ms": 0.0004931000000000018,
+            "heapDeltaBytes": 596816
           }
         },
         {
@@ -424,11 +424,11 @@
           "group": "primitive fixed-width",
           "strategy": "generic-trusted-measured-writer",
           "metrics": {
-            "totalMs": 17.3746,
-            "opsPerSec": 2877764.0924107605,
-            "avgMs": 0.000347492,
-            "p95Ms": 0.0003961000000000041,
-            "heapDeltaBytes": -1102200
+            "totalMs": 19.610100000000003,
+            "opsPerSec": 2549706.528778537,
+            "avgMs": 0.0003922020000000001,
+            "p95Ms": 0.0005046999999999997,
+            "heapDeltaBytes": 1966872
           }
         },
         {
@@ -437,11 +437,11 @@
           "group": "representative struct",
           "strategy": "safe-writer",
           "metrics": {
-            "totalMs": 19.295699999999997,
-            "opsPerSec": 2591250.9004596886,
-            "avgMs": 0.00038591399999999995,
-            "p95Ms": 0.0004753999999999934,
-            "heapDeltaBytes": 178584
+            "totalMs": 20.5394,
+            "opsPerSec": 2434345.696563678,
+            "avgMs": 0.000410788,
+            "p95Ms": 0.0004964999999999975,
+            "heapDeltaBytes": -206496
           }
         },
         {
@@ -450,11 +450,11 @@
           "group": "representative struct",
           "strategy": "generic-trusted-measured-writer",
           "metrics": {
-            "totalMs": 20.60329999999999,
-            "opsPerSec": 2426795.7074837536,
-            "avgMs": 0.0004120659999999998,
-            "p95Ms": 0.000499600000000001,
-            "heapDeltaBytes": -561480
+            "totalMs": 20.446700000000007,
+            "opsPerSec": 2445382.3844434544,
+            "avgMs": 0.0004089340000000001,
+            "p95Ms": 0.0005568999999999988,
+            "heapDeltaBytes": -868120
           }
         },
         {
@@ -463,11 +463,11 @@
           "group": "representative struct",
           "strategy": "specialized:struct(tag:u8,count:u16,ok:bool)",
           "metrics": {
-            "totalMs": 18.527299999999997,
-            "opsPerSec": 2698720.2668494605,
-            "avgMs": 0.0003705459999999999,
-            "p95Ms": 0.00044334999999999525,
-            "heapDeltaBytes": 1062680
+            "totalMs": 18.920000000000016,
+            "opsPerSec": 2642706.131078222,
+            "avgMs": 0.0003784000000000003,
+            "p95Ms": 0.0004483500000000049,
+            "heapDeltaBytes": -896800
           }
         },
         {
@@ -476,11 +476,11 @@
           "group": "nested optional/array/tuple",
           "strategy": "safe-writer",
           "metrics": {
-            "totalMs": 73.41760000000002,
-            "opsPerSec": 681035.6099899749,
-            "avgMs": 0.0014683520000000005,
-            "p95Ms": 0.0017131499999999988,
-            "heapDeltaBytes": -121328
+            "totalMs": 68.74370000000002,
+            "opsPerSec": 727339.3780084572,
+            "avgMs": 0.0013748740000000003,
+            "p95Ms": 0.0014902500000000033,
+            "heapDeltaBytes": -330768
           }
         },
         {
@@ -489,11 +489,11 @@
           "group": "nested optional/array/tuple",
           "strategy": "generic-trusted-measured-writer",
           "metrics": {
-            "totalMs": 71.27429999999998,
-            "opsPerSec": 701515.1323829208,
-            "avgMs": 0.0014254859999999997,
-            "p95Ms": 0.001488900000000001,
-            "heapDeltaBytes": -32768
+            "totalMs": 69.33400000000003,
+            "opsPerSec": 721146.9120489223,
+            "avgMs": 0.0013866800000000006,
+            "p95Ms": 0.0015538500000000113,
+            "heapDeltaBytes": -327248
           }
         },
         {
@@ -502,11 +502,11 @@
           "group": "nested optional/array/tuple",
           "strategy": "specialized:struct(tag:u8,maybePayload:optional(bytes),pairs:array(tuple(bool,u8)))",
           "metrics": {
-            "totalMs": 53.58460000000002,
-            "opsPerSec": 933103.9141842988,
-            "avgMs": 0.0010716920000000004,
-            "p95Ms": 0.0011400500000000023,
-            "heapDeltaBytes": 1913472
+            "totalMs": 52.58109999999999,
+            "opsPerSec": 950912.0197181118,
+            "avgMs": 0.0010516219999999999,
+            "p95Ms": 0.001156800000000004,
+            "heapDeltaBytes": -496016
           }
         },
         {
@@ -515,11 +515,11 @@
           "group": "frame send small payload",
           "strategy": "safe-fallback",
           "metrics": {
-            "totalMs": 814.8435999999999,
-            "opsPerSec": 61361.468630299125,
-            "avgMs": 0.016296871999999997,
-            "p95Ms": 0.017262550000000005,
-            "heapDeltaBytes": -601024
+            "totalMs": 833.1552999999999,
+            "opsPerSec": 60012.821139108164,
+            "avgMs": 0.016663105999999997,
+            "p95Ms": 0.01830925000000002,
+            "heapDeltaBytes": 604504
           }
         },
         {
@@ -528,11 +528,11 @@
           "group": "frame send small payload",
           "strategy": "specialized:struct(tag:u8,count:u16,ok:bool)",
           "metrics": {
-            "totalMs": 1765.7323,
-            "opsPerSec": 28316.863207406925,
-            "avgMs": 0.035314646,
-            "p95Ms": 0.03604745000000003,
-            "heapDeltaBytes": -134784
+            "totalMs": 1807.9222,
+            "opsPerSec": 27656.057323705634,
+            "avgMs": 0.036158444,
+            "p95Ms": 0.03731074999999987,
+            "heapDeltaBytes": 2899664
           }
         },
         {
@@ -541,11 +541,11 @@
           "group": "frame send medium payload",
           "strategy": "safe-fallback",
           "metrics": {
-            "totalMs": 984.2003,
-            "opsPerSec": 50802.66689615925,
-            "avgMs": 0.019684006,
-            "p95Ms": 0.020216000000000123,
-            "heapDeltaBytes": 355960
+            "totalMs": 975.1745999999998,
+            "opsPerSec": 51272.86949434492,
+            "avgMs": 0.019503491999999997,
+            "p95Ms": 0.020214750000000094,
+            "heapDeltaBytes": -2070960
           }
         },
         {
@@ -554,11 +554,11 @@
           "group": "frame send medium payload",
           "strategy": "specialized:struct(tag:u8,maybePayload:optional(bytes),pairs:array(tuple(bool,u8)))",
           "metrics": {
-            "totalMs": 1582.4782000000005,
-            "opsPerSec": 31596.01187555063,
-            "avgMs": 0.03164956400000001,
-            "p95Ms": 0.033348149999999806,
-            "heapDeltaBytes": 2925776
+            "totalMs": 1633.3855000000003,
+            "opsPerSec": 30611.267211567625,
+            "avgMs": 0.03266771000000001,
+            "p95Ms": 0.03404224999999997,
+            "heapDeltaBytes": 1941672
           }
         }
       ],
@@ -568,81 +568,81 @@
           "label": "u32 direct trusted measured vs safe",
           "before": "direct-u32-safe-writer",
           "after": "direct-u32-trusted-writer",
-          "throughputImprovementPct": -4.179664567817394,
-          "latencyReductionPct": -4.3619807308810365
+          "throughputImprovementPct": 0.6088699190723074,
+          "latencyReductionPct": 0.6051851288679332
         },
         {
           "id": "direct-struct-generic-vs-safe",
           "label": "struct direct generic trusted vs safe",
           "before": "direct-struct-safe-writer",
           "after": "direct-struct-generic-trusted-writer",
-          "throughputImprovementPct": -6.346556134211498,
-          "latencyReductionPct": -6.776639354882132
+          "throughputImprovementPct": 0.4533738940757663,
+          "latencyReductionPct": 0.45132769214287277
         },
         {
           "id": "direct-struct-specialized-vs-safe",
           "label": "struct direct specialized vs safe",
           "before": "direct-struct-safe-writer",
           "after": "direct-struct-specialized-writer",
-          "throughputImprovementPct": 4.1473933060942425,
-          "latencyReductionPct": 3.9822343838264573
+          "throughputImprovementPct": 8.559196617336049,
+          "latencyReductionPct": 7.884358842030361
         },
         {
           "id": "direct-struct-specialized-vs-generic",
           "label": "struct direct specialized vs generic trusted",
           "before": "direct-struct-generic-trusted-writer",
           "after": "direct-struct-specialized-writer",
-          "throughputImprovementPct": 11.205086547958937,
-          "latencyReductionPct": 10.076055777472511
+          "throughputImprovementPct": 8.0692389006342,
+          "latencyReductionPct": 7.4667305726596
         },
         {
           "id": "direct-nested-generic-vs-safe",
           "label": "nested direct generic trusted vs safe",
           "before": "direct-nested-safe-writer",
           "after": "direct-nested-generic-trusted-writer",
-          "throughputImprovementPct": 3.007114766472698,
-          "latencyReductionPct": 2.9193272457830797
+          "throughputImprovementPct": -0.85138604436497,
+          "latencyReductionPct": -0.8586968696768047
         },
         {
           "id": "direct-nested-specialized-vs-safe",
           "label": "nested direct specialized vs safe",
           "before": "direct-nested-safe-writer",
           "after": "direct-nested-specialized-writer",
-          "throughputImprovementPct": 37.01249986003441,
-          "latencyReductionPct": 27.01395850586235
+          "throughputImprovementPct": 30.738421219791977,
+          "latencyReductionPct": 23.511390861999015
         },
         {
           "id": "direct-nested-specialized-vs-generic",
           "label": "nested direct specialized vs generic trusted",
           "before": "direct-nested-generic-trusted-writer",
           "after": "direct-nested-specialized-writer",
-          "throughputImprovementPct": 33.01265662149191,
-          "latencyReductionPct": 24.81918447462826
+          "throughputImprovementPct": 31.86106795027119,
+          "latencyReductionPct": 24.162604205728833
         },
         {
           "id": "frame-struct-prepared-vs-safe",
           "label": "frame struct prepared specialized vs safe",
           "before": "frame-struct-safe-fallback",
           "after": "frame-struct-prepared-specialized",
-          "throughputImprovementPct": -53.852370486737996,
-          "latencyReductionPct": -116.69585427191184
+          "throughputImprovementPct": -53.91641852730168,
+          "latencyReductionPct": -116.99702324404588
         },
         {
           "id": "frame-nested-prepared-vs-safe",
           "label": "frame nested prepared specialized vs safe",
           "before": "frame-nested-safe-fallback",
           "after": "frame-nested-prepared-specialized",
-          "throughputImprovementPct": -37.80639126655902,
-          "latencyReductionPct": -60.7882257300674
+          "throughputImprovementPct": -40.29733948293286,
+          "latencyReductionPct": -67.49672315091068
         }
       ]
     },
     {
       "schemaVersion": 1,
       "suite": "codec-read-fast-path",
-      "generatedAt": "2026-08-12T15:36:23.393Z",
+      "generatedAt": "2026-08-12T16:16:07.478Z",
       "runtime": {
-        "node": "v26.0.0",
+        "node": "v24.11.0",
         "platform": "win32",
         "arch": "x64"
       },
@@ -658,11 +658,11 @@
           "group": "primitive fixed-width",
           "strategy": "safe-ring-binary-reader",
           "metrics": {
-            "totalMs": 31.560600000000008,
-            "opsPerSec": 3168507.569564583,
-            "avgMs": 0.00031560600000000007,
-            "p95Ms": 0.00039634999999999996,
-            "heapDeltaBytes": 234592
+            "totalMs": 33.9584,
+            "opsPerSec": 2944779.494911421,
+            "avgMs": 0.000339584,
+            "p95Ms": 0.0004339250000000003,
+            "heapDeltaBytes": 1479976
           }
         },
         {
@@ -671,11 +671,11 @@
           "group": "primitive fixed-width",
           "strategy": "read-side:u32",
           "metrics": {
-            "totalMs": 669.4283,
-            "opsPerSec": 149381.19586518823,
-            "avgMs": 0.0066942830000000005,
-            "p95Ms": 0.007284125000000003,
-            "heapDeltaBytes": -1021776
+            "totalMs": 675.3134,
+            "opsPerSec": 148079.3954332907,
+            "avgMs": 0.006753134,
+            "p95Ms": 0.006993574999999993,
+            "heapDeltaBytes": 140360
           }
         },
         {
@@ -684,11 +684,11 @@
           "group": "tuple of primitives",
           "strategy": "safe-ring-binary-reader",
           "metrics": {
-            "totalMs": 33.85250000000008,
-            "opsPerSec": 2953991.581123987,
-            "avgMs": 0.00033852500000000076,
-            "p95Ms": 0.00040227500000000304,
-            "heapDeltaBytes": -855456
+            "totalMs": 33.66409999999996,
+            "opsPerSec": 2970523.49535559,
+            "avgMs": 0.0003366409999999996,
+            "p95Ms": 0.0003974999999999795,
+            "heapDeltaBytes": 103552
           }
         },
         {
@@ -697,11 +697,11 @@
           "group": "tuple of primitives",
           "strategy": "read-side:tuple(bool,u16)",
           "metrics": {
-            "totalMs": 672.3169,
-            "opsPerSec": 148739.38168146598,
-            "avgMs": 0.006723169,
-            "p95Ms": 0.00727955,
-            "heapDeltaBytes": -1566016
+            "totalMs": 702.0336,
+            "opsPerSec": 142443.32464998827,
+            "avgMs": 0.007020335999999999,
+            "p95Ms": 0.007309500000000014,
+            "heapDeltaBytes": -165400
           }
         },
         {
@@ -710,11 +710,11 @@
           "group": "representative simple struct",
           "strategy": "safe-ring-binary-reader",
           "metrics": {
-            "totalMs": 35.59940000000006,
-            "opsPerSec": 2809036.1073501194,
-            "avgMs": 0.0003559940000000006,
-            "p95Ms": 0.00040577500000000557,
-            "heapDeltaBytes": 518080
+            "totalMs": 35.33290000000011,
+            "opsPerSec": 2830223.389532127,
+            "avgMs": 0.0003533290000000011,
+            "p95Ms": 0.00037752499999999146,
+            "heapDeltaBytes": -437496
           }
         },
         {
@@ -723,11 +723,11 @@
           "group": "representative simple struct",
           "strategy": "read-side:struct(tag:u8,count:u16,ok:bool)",
           "metrics": {
-            "totalMs": 664.8715,
-            "opsPerSec": 150405.0030720222,
-            "avgMs": 0.0066487149999999995,
-            "p95Ms": 0.006738775000000033,
-            "heapDeltaBytes": -288792
+            "totalMs": 682.7430999999997,
+            "opsPerSec": 146467.97602202065,
+            "avgMs": 0.006827430999999997,
+            "p95Ms": 0.007040900000000079,
+            "heapDeltaBytes": 54232
           }
         },
         {
@@ -736,11 +736,11 @@
           "group": "frame read simple struct",
           "strategy": "safe-reader-fallback",
           "metrics": {
-            "totalMs": 1436.2264999999998,
-            "opsPerSec": 69626.90077087424,
-            "avgMs": 0.014362264999999997,
-            "p95Ms": 0.014934199999999918,
-            "heapDeltaBytes": -1540536
+            "totalMs": 1476.1877,
+            "opsPerSec": 67742.06288265374,
+            "avgMs": 0.014761877,
+            "p95Ms": 0.015583049999999958,
+            "heapDeltaBytes": -1355872
           }
         },
         {
@@ -749,11 +749,11 @@
           "group": "frame read simple struct",
           "strategy": "read-side:struct(tag:u8,count:u16,ok:bool)",
           "metrics": {
-            "totalMs": 2049.8633,
-            "opsPerSec": 48783.74084749944,
-            "avgMs": 0.020498633,
-            "p95Ms": 0.02123747500000013,
-            "heapDeltaBytes": -275584
+            "totalMs": 2132.053000000001,
+            "opsPerSec": 46903.14921814793,
+            "avgMs": 0.021320530000000008,
+            "p95Ms": 0.0220327749999999,
+            "heapDeltaBytes": 501872
           }
         }
       ],
@@ -763,41 +763,41 @@
           "label": "u32 direct validated read-side vs safe",
           "before": "direct-u32-safe-reader",
           "after": "direct-u32-validated-read-side",
-          "throughputImprovementPct": -95.28543982977715,
-          "latencyReductionPct": -2021.0886358307505
+          "throughputImprovementPct": -94.97146065811813,
+          "latencyReductionPct": -1888.6490529589146
         },
         {
           "id": "direct-tuple-validated-vs-safe",
           "label": "tuple direct validated read-side vs safe",
           "before": "direct-tuple-safe-reader",
           "after": "direct-tuple-validated-read-side",
-          "throughputImprovementPct": -94.96480008162817,
-          "latencyReductionPct": -1886.0184624473775
+          "throughputImprovementPct": -95.20477367465034,
+          "latencyReductionPct": -1985.4073033290679
         },
         {
           "id": "direct-struct-validated-vs-safe",
           "label": "struct direct validated read-side vs safe",
           "before": "direct-struct-safe-reader",
           "after": "direct-struct-validated-read-side",
-          "throughputImprovementPct": -94.64567213363785,
-          "latencyReductionPct": -1767.6480502480345
+          "throughputImprovementPct": -94.82486165001154,
+          "latencyReductionPct": -1832.3154906616712
         },
         {
           "id": "frame-struct-validated-vs-safe",
           "label": "frame struct validated read-side vs safe",
           "before": "frame-struct-safe-fallback",
           "after": "frame-struct-validated-read-side",
-          "throughputImprovementPct": -29.93549862568886,
-          "latencyReductionPct": -42.725628582956816
+          "throughputImprovementPct": -30.7621480329054,
+          "latencyReductionPct": -44.42966839515062
         }
       ]
     },
     {
       "schemaVersion": 1,
       "suite": "pending-lifecycle",
-      "generatedAt": "2026-08-12T15:36:29.631Z",
+      "generatedAt": "2026-08-12T16:16:13.917Z",
       "runtime": {
-        "node": "v26.0.0",
+        "node": "v24.11.0",
         "platform": "win32",
         "arch": "x64"
       },
@@ -812,11 +812,11 @@
           "label": "single request release raw map",
           "group": "raw",
           "metrics": {
-            "opsPerSec": 27981389.018535994,
-            "avgLatencyMs": 0.00003573804,
-            "p50LatencyMs": 0.00003526499999999999,
-            "p95LatencyMs": 0.00003768699999999995,
-            "p99LatencyMs": 0.00004213099999999997,
+            "opsPerSec": 29058549.49019681,
+            "avgLatencyMs": 0.000034413279999999997,
+            "p50LatencyMs": 0.00003388900000000007,
+            "p95LatencyMs": 0.000038599999999999996,
+            "p99LatencyMs": 0.00003861700000000006,
             "rmePct": 0
           }
         },
@@ -825,11 +825,11 @@
           "label": "single request release witness",
           "group": "witness",
           "metrics": {
-            "opsPerSec": 21696699.237751562,
-            "avgLatencyMs": 0.00004608995999999999,
-            "p50LatencyMs": 0.00004549300000000016,
-            "p95LatencyMs": 0.00004791600000000017,
-            "p99LatencyMs": 0.00005133499999999998,
+            "opsPerSec": 22499151.78197782,
+            "avgLatencyMs": 0.000044446119999999996,
+            "p50LatencyMs": 0.00004389499999999998,
+            "p95LatencyMs": 0.00004876599999999996,
+            "p99LatencyMs": 0.0000488069999999999,
             "rmePct": 0
           }
         },
@@ -838,11 +838,11 @@
           "label": "late stale witness release raw map",
           "group": "raw",
           "metrics": {
-            "opsPerSec": 15277643.674016625,
-            "avgLatencyMs": 0.00006545512000000005,
-            "p50LatencyMs": 0.00006470899999999972,
-            "p95LatencyMs": 0.00007242200000000025,
-            "p99LatencyMs": 0.00007324099999999988,
+            "opsPerSec": 16096620.932947291,
+            "avgLatencyMs": 0.00006212483999999993,
+            "p50LatencyMs": 0.00006187700000000007,
+            "p95LatencyMs": 0.0000635269999999997,
+            "p99LatencyMs": 0.00006359899999999982,
             "rmePct": 0
           }
         },
@@ -851,11 +851,11 @@
           "label": "late stale witness release witness",
           "group": "witness",
           "metrics": {
-            "opsPerSec": 13155035.247601405,
-            "avgLatencyMs": 0.00007601652000000022,
-            "p50LatencyMs": 0.0000762029999999993,
-            "p95LatencyMs": 0.00007737700000000018,
-            "p99LatencyMs": 0.00007754800000000046,
+            "opsPerSec": 13376630.811945446,
+            "avgLatencyMs": 0.00007475723999999997,
+            "p50LatencyMs": 0.00007253600000000005,
+            "p95LatencyMs": 0.00008630599999999959,
+            "p99LatencyMs": 0.00009882900000000064,
             "rmePct": 0
           }
         },
@@ -864,11 +864,11 @@
           "label": "close many pending raw map",
           "group": "raw",
           "metrics": {
-            "opsPerSec": 14996640.75247142,
-            "avgLatencyMs": 0.00006668160000000012,
-            "p50LatencyMs": 0.00005846900000000005,
-            "p95LatencyMs": 0.00009168999999999982,
-            "p99LatencyMs": 0.00012870499999999993,
+            "opsPerSec": 13079733.00602611,
+            "avgLatencyMs": 0.00007645415999999991,
+            "p50LatencyMs": 0.00006771499999999947,
+            "p95LatencyMs": 0.00011171799999999962,
+            "p99LatencyMs": 0.0001515429999999992,
             "rmePct": 0
           }
         },
@@ -877,11 +877,11 @@
           "label": "close many pending witness",
           "group": "witness",
           "metrics": {
-            "opsPerSec": 8512666.848270228,
-            "avgLatencyMs": 0.00011747199999999998,
-            "p50LatencyMs": 0.00011613399999999956,
-            "p95LatencyMs": 0.00016920699999999896,
-            "p99LatencyMs": 0.00019386199999999918,
+            "opsPerSec": 8193296.245012341,
+            "avgLatencyMs": 0.00012205099999999984,
+            "p50LatencyMs": 0.00009756200000000035,
+            "p95LatencyMs": 0.00019724100000000135,
+            "p99LatencyMs": 0.00023769199999999955,
             "rmePct": 0
           }
         }
@@ -893,8 +893,8 @@
           "baselineCaseId": "single-request-release:raw",
           "candidateCaseId": "single-request-release:witness",
           "delta": {
-            "throughputPct": -22.460249477326524,
-            "latencyPct": 28.966110060876293
+            "throughputPct": -22.573038996429833,
+            "latencyPct": 29.153977766722615
           }
         },
         {
@@ -903,8 +903,8 @@
           "baselineCaseId": "late-stale-witness-release:raw",
           "candidateCaseId": "late-stale-witness-release:witness",
           "delta": {
-            "throughputPct": -13.893558926401953,
-            "latencyPct": 16.135330589876183
+            "throughputPct": -16.897895106882007,
+            "latencyPct": 20.333895427336397
           }
         },
         {
@@ -913,8 +913,8 @@
           "baselineCaseId": "close-many-pending:raw",
           "candidateCaseId": "close-many-pending:witness",
           "delta": {
-            "throughputPct": -43.2361754290383,
-            "latencyPct": 76.16853824743222
+            "throughputPct": -37.3588417956428,
+            "latencyPct": 59.639449311849056
           }
         }
       ]
@@ -922,9 +922,9 @@
     {
       "schemaVersion": 1,
       "suite": "node-postmessage-vs-sab",
-      "generatedAt": "2026-08-12T15:36:30.988Z",
+      "generatedAt": "2026-08-12T16:16:15.299Z",
       "runtime": {
-        "node": "v26.0.0",
+        "node": "v24.11.0",
         "platform": "win32",
         "arch": "x64"
       },
@@ -942,12 +942,12 @@
           "payloadBytes": 32,
           "capacityBytes": 1048576,
           "metrics": {
-            "opsPerSec": 56603.9356637784,
-            "avgLatencyMs": 0.018318666566484024,
-            "p50LatencyMs": 0.01700000000005275,
-            "p95LatencyMs": 0.0221000000000231,
-            "p99LatencyMs": 0.045900000000074215,
-            "rmePct": 0.19525906691398584
+            "opsPerSec": 55869.23760054556,
+            "avgLatencyMs": 0.01842081139514171,
+            "p50LatencyMs": 0.016999999999995907,
+            "p95LatencyMs": 0.02189999999998804,
+            "p99LatencyMs": 0.046599999999983766,
+            "rmePct": 0.13363458633207553
           }
         },
         {
@@ -957,12 +957,12 @@
           "payloadBytes": 32,
           "capacityBytes": 1048576,
           "metrics": {
-            "opsPerSec": 12727.252094800033,
-            "avgLatencyMs": 0.08204350656515445,
-            "p50LatencyMs": 0.07439999999996871,
-            "p95LatencyMs": 0.11569999999994707,
-            "p99LatencyMs": 0.17499999999995453,
-            "rmePct": 0.3100164716202467
+            "opsPerSec": 11422.92722693486,
+            "avgLatencyMs": 0.09137324620885195,
+            "p50LatencyMs": 0.0807999999999538,
+            "p95LatencyMs": 0.13820000000009713,
+            "p99LatencyMs": 0.20280000000002474,
+            "rmePct": 0.4671957636713237
           }
         },
         {
@@ -972,12 +972,12 @@
           "payloadBytes": 32,
           "capacityBytes": 1048576,
           "metrics": {
-            "opsPerSec": 15887.05684900289,
-            "avgLatencyMs": 0.06678560517566526,
-            "p50LatencyMs": 0.059399999999982356,
-            "p95LatencyMs": 0.10380000000031941,
-            "p99LatencyMs": 0.16210000000000946,
-            "rmePct": 0.3654442260295617
+            "opsPerSec": 15608.514073638347,
+            "avgLatencyMs": 0.06778108405054026,
+            "p50LatencyMs": 0.061100000000124055,
+            "p95LatencyMs": 0.10329999999999018,
+            "p99LatencyMs": 0.1592999999999165,
+            "rmePct": 0.35090431505190306
           }
         },
         {
@@ -987,12 +987,12 @@
           "payloadBytes": 4096,
           "capacityBytes": 1048576,
           "metrics": {
-            "opsPerSec": 51261.746648006374,
-            "avgLatencyMs": 0.021115138764807105,
-            "p50LatencyMs": 0.01830000000018117,
-            "p95LatencyMs": 0.0340000000001055,
-            "p99LatencyMs": 0.0658000000003085,
-            "rmePct": 0.26750042516247463
+            "opsPerSec": 51195.368042012,
+            "avgLatencyMs": 0.020379675481442,
+            "p50LatencyMs": 0.017800000000079308,
+            "p95LatencyMs": 0.030899999999746797,
+            "p99LatencyMs": 0.062300000000050204,
+            "rmePct": 0.2165830009335896
           }
         },
         {
@@ -1002,12 +1002,12 @@
           "payloadBytes": 4096,
           "capacityBytes": 1048576,
           "metrics": {
-            "opsPerSec": 10390.200068963137,
-            "avgLatencyMs": 0.10940547622552302,
-            "p50LatencyMs": 0.09209999999984575,
-            "p95LatencyMs": 0.19279999999980646,
-            "p99LatencyMs": 0.27340000000003783,
-            "rmePct": 0.5806957145466702
+            "opsPerSec": 10882.016417089126,
+            "avgLatencyMs": 0.09637688611868657,
+            "p50LatencyMs": 0.08109999999987849,
+            "p95LatencyMs": 0.17750000000023647,
+            "p99LatencyMs": 0.2195000000001528,
+            "rmePct": 0.6580949573060688
           }
         },
         {
@@ -1017,12 +1017,12 @@
           "payloadBytes": 4096,
           "capacityBytes": 1048576,
           "metrics": {
-            "opsPerSec": 12343.187059362403,
-            "avgLatencyMs": 0.09765376428852963,
-            "p50LatencyMs": 0.07240000000001601,
-            "p95LatencyMs": 0.19029999999929714,
-            "p99LatencyMs": 0.25320000000010623,
-            "rmePct": 0.7609872456332529
+            "opsPerSec": 13809.263978671392,
+            "avgLatencyMs": 0.07575631196974388,
+            "p50LatencyMs": 0.06400000000030559,
+            "p95LatencyMs": 0.13630000000011933,
+            "p99LatencyMs": 0.17420000000038272,
+            "rmePct": 0.606837349572643
           }
         },
         {
@@ -1032,12 +1032,12 @@
           "payloadBytes": 65536,
           "capacityBytes": 1048576,
           "metrics": {
-            "opsPerSec": 19754.497281561857,
-            "avgLatencyMs": 0.07187080433101155,
-            "p50LatencyMs": 0.06329999999979918,
-            "p95LatencyMs": 0.11540000000059081,
-            "p99LatencyMs": 0.22080000000005384,
-            "rmePct": 0.9606387924695206
+            "opsPerSec": 20754.983310736952,
+            "avgLatencyMs": 0.06985681624941119,
+            "p50LatencyMs": 0.061300000000301225,
+            "p95LatencyMs": 0.12480000000050495,
+            "p99LatencyMs": 0.27189999999973224,
+            "rmePct": 0.8584126801681249
           }
         },
         {
@@ -1047,12 +1047,12 @@
           "payloadBytes": 65536,
           "capacityBytes": 1048576,
           "metrics": {
-            "opsPerSec": 9398.188809181518,
-            "avgLatencyMs": 0.1245032414369244,
-            "p50LatencyMs": 0.10069999999996071,
-            "p95LatencyMs": 0.2092000000002372,
-            "p99LatencyMs": 0.29069999999956053,
-            "rmePct": 0.5894931845543865
+            "opsPerSec": 8733.659551304754,
+            "avgLatencyMs": 0.14138390345876467,
+            "p50LatencyMs": 0.11299999999937427,
+            "p95LatencyMs": 0.2749999999996362,
+            "p99LatencyMs": 0.4021999999995387,
+            "rmePct": 0.7417879377349531
           }
         },
         {
@@ -1062,12 +1062,12 @@
           "payloadBytes": 65536,
           "capacityBytes": 1048576,
           "metrics": {
-            "opsPerSec": 10004.727617693337,
-            "avgLatencyMs": 0.11968689921235297,
-            "p50LatencyMs": 0.10319999999956053,
-            "p95LatencyMs": 0.21919999999954598,
-            "p99LatencyMs": 0.3216000000002168,
-            "rmePct": 0.8884984995270991
+            "opsPerSec": 10394.653447424196,
+            "avgLatencyMs": 0.1158423855496733,
+            "p50LatencyMs": 0.09290000000055443,
+            "p95LatencyMs": 0.21500000000014552,
+            "p99LatencyMs": 0.32819999999992433,
+            "rmePct": 0.7213780224124288
           }
         }
       ]
@@ -1075,9 +1075,9 @@
     {
       "schemaVersion": 1,
       "suite": "node-pool-contention",
-      "generatedAt": "2026-08-12T15:36:38.127Z",
+      "generatedAt": "2026-08-12T16:16:22.462Z",
       "runtime": {
-        "node": "v26.0.0",
+        "node": "v24.11.0",
         "platform": "win32",
         "arch": "x64"
       },
@@ -1089,12 +1089,12 @@
           "concurrency": 1,
           "group": "1 workers",
           "metrics": {
-            "opsPerSec": 16228.316509515209,
-            "avgLatencyMs": 0.06860171512427818,
-            "p50LatencyMs": 0.05829999999997426,
-            "p95LatencyMs": 0.1168999999999869,
-            "p99LatencyMs": 0.20549999999991542,
-            "rmePct": 0.370096022416429
+            "opsPerSec": 15105.789133334009,
+            "avgLatencyMs": 0.07388020154119737,
+            "p50LatencyMs": 0.06179999999994834,
+            "p95LatencyMs": 0.12860000000000582,
+            "p99LatencyMs": 0.22759999999993852,
+            "rmePct": 0.45102481840543696
           }
         },
         {
@@ -1104,12 +1104,12 @@
           "concurrency": 8,
           "group": "1 workers",
           "metrics": {
-            "opsPerSec": 4267.944510204628,
-            "avgLatencyMs": 0.2499033677892629,
-            "p50LatencyMs": 0.22690000000000055,
-            "p95LatencyMs": 0.376700000000028,
-            "p99LatencyMs": 0.5228000000000748,
-            "rmePct": 0.6107352901714543
+            "opsPerSec": 3974.9956033487288,
+            "avgLatencyMs": 0.2655560240963873,
+            "p50LatencyMs": 0.23739999999997963,
+            "p95LatencyMs": 0.4278999999999087,
+            "p99LatencyMs": 0.6022000000000389,
+            "rmePct": 0.7503397690323176
           }
         },
         {
@@ -1119,12 +1119,12 @@
           "concurrency": 32,
           "group": "1 workers",
           "metrics": {
-            "opsPerSec": 1263.464130300135,
-            "avgLatencyMs": 0.8057346566523698,
-            "p50LatencyMs": 0.7635000000000218,
-            "p95LatencyMs": 1.01299999999992,
-            "p99LatencyMs": 1.3858000000000175,
-            "rmePct": 0.8686302785855549
+            "opsPerSec": 1216.9450494162872,
+            "avgLatencyMs": 0.8383664062499984,
+            "p50LatencyMs": 0.7980000000000018,
+            "p95LatencyMs": 1.0090000000000146,
+            "p99LatencyMs": 1.49570000000017,
+            "rmePct": 0.7993353472454522
           }
         },
         {
@@ -1134,12 +1134,12 @@
           "concurrency": 1,
           "group": "2 workers",
           "metrics": {
-            "opsPerSec": 16736.034347633435,
-            "avgLatencyMs": 0.06291612713361146,
-            "p50LatencyMs": 0.056300000000192085,
-            "p95LatencyMs": 0.09159999999974389,
-            "p99LatencyMs": 0.14620000000013533,
-            "rmePct": 0.32999529707051345
+            "opsPerSec": 16483.06488759629,
+            "avgLatencyMs": 0.06459452598860509,
+            "p50LatencyMs": 0.05830000000014479,
+            "p95LatencyMs": 0.09320000000025175,
+            "p99LatencyMs": 0.14750000000003638,
+            "rmePct": 0.28897314071765207
           }
         },
         {
@@ -1149,12 +1149,12 @@
           "concurrency": 8,
           "group": "2 workers",
           "metrics": {
-            "opsPerSec": 4600.259352635083,
-            "avgLatencyMs": 0.22279806777645628,
-            "p50LatencyMs": 0.20540000000028158,
-            "p95LatencyMs": 0.31759999999985666,
-            "p99LatencyMs": 0.45489999999972497,
-            "rmePct": 0.5657643430995422
+            "opsPerSec": 4004.246341065271,
+            "avgLatencyMs": 0.2517781848739548,
+            "p50LatencyMs": 0.2373000000002321,
+            "p95LatencyMs": 0.3196000000002641,
+            "p99LatencyMs": 0.45699999999987995,
+            "rmePct": 0.5123431771628044
           }
         },
         {
@@ -1164,12 +1164,12 @@
           "concurrency": 32,
           "group": "2 workers",
           "metrics": {
-            "opsPerSec": 1336.0674059419603,
-            "avgLatencyMs": 0.7608332657201041,
-            "p50LatencyMs": 0.7151000000003478,
-            "p95LatencyMs": 1.0041000000001077,
-            "p99LatencyMs": 1.3896999999997206,
-            "rmePct": 0.8513595663699186
+            "opsPerSec": 1110.9241965426754,
+            "avgLatencyMs": 0.9106367272727386,
+            "p50LatencyMs": 0.8463000000001557,
+            "p95LatencyMs": 1.1387000000004264,
+            "p99LatencyMs": 1.7341999999998734,
+            "rmePct": 1.0415715163723986
           }
         },
         {
@@ -1179,12 +1179,12 @@
           "concurrency": 1,
           "group": "4 workers",
           "metrics": {
-            "opsPerSec": 14459.92592019353,
-            "avgLatencyMs": 0.0764685302534784,
-            "p50LatencyMs": 0.05989999999928841,
-            "p95LatencyMs": 0.14950000000044383,
-            "p99LatencyMs": 0.19470000000001164,
-            "rmePct": 0.6832022390523212
+            "opsPerSec": 16641.710951383466,
+            "avgLatencyMs": 0.06254441284709723,
+            "p50LatencyMs": 0.05749999999989086,
+            "p95LatencyMs": 0.08840000000054715,
+            "p99LatencyMs": 0.13069999999970605,
+            "rmePct": 0.284242053562773
           }
         },
         {
@@ -1194,12 +1194,12 @@
           "concurrency": 8,
           "group": "4 workers",
           "metrics": {
-            "opsPerSec": 4281.395521567659,
-            "avgLatencyMs": 0.2869074980872202,
-            "p50LatencyMs": 0.2246000000004642,
-            "p95LatencyMs": 0.5412999999998647,
-            "p99LatencyMs": 0.6259000000000015,
-            "rmePct": 0.8456234225414921
+            "opsPerSec": 4480.609993454631,
+            "avgLatencyMs": 0.23602430730478782,
+            "p50LatencyMs": 0.2157999999999447,
+            "p95LatencyMs": 0.3419000000003507,
+            "p99LatencyMs": 0.5029999999997017,
+            "rmePct": 0.4226476451479282
           }
         },
         {
@@ -1209,12 +1209,12 @@
           "concurrency": 32,
           "group": "4 workers",
           "metrics": {
-            "opsPerSec": 1238.228140812759,
-            "avgLatencyMs": 0.8457055180180097,
-            "p50LatencyMs": 0.7480999999997948,
-            "p95LatencyMs": 1.408900000000358,
-            "p99LatencyMs": 1.7610999999997148,
-            "rmePct": 1.4061828635176619
+            "opsPerSec": 1276.8284361815404,
+            "avgLatencyMs": 0.7979228480340075,
+            "p50LatencyMs": 0.757900000000518,
+            "p95LatencyMs": 0.9607999999998356,
+            "p99LatencyMs": 1.6017000000001644,
+            "rmePct": 0.792977811023415
           }
         }
       ]

@@ -9,14 +9,14 @@ import { type ContractInput, type ContractShape, type MethodNames, type Prepared
 import {
     createDurationStats,
     createMethodLatencyMetrics,
+    invokeFatalErrorHook,
     nowMs,
     type RpcNotifyErrorPolicy,
-    type RpcTransportSnapshot,
     recordDuration,
     recordMethodLatency,
     safeInvokeHook,
-    snapshotDurationStats,
     snapshotMethodLatencyMetrics,
+    snapshotRpcTransport,
 } from './observability.js';
 import { remoteErrorCodec, toRemoteErrorPayload } from './remote-error.js';
 import type { RpcHandlerContext, RpcHandlers, RpcOverloadPolicy, RpcServer, RpcTransportOptions } from './types.js';
@@ -108,13 +108,11 @@ export class RpcServerImpl<C extends ContractShape> implements RpcServer<C> {
             throw new TypeError('notifyErrorPolicy="callback" requires onNotifyError');
         }
     }
-    snapshot(): RpcTransportSnapshot {
-        const endpoint = this.#endpoint.snapshot();
-        return {
-            at: Date.now(),
+    snapshot() {
+        return snapshotRpcTransport({
             role: 'server',
             closed: this.#closed,
-            endpoint,
+            endpoint: this.#endpoint.snapshot(),
             counters: {
                 callsInFlight: this.#requestInvocations.size,
                 queuedRequests: this.#pendingQueue.length,
@@ -124,18 +122,14 @@ export class RpcServerImpl<C extends ContractShape> implements RpcServer<C> {
                 cancelled: this.#cancelled,
                 notifyErrors: this.#notifyErrors,
             },
-            timings: {
-                encodeTimeMs: endpoint.timings.encodeTimeMs,
-                queueWaitMs: endpoint.timings.queueWaitMs,
-                handlerTimeMs: snapshotDurationStats(this.#handlerTimeStats),
-                responseSendTimeMs: snapshotDurationStats(this.#responseSendTimeStats),
-            },
+            handlerTimeStats: this.#handlerTimeStats,
+            responseSendTimeStats: this.#responseSendTimeStats,
             metrics: {
                 handlerLatencyByMethod: Object.fromEntries(
                     [...this.#handlerLatencyByMethod].map(([methodName, metrics]) => [methodName, snapshotMethodLatencyMetrics(metrics)]),
                 ),
             },
-        };
+        });
     }
     async serve(): Promise<void> {
         if (this.#servePromise) {
@@ -177,25 +171,6 @@ export class RpcServerImpl<C extends ContractShape> implements RpcServer<C> {
         })();
         return this.#closePromise;
     }
-    private reportFatalError(error: unknown, phase: 'serve-loop' | 'handler' | 'shutdown' = 'serve-loop'): void {
-        let snapshot: RpcTransportSnapshot;
-        try {
-            snapshot = this.snapshot();
-        } catch {
-            return;
-        }
-        safeInvokeHook(
-            this.#onFatalError,
-            {
-                at: Date.now(),
-                role: 'server',
-                phase,
-                error,
-                snapshot,
-            },
-            'onFatalError',
-        );
-    }
     private async runServeLoop(): Promise<void> {
         try {
             while (!this.#closed) {
@@ -221,7 +196,7 @@ export class RpcServerImpl<C extends ContractShape> implements RpcServer<C> {
             }
         } catch (error) {
             if (!this.#closed) {
-                this.reportFatalError(error, 'serve-loop');
+                invokeFatalErrorHook(this.#onFatalError, 'server', 'serve-loop', error, () => this.snapshot());
                 await this.shutdown(error instanceof Error ? error : new Error(describeError(error)), false);
             }
             if (error instanceof ShirikaClosedError && this.#closed) {
@@ -269,7 +244,7 @@ export class RpcServerImpl<C extends ContractShape> implements RpcServer<C> {
         const task = this.handleFrame(frame, kind, invocation)
             .catch(async (error: unknown) => {
                 if (!this.#closed) {
-                    this.reportFatalError(error, 'handler');
+                    invokeFatalErrorHook(this.#onFatalError, 'server', 'handler', error, () => this.snapshot());
                     await this.shutdown(error instanceof Error ? error : new Error(describeError(error)), false, task);
                 }
             })
@@ -402,6 +377,20 @@ export class RpcServerImpl<C extends ContractShape> implements RpcServer<C> {
         }
         console.error(`[shirika-rpc] notify handler failed for ${methodName ?? `method#${methodId}`}`, error);
     }
+    private async sendReply(send: () => Promise<void>): Promise<SendReplyOutcome> {
+        const startedAt = nowMs();
+        try {
+            await send();
+            return 'sent';
+        } catch (error) {
+            if (error instanceof ShirikaTimeoutError) {
+                return 'timed-out';
+            }
+            throw error;
+        } finally {
+            recordDuration(this.#responseSendTimeStats, nowMs() - startedAt);
+        }
+    }
     private async sendOkResponse<T>(
         requestId: number,
         methodId: number,
@@ -413,18 +402,9 @@ export class RpcServerImpl<C extends ContractShape> implements RpcServer<C> {
         if (timing.timeoutMs !== undefined && timing.timeoutMs <= 0) {
             return 'timed-out';
         }
-        const startedAt = nowMs();
-        try {
-            await this.#endpoint.send(Opcode.RESPONSE_OK, requestId, methodId, codec, response, createSendOptions(timing.timeoutMs, timing.deadline));
-            return 'sent';
-        } catch (error) {
-            if (error instanceof ShirikaTimeoutError) {
-                return 'timed-out';
-            }
-            throw error;
-        } finally {
-            recordDuration(this.#responseSendTimeStats, nowMs() - startedAt);
-        }
+        return this.sendReply(() =>
+            this.#endpoint.send(Opcode.RESPONSE_OK, requestId, methodId, codec, response, createSendOptions(timing.timeoutMs, timing.deadline)),
+        );
     }
     private async sendErrorResponse(requestId: number, methodId: number, error: unknown, deadline: number | undefined): Promise<SendReplyOutcome> {
         const timing = resolveResponseTiming(deadline, this.#defaultResponseTimeoutMs);
@@ -433,8 +413,7 @@ export class RpcServerImpl<C extends ContractShape> implements RpcServer<C> {
         }
         const basePayload = toRemoteErrorPayload(error);
         const statusCode = resolveErrorStatusCode(error, basePayload.code);
-        const startedAt = nowMs();
-        try {
+        return this.sendReply(async () => {
             for (const payload of createRemoteErrorPayloadAttempts(basePayload)) {
                 try {
                     await this.#endpoint.send(
@@ -445,20 +424,15 @@ export class RpcServerImpl<C extends ContractShape> implements RpcServer<C> {
                         payload,
                         createSendOptions(timing.timeoutMs, timing.deadline, statusCode),
                     );
-                    return 'sent';
+                    return;
                 } catch (sendError) {
-                    if (sendError instanceof ShirikaTimeoutError) {
-                        return 'timed-out';
-                    }
-                    if (!(sendError instanceof ShirikaOversizeError)) {
+                    if (sendError instanceof ShirikaTimeoutError || !(sendError instanceof ShirikaOversizeError)) {
                         throw sendError;
                     }
                 }
             }
             throw new ShirikaOversizeError('Remote error response does not fit into the transport ring');
-        } finally {
-            recordDuration(this.#responseSendTimeStats, nowMs() - startedAt);
-        }
+        });
     }
     private recordRequestOutcome(outcome: SendReplyOutcome | TerminalOutcome): void {
         switch (outcome) {

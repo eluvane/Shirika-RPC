@@ -93,6 +93,7 @@ docs/
 !yarn.lock
 !README.md
 !.github/**
+.config/shirika/README.md
 !.config/shirika/build/
 !.config/shirika/build/**
 !.benchmark/README.md

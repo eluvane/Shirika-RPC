@@ -7,95 +7,32 @@ interface ReadStep {
     readonly size: number;
 }
 
+const size1 = Object.freeze([{ size: 1 }] satisfies ReadStep[]);
+const size2 = Object.freeze([{ size: 2 }] satisfies ReadStep[]);
+const size4 = Object.freeze([{ size: 4 }] satisfies ReadStep[]);
 const boolU8Plan = Object.freeze([{ size: 1 }, { size: 1 }] satisfies ReadStep[]);
 const boolU16Plan = Object.freeze([{ size: 1 }, { size: 2 }] satisfies ReadStep[]);
 const simpleStructPlan = Object.freeze([{ size: 1 }, { size: 2 }, { size: 1 }] satisfies ReadStep[]);
 
-const voidStrategy = defineStrategy({
-    id: 'read-side:void',
-    conformanceVectors: ['primitive-void'],
-    validateAndDecode(ring, range) {
-        void ring;
-        validateFixedReadPlan(range.payloadLength, []);
-        return undefined;
-    },
-});
-
-const boolStrategy = defineStrategy({
-    id: 'read-side:bool',
-    conformanceVectors: ['primitive-bool'],
-    validateAndDecode(ring, range) {
-        validateFixedReadPlan(range.payloadLength, [{ size: 1 }]);
-        return readBoolAt(ring, range.payloadSeq);
-    },
-});
-
-const u8Strategy = defineStrategy({
-    id: 'read-side:u8',
-    conformanceVectors: ['primitive-u8'],
-    validateAndDecode(ring, range) {
-        validateFixedReadPlan(range.payloadLength, [{ size: 1 }]);
-        return ring.readByte(range.payloadSeq);
-    },
-});
-
-const u16Strategy = defineStrategy({
-    id: 'read-side:u16',
-    conformanceVectors: ['primitive-u16'],
-    validateAndDecode(ring, range) {
-        validateFixedReadPlan(range.payloadLength, [{ size: 2 }]);
-        return readU16At(ring, range.payloadSeq);
-    },
-});
-
-const u32Strategy = defineStrategy({
-    id: 'read-side:u32',
-    conformanceVectors: ['primitive-u32'],
-    validateAndDecode(ring, range) {
-        validateFixedReadPlan(range.payloadLength, [{ size: 4 }]);
-        return readFixedAt(ring, range.payloadSeq, 4, (view) => view.getUint32(0, true));
-    },
-});
-
-const i32Strategy = defineStrategy({
-    id: 'read-side:i32',
-    conformanceVectors: ['primitive-i32'],
-    validateAndDecode(ring, range) {
-        validateFixedReadPlan(range.payloadLength, [{ size: 4 }]);
-        return readFixedAt(ring, range.payloadSeq, 4, (view) => view.getInt32(0, true));
-    },
-});
-
-const tupleBoolU8Strategy = defineStrategy({
-    id: 'read-side:tuple(bool,u8)',
-    conformanceVectors: ['tuple-bool-u8'],
-    validateAndDecode(ring, range) {
-        validateFixedReadPlan(range.payloadLength, boolU8Plan);
-        return [readBoolAt(ring, range.payloadSeq), ring.readByte(u32(range.payloadSeq + 1))];
-    },
-});
-
-const tupleBoolU16Strategy = defineStrategy({
-    id: 'read-side:tuple(bool,u16)',
-    conformanceVectors: ['tuple-bool-u16'],
-    validateAndDecode(ring, range) {
-        validateFixedReadPlan(range.payloadLength, boolU16Plan);
-        return [readBoolAt(ring, range.payloadSeq), readU16At(ring, u32(range.payloadSeq + 1))];
-    },
-});
-
-const simpleStructStrategy = defineStrategy({
-    id: 'read-side:struct(tag:u8,count:u16,ok:bool)',
-    conformanceVectors: ['struct-simple'],
-    validateAndDecode(ring, range) {
-        validateFixedReadPlan(range.payloadLength, simpleStructPlan);
-        return {
-            tag: ring.readByte(range.payloadSeq),
-            count: readU16At(ring, u32(range.payloadSeq + 1)),
-            ok: readBoolAt(ring, u32(range.payloadSeq + 3)),
-        };
-    },
-});
+const voidStrategy = defineFixedStrategy('void', 'primitive-void', [], () => undefined);
+const boolStrategy = defineFixedStrategy('bool', 'primitive-bool', size1, readBoolAt);
+const u8Strategy = defineFixedStrategy('u8', 'primitive-u8', size1, (ring, seq) => ring.readByte(seq));
+const u16Strategy = defineFixedStrategy('u16', 'primitive-u16', size2, readU16At);
+const u32Strategy = defineFixedStrategy('u32', 'primitive-u32', size4, (ring, seq) => readFixedAt(ring, seq, 4, (view) => view.getUint32(0, true)));
+const i32Strategy = defineFixedStrategy('i32', 'primitive-i32', size4, (ring, seq) => readFixedAt(ring, seq, 4, (view) => view.getInt32(0, true)));
+const tupleBoolU8Strategy = defineFixedStrategy('tuple(bool,u8)', 'tuple-bool-u8', boolU8Plan, (ring, seq) => [
+    readBoolAt(ring, seq),
+    ring.readByte(u32(seq + 1)),
+]);
+const tupleBoolU16Strategy = defineFixedStrategy('tuple(bool,u16)', 'tuple-bool-u16', boolU16Plan, (ring, seq) => [
+    readBoolAt(ring, seq),
+    readU16At(ring, u32(seq + 1)),
+]);
+const simpleStructStrategy = defineFixedStrategy('struct(tag:u8,count:u16,ok:bool)', 'struct-simple', simpleStructPlan, (ring, seq) => ({
+    tag: ring.readByte(seq),
+    count: readU16At(ring, u32(seq + 1)),
+    ok: readBoolAt(ring, u32(seq + 3)),
+}));
 
 const specializedReadSideStrategies = new Map<string, InternalReadSideStrategy>([
     ['void', voidStrategy],
@@ -111,6 +48,22 @@ const specializedReadSideStrategies = new Map<string, InternalReadSideStrategy>(
 
 export function getSpecializedReadSideStrategy(signature: string): InternalReadSideStrategy | undefined {
     return specializedReadSideStrategies.get(signature);
+}
+
+function defineFixedStrategy<T>(
+    signature: string,
+    conformanceVector: string,
+    plan: readonly ReadStep[],
+    decode: (ring: SharedRingBuffer, payloadSeq: number) => T,
+): InternalReadSideStrategy {
+    return defineStrategy({
+        id: `read-side:${signature}`,
+        conformanceVectors: [conformanceVector],
+        validateAndDecode(ring, range) {
+            validateFixedReadPlan(range.payloadLength, plan);
+            return decode(ring, range.payloadSeq);
+        },
+    });
 }
 
 function defineStrategy(strategy: InternalReadSideStrategy): InternalReadSideStrategy {

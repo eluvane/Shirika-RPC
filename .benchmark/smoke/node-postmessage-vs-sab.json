@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "suite": "node-postmessage-vs-sab",
-  "generatedAt": "2026-08-12T15:36:54.777Z",
+  "generatedAt": "2026-08-12T16:16:39.287Z",
   "runtime": {
-    "node": "v26.0.0",
+    "node": "v24.11.0",
     "platform": "win32",
     "arch": "x64"
   },
@@ -21,12 +21,12 @@
       "payloadBytes": 32,
       "capacityBytes": 1048576,
       "metrics": {
-        "opsPerSec": 56178.6570812564,
-        "avgLatencyMs": 0.018902336388279914,
-        "p50LatencyMs": 0.017200000000002547,
-        "p95LatencyMs": 0.02410000000003265,
-        "p99LatencyMs": 0.054099999999834836,
-        "rmePct": 0.20214081899031713
+        "opsPerSec": 52835.90652350219,
+        "avgLatencyMs": 0.019021601264155745,
+        "p50LatencyMs": 0.017400000000009186,
+        "p95LatencyMs": 0.027599999999893043,
+        "p99LatencyMs": 0.04279999999999973,
+        "rmePct": 0.19289802620273125
       }
     },
     {
@@ -36,12 +36,12 @@
       "payloadBytes": 32,
       "capacityBytes": 1048576,
       "metrics": {
-        "opsPerSec": 12611.125450676065,
-        "avgLatencyMs": 0.08317413291564049,
-        "p50LatencyMs": 0.075099999999793,
-        "p95LatencyMs": 0.11840000000000828,
-        "p99LatencyMs": 0.19319999999993342,
-        "rmePct": 0.3398775683799622
+        "opsPerSec": 11397.20324073289,
+        "avgLatencyMs": 0.0917214657093341,
+        "p50LatencyMs": 0.08070000000003574,
+        "p95LatencyMs": 0.1430000000000291,
+        "p99LatencyMs": 0.20849999999995816,
+        "rmePct": 0.5088304005740426
       }
     },
     {
@@ -51,12 +51,12 @@
       "payloadBytes": 32,
       "capacityBytes": 1048576,
       "metrics": {
-        "opsPerSec": 15708.505194340329,
-        "avgLatencyMs": 0.06672610218191719,
-        "p50LatencyMs": 0.05960000000004584,
-        "p95LatencyMs": 0.10350000000016735,
-        "p99LatencyMs": 0.15390000000024884,
-        "rmePct": 0.37920850763033903
+        "opsPerSec": 15138.178879224228,
+        "avgLatencyMs": 0.07027198443579806,
+        "p50LatencyMs": 0.06200000000001182,
+        "p95LatencyMs": 0.11249999999995453,
+        "p99LatencyMs": 0.1744000000003325,
+        "rmePct": 0.4393875827135643
       }
     },
     {
@@ -66,12 +66,12 @@
       "payloadBytes": 65536,
       "capacityBytes": 1048576,
       "metrics": {
-        "opsPerSec": 23474.640636952132,
-        "avgLatencyMs": 0.06072280515665584,
-        "p50LatencyMs": 0.049399999999877764,
-        "p95LatencyMs": 0.09439999999995052,
-        "p99LatencyMs": 0.15410000000019863,
-        "rmePct": 0.6344271198620608
+        "opsPerSec": 23388.70545287549,
+        "avgLatencyMs": 0.05937817059483804,
+        "p50LatencyMs": 0.057400000000143336,
+        "p95LatencyMs": 0.10170000000016444,
+        "p99LatencyMs": 0.2316000000000713,
+        "rmePct": 0.6954163374877622
       }
     },
     {
@@ -81,12 +81,12 @@
       "payloadBytes": 65536,
       "capacityBytes": 1048576,
       "metrics": {
-        "opsPerSec": 10090.48292841042,
-        "avgLatencyMs": 0.11137109783420056,
-        "p50LatencyMs": 0.09479999999985012,
-        "p95LatencyMs": 0.1610000000000582,
-        "p99LatencyMs": 0.23800000000028376,
-        "rmePct": 0.39245780283429554
+        "opsPerSec": 9702.45394081534,
+        "avgLatencyMs": 0.11667443939156061,
+        "p50LatencyMs": 0.09899999999925058,
+        "p95LatencyMs": 0.17050000000017462,
+        "p99LatencyMs": 0.25389999999970314,
+        "rmePct": 0.37816728796273114
       }
     },
     {
@@ -96,12 +96,12 @@
       "payloadBytes": 65536,
       "capacityBytes": 1048576,
       "metrics": {
-        "opsPerSec": 11340.215430268197,
-        "avgLatencyMs": 0.0966598468129387,
-        "p50LatencyMs": 0.07839999999941938,
-        "p95LatencyMs": 0.18329999999969004,
-        "p99LatencyMs": 0.24659999999994398,
-        "rmePct": 0.6840622024967229
+        "opsPerSec": 10262.978345683021,
+        "avgLatencyMs": 0.10224836934085492,
+        "p50LatencyMs": 0.0852999999997337,
+        "p95LatencyMs": 0.16299999999955617,
+        "p99LatencyMs": 0.21979999999985012,
+        "rmePct": 0.6368613015443502
       }
     }
   ]

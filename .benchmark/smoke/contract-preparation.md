@@ -1,21 +1,21 @@
 # Contract preparation benchmark
 
-Generated at: 2026-08-12T15:36:51.888Z
-Node: v26.0.0
+Generated at: 2026-08-12T16:16:36.394Z
+Node: v24.11.0
 Methods: 64
 Iterations: 5000
 
 | Case | ops/sec | total ms |
 | --- | --- | --- |
-| describeContract(raw contract) | 32485.74 | 153.91 |
-| describeContract(prepared) | 134889.42 | 37.07 |
-| getContractHash(raw contract) | 32757.89 | 152.63 |
-| getContractHash(prepared) | 152718.85 | 32.74 |
-| buildMethodIndex(raw contract) | 32047.34 | 156.02 |
-| prepared.methodIndex lookup | 43029259.90 | 0.12 |
+| describeContract(raw contract) | 31089.09 | 160.83 |
+| describeContract(prepared) | 131812.74 | 37.93 |
+| getContractHash(raw contract) | 33365.56 | 149.86 |
+| getContractHash(prepared) | 151224.16 | 33.06 |
+| buildMethodIndex(raw contract) | 30673.15 | 163.01 |
+| prepared.methodIndex lookup | 19157088.12 | 0.26 |
 
 | Comparison | time reduction % | throughput improvement % |
 | --- | --- | --- |
-| describe prepared vs raw | 75.92 | 315.23 |
-| hash prepared vs raw | 78.55 | 366.20 |
-| prepared index lookup vs raw build | 99.93 | 134167.81 |
+| describe prepared vs raw | 76.41 | 323.98 |
+| hash prepared vs raw | 77.94 | 353.23 |
+| prepared index lookup vs raw build | 99.84 | 62355.56 |

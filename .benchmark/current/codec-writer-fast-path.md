@@ -1,32 +1,32 @@
 # Codec writer fast path benchmark
 
-Generated at: 2026-08-12T15:36:17.317Z
-Node: v26.0.0
+Generated at: 2026-08-12T16:16:01.286Z
+Node: v24.11.0
 Iterations: 50000
 
 | Case | Strategy | ops/sec | avg ms | p95 ms | heap delta bytes |
 | --- | --- | --- | --- | --- | --- |
-| u32 direct safe writer | safe-writer | 3003291.61 | 0.00 | 0.00 | -402968 |
-| u32 direct trusted measured writer | generic-trusted-measured-writer | 2877764.09 | 0.00 | 0.00 | -1102200 |
-| struct direct safe writer | safe-writer | 2591250.90 | 0.00 | 0.00 | 178584 |
-| struct direct generic trusted writer | generic-trusted-measured-writer | 2426795.71 | 0.00 | 0.00 | -561480 |
-| struct direct specialized writer | specialized:struct(tag:u8,count:u16,ok:bool) | 2698720.27 | 0.00 | 0.00 | 1062680 |
-| nested direct safe writer | safe-writer | 681035.61 | 0.00 | 0.00 | -121328 |
-| nested direct generic trusted writer | generic-trusted-measured-writer | 701515.13 | 0.00 | 0.00 | -32768 |
-| nested direct specialized writer | specialized:struct(tag:u8,maybePayload:optional(bytes),pairs:array(tuple(bool,u8))) | 933103.91 | 0.00 | 0.00 | 1913472 |
-| frame struct safe fallback | safe-fallback | 61361.47 | 0.02 | 0.02 | -601024 |
-| frame struct prepared specialized writer | specialized:struct(tag:u8,count:u16,ok:bool) | 28316.86 | 0.04 | 0.04 | -134784 |
-| frame nested safe fallback | safe-fallback | 50802.67 | 0.02 | 0.02 | 355960 |
-| frame nested prepared specialized writer | specialized:struct(tag:u8,maybePayload:optional(bytes),pairs:array(tuple(bool,u8))) | 31596.01 | 0.03 | 0.03 | 2925776 |
+| u32 direct safe writer | safe-writer | 2534276.08 | 0.00 | 0.00 | 596816 |
+| u32 direct trusted measured writer | generic-trusted-measured-writer | 2549706.53 | 0.00 | 0.00 | 1966872 |
+| struct direct safe writer | safe-writer | 2434345.70 | 0.00 | 0.00 | -206496 |
+| struct direct generic trusted writer | generic-trusted-measured-writer | 2445382.38 | 0.00 | 0.00 | -868120 |
+| struct direct specialized writer | specialized:struct(tag:u8,count:u16,ok:bool) | 2642706.13 | 0.00 | 0.00 | -896800 |
+| nested direct safe writer | safe-writer | 727339.38 | 0.00 | 0.00 | -330768 |
+| nested direct generic trusted writer | generic-trusted-measured-writer | 721146.91 | 0.00 | 0.00 | -327248 |
+| nested direct specialized writer | specialized:struct(tag:u8,maybePayload:optional(bytes),pairs:array(tuple(bool,u8))) | 950912.02 | 0.00 | 0.00 | -496016 |
+| frame struct safe fallback | safe-fallback | 60012.82 | 0.02 | 0.02 | 604504 |
+| frame struct prepared specialized writer | specialized:struct(tag:u8,count:u16,ok:bool) | 27656.06 | 0.04 | 0.04 | 2899664 |
+| frame nested safe fallback | safe-fallback | 51272.87 | 0.02 | 0.02 | -2070960 |
+| frame nested prepared specialized writer | specialized:struct(tag:u8,maybePayload:optional(bytes),pairs:array(tuple(bool,u8))) | 30611.27 | 0.03 | 0.03 | 1941672 |
 
 | Comparison | latency reduction % | throughput improvement % |
 | --- | --- | --- |
-| u32 direct trusted measured vs safe | -4.36 | -4.18 |
-| struct direct generic trusted vs safe | -6.78 | -6.35 |
-| struct direct specialized vs safe | 3.98 | 4.15 |
-| struct direct specialized vs generic trusted | 10.08 | 11.21 |
-| nested direct generic trusted vs safe | 2.92 | 3.01 |
-| nested direct specialized vs safe | 27.01 | 37.01 |
-| nested direct specialized vs generic trusted | 24.82 | 33.01 |
-| frame struct prepared specialized vs safe | -116.70 | -53.85 |
-| frame nested prepared specialized vs safe | -60.79 | -37.81 |
+| u32 direct trusted measured vs safe | 0.61 | 0.61 |
+| struct direct generic trusted vs safe | 0.45 | 0.45 |
+| struct direct specialized vs safe | 7.88 | 8.56 |
+| struct direct specialized vs generic trusted | 7.47 | 8.07 |
+| nested direct generic trusted vs safe | -0.86 | -0.85 |
+| nested direct specialized vs safe | 23.51 | 30.74 |
+| nested direct specialized vs generic trusted | 24.16 | 31.86 |
+| frame struct prepared specialized vs safe | -117.00 | -53.92 |
+| frame nested prepared specialized vs safe | -67.50 | -40.30 |

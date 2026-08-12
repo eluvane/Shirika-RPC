@@ -22,26 +22,6 @@ class BlockingWaitStrategy implements WaitStrategy {
         return result;
     }
 }
-class AsyncWaitAsyncStrategy implements WaitStrategy {
-    readonly canBlock = false;
-    async wait(control: Int32Array, index: number, expected: number, timeoutMs?: number, signal?: AbortSignal): Promise<WaitResult> {
-        throwIfAborted(signal);
-        const waitAsync = atomicsWithWaitAsync.waitAsync?.bind(atomicsWithWaitAsync);
-        if (!waitAsync) {
-            return new AsyncPollingWaitStrategy().wait(control, index, expected, timeoutMs, signal);
-        }
-        const result = waitAsync(control, index, expected, timeoutMs ?? Number.POSITIVE_INFINITY);
-        if (!result.async) {
-            throwIfAborted(signal);
-            return result.value as WaitResult;
-        }
-        const waitPromise = Promise.resolve(result.value);
-        if (!signal) {
-            return waitPromise;
-        }
-        return raceWaitWithAbort(waitPromise, signal);
-    }
-}
 class AsyncPollingWaitStrategy implements WaitStrategy {
     readonly canBlock = false;
     async wait(control: Int32Array, index: number, expected: number, timeoutMs?: number, signal?: AbortSignal): Promise<WaitResult> {
@@ -62,9 +42,29 @@ class AsyncPollingWaitStrategy implements WaitStrategy {
         return 'ok';
     }
 }
+const asyncPollingWaitStrategy = new AsyncPollingWaitStrategy();
+class AsyncWaitAsyncStrategy implements WaitStrategy {
+    readonly canBlock = false;
+    async wait(control: Int32Array, index: number, expected: number, timeoutMs?: number, signal?: AbortSignal): Promise<WaitResult> {
+        throwIfAborted(signal);
+        const waitAsync = atomicsWithWaitAsync.waitAsync?.bind(atomicsWithWaitAsync);
+        if (!waitAsync) {
+            return asyncPollingWaitStrategy.wait(control, index, expected, timeoutMs, signal);
+        }
+        const result = waitAsync(control, index, expected, timeoutMs ?? Number.POSITIVE_INFINITY);
+        if (!result.async) {
+            throwIfAborted(signal);
+            return result.value as WaitResult;
+        }
+        const waitPromise = Promise.resolve(result.value);
+        if (!signal) {
+            return waitPromise;
+        }
+        return raceWaitWithAbort(waitPromise, signal);
+    }
+}
 const blockingWaitStrategy = new BlockingWaitStrategy();
 const asyncWaitAsyncStrategy = new AsyncWaitAsyncStrategy();
-const asyncPollingWaitStrategy = new AsyncPollingWaitStrategy();
 export function createWaitStrategy(canBlock: boolean): WaitStrategy {
     if (canBlock) {
         return blockingWaitStrategy;
